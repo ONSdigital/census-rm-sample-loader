@@ -50,6 +50,7 @@ def create_json(sample_id,sampleunit):
     obj = {"id":str(sample_id),"attributes":{}}
     attrs = {}
     
+    # having to add attributes like this as json.dumps double escapes the quotes
     for key in sampleunit:
         attrs.update({str(key) : str(sampleunit[key])})
 
