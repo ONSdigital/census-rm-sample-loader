@@ -1,7 +1,6 @@
-import csv, pika, jinja2
+import csv, pika, jinja2, redis, json
 import sys, getopt, uuid, os
 
-# connect to rabbitmq server
 # get rabbitmq env vars
 rabbitmq_host       = os.environ.get('RABBITMQ_SERVICE_HOST', 'localhost')
 rabbitmq_port       = os.environ.get('RABBITMQ_SERVICE_PORT', '5672')
@@ -11,11 +10,15 @@ rabbitmq_exchange   = os.environ.get('RABBITMQ_EXCHANGE', '')
 rabbitmq_user       = os.environ.get('RABBITMQ_USER', 'guest')
 rabbitmq_password   = os.environ.get('RABBITMQ_PASSWORD', 'guest')
 
-# set in init_rabbit
+# rabbit global vars
 rabbitmq_credentials = None
 rabbitmq_connection  = None
 rabbitmq_channel     = None
 
+# get redis env vars
+redis_host       = os.environ.get('REDIS_SERVICE_HOST', 'localhost')
+redis_port       = os.environ.get('REDIS_SERVICE_PORT', '6379')
+redis_db         = os.environ.get('REDIS_DB', '0')         
 
 
 # globally load sampleunit message template
@@ -26,10 +29,13 @@ jinja_template = env.get_template( "message_template.xml")
 
 def sample_reader(file_obj,ce_uuid,ap_uuid,ci_uuid):
    
+    sampleunits = {}
     reader = csv.DictReader(file_obj, delimiter=',')
     count = 0
     for sampleunit in reader:
-        publish_sampleunit (jinja_template.render(sample=sampleunit, uuid=uuid.uuid4() , ce_uuid=ce_uuid ,ap_uuid=ap_uuid , ci_uuid=ci_uuid))
+        sample_id = uuid.uuid4()
+        sampleunits.update( {"sampleunit:"+str(sample_id) : create_json(sample_id,sampleunit)} )
+        publish_sampleunit (jinja_template.render(sample=sampleunit, uuid=sample_id , ce_uuid=ce_uuid ,ap_uuid=ap_uuid , ci_uuid=ci_uuid))
         count += 1
         if count % 5000 == 0:
             sys.stdout.write("\r" + str(count) + " samples loaded")
@@ -37,7 +43,18 @@ def sample_reader(file_obj,ce_uuid,ap_uuid,ci_uuid):
     
     print('\nAll Sample Units have been added to the queue ' +rabbitmq_queue )
     rabbitmq_connection.close()
+    write_sampleunits_to_redis(sampleunits)
 
+def create_json(sample_id,sampleunit):
+    
+    obj = {"id":str(sample_id),"attributes":{}}
+    attrs = {}
+    
+    for key in sampleunit:
+        attrs.update({str(key) : str(sampleunit[key])})
+
+    obj.update({"attributes":attrs })
+    return obj
         
 
 def publish_sampleunit(message):
@@ -60,6 +77,25 @@ def init_rabbit():
 
     if rabbitmq_queue == 'localtest':
         rabbitmq_channel.queue_declare(queue=rabbitmq_queue)
+
+
+def write_sampleunits_to_redis(sampleunits):
+    redis_connection = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
+
+    print("Writing sampleunits to Redis")
+    count = 0
+    redis_pipeline = redis_connection.pipeline()
+    for key in sampleunits:
+        redis_connection.set(key, sampleunits[key])
+        count += 1
+        if count % 5000 == 0:
+            sys.stdout.write("\r" + str(count) + " samples loaded")
+            sys.stdout.flush()
+
+
+    redis_pipeline.execute()
+    print("Sample Units written to Redis")
+    
 
 #----------------------------------------------------------------------
 # Usage python loadSample.py <SAMPLE.csv> <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
