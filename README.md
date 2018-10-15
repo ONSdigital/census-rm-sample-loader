@@ -1,9 +1,11 @@
 # Census sample loader
-This project contains a simplified sample loading script for Response Management case setup. (Currently in use for performance test setup on Kubernetes) It will take as arguments a sample CSV file, a Collection Exercise UUID, Action Plan UUI and Collection Instrument UUID.
+This project contains a simplified sample loading script for Response Management case setup. (Currently in use for performance test setup on Kubernetes) It will take as arguments a sample CSV file, a Collection Exercise UUID, Action Plan UUID and Collection Instrument UUID.
 
-The Loader will generate UUIDs for Sample Units and place messages (See example.xml for format) directly onto the Case.CaseDelivery queue. Case service will then create corresponding Cases.
+The Sample Loader will generate UUIDs for Sample Units and place messages (See example.xml for format) directly onto the Case.CaseDelivery queue. Case service will then create corresponding Cases.
 
 After adding messages to the queue it then loads all sample attributes into Redis keyed by sampleunit:<UUID>. The JSON stored for each sample matches the JSON returned by the current Sample service.
+  
+Collection Exercises, Collection Instruments and Action Plans must currently be setup either using the social-test-setup scripts https://github.com/ONSdigital/rm-tools/tree/master/social-test-setup or the rasrm-ops UI https://github.com/ONSdigital/rasrm-ops
 
 
 
