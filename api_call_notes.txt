@@ -1,8 +1,0 @@
-case lifecycle event
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns2:caseNotification xmlns:ns2="http://ons.gov.uk/ctp/response/casesvc/message/notification"><sampleUnitId>c0dac3f5-d79b-4736-9a38-28df6542ce72</sampleUnitId><caseId>bf10c16d-1403-49b3-adad-0b4deed6869e</caseId><actionPlanId>241bfac5-8aa9-4f47-b1ed-bcf7a6299c5f</actionPlanId><exerciseId>a93e6884-62f2-4588-9013-369fc571a3e8</exerciseId><sampleUnitType>H</sampleUnitType><notificationType>ACTIVATED</notificationType></ns2:caseNotification>
-
-
-get sample attributes
-http://admin:secret@samplesvc/samples/e0beb244-0b2a-4cd5-9fc1-a57a3e47450d/attributes
-
-{"id":"e0beb244-0b2a-4cd5-9fc1-a57a3e47450d","attributes":{"TLA":"OHS","UPRN":"123456","COUNTRY":"E","LOCALITY":"Hampshire","POSTCODE":"PO15 5RR","REFERENCE":"000001","TOWN_NAME":"Titchfield","ADDRESS_LINE1":"Office for National Statistics","ADDRESS_LINE2":"Segensworth Road","ORGANISATION_NAME":""}}
