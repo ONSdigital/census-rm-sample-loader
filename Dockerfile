@@ -13,3 +13,4 @@ WORKDIR /app
 COPY . /app
 RUN pip install pika
 RUN pip install jinja2
+RUN pip install redis
