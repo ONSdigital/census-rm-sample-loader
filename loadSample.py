@@ -1,5 +1,11 @@
-import csv, pika, jinja2, redis, json
-import sys, getopt, uuid, os
+import csv 
+import pika 
+import jinja2
+import redis
+import json
+import sys
+import uuid
+import os
 
 # get rabbitmq env vars
 rabbitmq_host       = os.environ.get('RABBITMQ_SERVICE_HOST', 'localhost')
@@ -45,6 +51,8 @@ def sample_reader(file_obj,ce_uuid,ap_uuid,ci_uuid):
     rabbitmq_connection.close()
     write_sampleunits_to_redis(sampleunits)
 
+
+
 def create_json(sample_id,sampleunit):
     
     obj = {"id":str(sample_id),"attributes":{}}
@@ -56,7 +64,8 @@ def create_json(sample_id,sampleunit):
 
     obj.update({"attributes":attrs })
     return obj
-        
+
+
 
 def publish_sampleunit(message):
    
@@ -65,6 +74,8 @@ def publish_sampleunit(message):
                       body=str(message),
                       properties=pika.BasicProperties(content_type='text/xml')
                     )
+
+
 
 def init_rabbit():
     global rabbitmq_credentials, rabbitmq_connection, rabbitmq_channel 
@@ -78,6 +89,7 @@ def init_rabbit():
 
     if rabbitmq_queue == 'localtest':
         rabbitmq_channel.queue_declare(queue=rabbitmq_queue)
+
 
 
 def write_sampleunits_to_redis(sampleunits):
@@ -98,16 +110,14 @@ def write_sampleunits_to_redis(sampleunits):
     print("Sample Units written to Redis")
     
 
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------
 # Usage python loadSample.py <SAMPLE.csv> <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
-# 
-def main(argv):  
+#------------------------------------------------------------------------------------------------------------------ 
+
+if __name__ == "__main__":
     if len(sys.argv) < 4:
       print('Usage python loadSample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>')
     else:
       init_rabbit()
       with open(sys.argv[1]) as f_obj:
          sample_reader(f_obj,sys.argv[2],sys.argv[3],sys.argv[4]) 
-
-if __name__ == "__main__":
-    main(sys.argv)
