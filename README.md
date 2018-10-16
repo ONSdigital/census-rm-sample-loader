@@ -37,7 +37,7 @@ python load_sample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <C
 ```
 e.g.
 ```
-python load_sample.py sample_100000.csv ed3b1381-efb5-4162-9af6-3d95ca0c543c 4f5e6db7-6f55-4998-b4e5-db234c8740ac 7eadd7b2-ccf1-46c3-acb8-9db450df5521
+python load_sample.py sample_100000.csv 2fc107ee-96f5-465b-923e-38914ce63e3e 2c64c460-2543-4abe-8728-01bbb0449807 ec6da84c-2b3b-4445-88c7-17c2171d9063
 ```
 
 ## Vewing messages in the Rabbit queue
