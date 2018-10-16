@@ -33,11 +33,11 @@ Once running Redis and RabbitMQ are running you can now run the sample loader
 
 ## Usage
 ```
-python loadSample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
+python load_sample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
 ```
 e.g.
 ```
-python loadSample.py Sample_100000.csv ed3b1381-efb5-4162-9af6-3d95ca0c543c 4f5e6db7-6f55-4998-b4e5-db234c8740ac 7eadd7b2-ccf1-46c3-acb8-9db450df5521
+python load_sample.py sample_100000.csv ed3b1381-efb5-4162-9af6-3d95ca0c543c 4f5e6db7-6f55-4998-b4e5-db234c8740ac 7eadd7b2-ccf1-46c3-acb8-9db450df5521
 ```
 
 ## Vewing messages in the Rabbit queue
@@ -63,7 +63,7 @@ To clear the contents of redis
 ```
 
 ## Running in Kubernetes
-To run the loadSample app in Kubernetes 
+To run the load_sample app in Kubernetes 
 
 ```
 kubectl run sampleloader --image sdcplatform/census-sample-loader -it --rm /bin/bash
