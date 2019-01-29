@@ -84,7 +84,6 @@ def write_sampleunits_to_redis(sampleunits):
     count = 0
     redis_pipeline = redis_connection.pipeline()
     for key, attributes in sampleunits.items():
-        print(attributes)
         redis_connection.set(key, attributes)
         count += 1
         if count % 5000 == 0:
