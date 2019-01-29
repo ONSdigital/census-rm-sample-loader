@@ -47,6 +47,7 @@ def sample_reader(file_obj, ce_uuid, ap_uuid, ci_uuid):
             sys.stdout.flush()
 
     print('\nAll Sample Units have been added to the queue ' + rabbitmq_queue)
+    rabbitmq_connection.close()
     write_sampleunits_to_redis(sampleunits)
 
 
