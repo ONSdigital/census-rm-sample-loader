@@ -4,7 +4,10 @@ services:
   - docker
 
 after_success:
-- if ([ "$TRAVIS_BRANCH" == "rm-census" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || ([ "$TRAVIS_BRANCH" == "automate-census-docker-build" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]); then
+- echo $TRAVIS_BRANCH
+- echo $TRAVIS_PULL_REQUEST
+- if ([ "$TRAVIS_BRANCH" == "rm-census" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || ([ "$TRAVIS_BRANCH" == "automate-census-docker-build" ]); then
+  echo "RUNNING IN HERE"
   docker build -t "${DOCKER_GCP_LOCATION}"/census-rm-sample-loader .;
   docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
   docker push "${DOCKER_GCP_LOCATION}"/census-rm-sample-loader;
