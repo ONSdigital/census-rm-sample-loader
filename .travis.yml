@@ -3,12 +3,7 @@ sudo: required
 services:
   - docker
 
-language: python
-
-python:
-  - "3.6"
-
-after_success:
+before_install:
 - if ([ "$TRAVIS_BRANCH" == "rm-census" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || ([ "$TRAVIS_BRANCH" == "automate-census-docker-build" ]); then
   docker build -t "$DESTINATION_IMAGE_NAME" .;
   docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
