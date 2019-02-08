@@ -3,7 +3,19 @@ sudo: required
 services:
   - docker
 
-before_install:
+language: python
+
+python:
+  - "3.6"
+
+install:
+  - pip install pipenv
+  - pipenv install --dev --deploy
+
+script:
+  - pipenv check
+
+after_success:
 - if ([ "$TRAVIS_BRANCH" == "rm-census" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]) || ([ "$TRAVIS_BRANCH" == "automate-census-docker-build" ]); then
   docker build -t "$DESTINATION_IMAGE_NAME" .;
   docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
@@ -14,6 +26,7 @@ before_install:
 env:
   global:
     - DESTINATION_IMAGE_NAME="$DOCKER_GCP_LOCATION/census-rm-sample-loader"
+    - PIPENV_IGNORE_VIRTUALENVS=1
 
 branches:
   only:
