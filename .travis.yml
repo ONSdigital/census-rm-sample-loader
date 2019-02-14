@@ -30,4 +30,4 @@ env:
 
 branches:
   only:
-    - rm-census
+    - master
