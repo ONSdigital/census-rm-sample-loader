@@ -10,10 +10,10 @@ import redis
 
 # get rabbitmq env vars
 rabbitmq_host = os.environ.get('RABBITMQ_SERVICE_HOST', 'localhost')
-rabbitmq_port = os.environ.get('RABBITMQ_SERVICE_PORT', '5672')
+rabbitmq_port = os.environ.get('RABBITMQ_SERVICE_PORT', '6672')
 rabbitmq_vhost = os.environ.get('RABBITMQ_VHOST', '/')
-rabbitmq_queue = os.environ.get('RABBITMQ_QUEUE', 'localtest')
-rabbitmq_exchange = os.environ.get('RABBITMQ_EXCHANGE', '')
+rabbitmq_queue = os.environ.get('RABBITMQ_QUEUE', 'Case.CaseDelivery.binding')
+rabbitmq_exchange = os.environ.get('RABBITMQ_EXCHANGE', 'collection-outbound-exchange')
 rabbitmq_user = os.environ.get('RABBITMQ_USER', 'guest')
 rabbitmq_password = os.environ.get('RABBITMQ_PASSWORD', 'guest')
 
@@ -23,8 +23,8 @@ rabbitmq_connection = None
 rabbitmq_channel = None
 
 # get redis env vars
-redis_host = os.environ.get('REDIS_SERVICE_HOST', 'localhost')
-redis_port = os.environ.get('REDIS_SERVICE_PORT', '6379')
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+redis_port = os.environ.get('REDIS_PORT', '7379')
 redis_db = os.environ.get('REDIS_DB', '0')
 
 # globally load sampleunit message template
