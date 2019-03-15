@@ -2,6 +2,13 @@ import sys
 
 from sample_loader import SampleLoader
 
+
+def load_sample_file(sample_file_path, collection_exercise_id, actionplan_id, collection_instrument_id):
+    sample_loader = SampleLoader()
+    with open(sample_file_path) as sample_file:
+        sample_loader.load_sample(sample_file, collection_exercise_id, actionplan_id, collection_instrument_id)
+
+
 # ------------------------------------------------------------------------------------------------------------------
 # Usage python loadSample.py <SAMPLE.csv> <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
 # ------------------------------------------------------------------------------------------------------------------
@@ -10,6 +17,4 @@ if __name__ == "__main__":
         print(
             'Usage python loadSample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>')
     else:
-        sample_loader = SampleLoader()
-        with open(sys.argv[1]) as f_obj:
-            sample_loader.load_sample(f_obj, sys.argv[2], sys.argv[3], sys.argv[4])
+        load_sample_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
