@@ -20,9 +20,16 @@ Install dependencies with
 make build
 ```
 
+Enter the environment shell with
+```bash
+pipenv shell
+```
+
 ## building and pushing the docker container
-docker build -t sdcplatform/census-sample-loader:latest .
-docker push sdcplatform/census-sample-loader:latest
+```bash
+docker build -t eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG> .
+docker push eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG>
+```
 
 ## Testing Locally with Docker
 To test the script locally you must run RabbitMQ and Redis containers. A docker-compose.yml file exists for this purpose.
@@ -31,7 +38,8 @@ To test the script locally you must run RabbitMQ and Redis containers. A docker-
 docker-compose up -d
 ```
 
-Once running Redis and RabbitMQ are running you can now run the sample loader
+Once running Redis and RabbitMQ are running you can now run the sample loader.
+This also runs the stub sample service to retrieve the sample units via an API.
 
 ## Usage
 ```
@@ -67,6 +75,8 @@ To clear the contents of redis
 ## Running in Kubernetes
 To run the load_sample app in Kubernetes 
 
+```bash
+./run_in_kubernetes.sh
 ```
-kubectl run sampleloader --image sdcplatform/census-sample-loader -it --rm /bin/bash
-```
+
+This will deploy a sample loader pod in the context your kubectl is currently set to and attach to the shell, allowing you to run the sample loader within the cluster. The pod is deleted when the shell is exited.
