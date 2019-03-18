@@ -3,7 +3,7 @@ from typing import Dict
 
 import redis
 
-from Exceptions import RedisPipelineClosedError
+from exceptions import RedisPipelineClosedError
 
 
 class RedisPipelineContext:

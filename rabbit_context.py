@@ -2,7 +2,7 @@ import os
 
 import pika
 
-from Exceptions import RabbitConnectionClosedError
+from exceptions import RabbitConnectionClosedError
 
 
 class RabbitContext:

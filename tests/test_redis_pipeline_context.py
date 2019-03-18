@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from Exceptions import RedisPipelineClosedError
+from exceptions import RedisPipelineClosedError
 from redis_pipeline_context import RedisPipelineContext
 
 

@@ -10,12 +10,14 @@ Collection Exercises, Collection Instruments and Action Plans must currently be 
 
 
 ## Setting up the python environment
+This project uses pyenv and pipenv for python version and dependency management, install with
+```bash
+brew install pyenv pipenv
 ```
-brew install pyenv
-pyenv install
-pip install --upgrade pip setuptools pipenv
-pipenv install --dev
-pipenv shell
+
+Install dependencies with
+```bash
+make build
 ```
 
 ## building and pushing the docker container

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from Exceptions import RabbitConnectionClosedError
+from exceptions import RabbitConnectionClosedError
 from rabbit_context import RabbitContext
 
 
