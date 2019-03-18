@@ -1,6 +1,15 @@
-import sys
+import argparse
 
 from sample_loader import SampleLoader
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Load a sample file into response management.')
+    parser.add_argument('sample_file_path', help='Path to the sample file', type=str)
+    parser.add_argument('collection_exercise_id', help='collection exercise ID', type=str)
+    parser.add_argument('action_plan_id', help='action plan ID', type=str)
+    parser.add_argument('collection_instrument_id', help='collection instrument ID', type=str)
+    return parser.parse_args()
 
 
 def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, collection_instrument_id):
@@ -9,12 +18,7 @@ def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, c
         sample_loader.load_sample(sample_file, collection_exercise_id, action_plan_id, collection_instrument_id)
 
 
-# ------------------------------------------------------------------------------------------------------------------
-# Usage python loadSample.py <SAMPLE.csv> <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
-# ------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print('Usage python loadSample.py sample.csv'
-              '<COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>')
-    else:
-        load_sample_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    args = parse_arguments()
+    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id,
+                     args.collection_instrument_id)

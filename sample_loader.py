@@ -32,7 +32,6 @@ class SampleLoader:
                 sample_unit_id = uuid.uuid4()
                 sample_unit = {
                     f"sample_unit: {sample_unit_id}": self._create_sample_unit_json(sample_unit_id, sample_row)}
-                print(sample_unit)  # DEBUG
                 rabbit.publish_message(
                     message=str(self._jinja_template.render(sample=sample_row,
                                                             sample_unit_id=sample_unit_id,
