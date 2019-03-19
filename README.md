@@ -80,3 +80,11 @@ To run the load_sample app in Kubernetes
 ```
 
 This will deploy a sample loader pod in the context your kubectl is currently set to and attach to the shell, allowing you to run the sample loader within the cluster. The pod is deleted when the shell is exited.
+
+### Copying across a sample file
+To get a sample file into a pod in kubernetes you can use the `kubectl cp` command
+
+While the sample loader pod is running, from another shell run
+```bash
+kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
+```
