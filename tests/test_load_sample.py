@@ -11,27 +11,24 @@ from load_sample import load_sample_file, load_sample
 @patch('load_sample.RabbitContext')
 @patch('load_sample.RedisPipelineContext')
 class TestLoadSample(TestCase):
-    def setUp(self):
-        self.current_file_path = os.path.dirname(__file__)
+    sample_5_file_path = f'{os.path.dirname(__file__)}/resources/sample_5.csv'
 
     def test_load_sample_file_publishes_cases_to_rabbit(self, _, patch_rabbit):
-        sample_file_path = f'{self.current_file_path}/resources/sample_5.csv'
-        load_sample_file(sample_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
+        load_sample_file(self.sample_5_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
 
         patch_rabbit_context = patch_rabbit.return_value.__enter__.return_value
         publish_message_call_args = patch_rabbit_context.publish_message.call_args_list
 
-        with open(sample_file_path) as sample_file:
+        with open(self.sample_5_file_path) as sample_file:
             self._check_published_cases_contain_required_data(publish_message_call_args, sample_file)
 
     def test_load_sample_file_writes_all_attributes_to_redis(self, patch_redis, _):
-        sample_file_path = f'{self.current_file_path}/resources/sample_5.csv'
-        load_sample_file(sample_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
+        load_sample_file(self.sample_5_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
 
         patch_redis_context = patch_redis.return_value.__enter__.return_value
         redis_set_call_args_list = patch_redis_context.set_names_to_values.call_args_list
 
-        with open(sample_file_path) as sample_file:
+        with open(self.sample_5_file_path) as sample_file:
             self._check_attributes_sent_to_redis_match_sample_file(redis_set_call_args_list, sample_file)
 
     def test_load_sample_publishes_case_to_rabbit(self, _, patch_rabbit):
@@ -59,8 +56,8 @@ class TestLoadSample(TestCase):
         self._check_attributes_sent_to_redis_match_sample_file(redis_set_call_args_list, sample_file)
 
     def test_ARID_is_used_as_sample_unit_ref_in_case(self, _, patch_rabbit):
-        sample_file = ('ARID\n'
-                       'DDR190314000000195675\n').split('\n')
+        sample_file = ('ARID',
+                       'DDR190314000000195675')
         load_sample(sample_file, 'ce_uuid', 'ap_uuid', 'ci_uuid')
 
         patch_rabbit_context = patch_rabbit.return_value.__enter__.return_value
@@ -85,6 +82,4 @@ class TestLoadSample(TestCase):
         for row_number, sample_row in enumerate(sample_file_rows):
             loaded_sample_unit = json.loads(tuple(redis_set_call_args_list[row_number][0][0].values())[0])
             for attribute, value in sample_row.items():
-                self.assertEqual(value, loaded_sample_unit['attributes'][attribute],
-                                 f'Loaded sample attributes were missing attribute:'
-                                 f' [{attribute}] with value [{value}]')
+                self.assertEqual(value, loaded_sample_unit['attributes'][attribute])
