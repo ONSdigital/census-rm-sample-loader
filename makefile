@@ -3,7 +3,7 @@ build:
 
 lint:
 	pipenv run flake8 . ./tests
-	pipenv check . ./tests
+	pipenv check
 
 test: lint
 	pipenv run pytest --cov-report term-missing --cov . --capture no

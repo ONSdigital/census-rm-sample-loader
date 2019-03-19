@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Mapping
 
 import redis
 
@@ -30,7 +30,7 @@ class RedisPipelineContext:
         self._is_pipeline_open = False
         self._pipeline.execute()
 
-    def set_names_to_values(self, names_to_values: Dict[str, str]):
+    def set_names_to_values(self, names_to_values: Mapping[str, str]):
         if not self._is_pipeline_open:
             raise RedisPipelineClosedError
         for name, value in names_to_values.items():

@@ -14,8 +14,8 @@ from redis_pipeline_context import RedisPipelineContext
 class SampleLoader:
 
     def __init__(self):
-        self._jinja_template = jinja2.Environment(
-            loader=jinja2.FileSystemLoader([os.path.dirname(__file__)])).get_template("message_template.xml")
+        self._case_message_template = jinja2.Environment(
+            loader=jinja2.FileSystemLoader([os.path.dirname(__file__)])).get_template('message_template.xml')
         self._rabbit_context = RabbitContext()
         self._redis_pipeline_context = RedisPipelineContext()
 
@@ -30,23 +30,23 @@ class SampleLoader:
             print(f'Loading sample units to queue {rabbit.queue_name}')
             for count, sample_row in enumerate(sample_file_reader):
                 sample_unit_id = uuid.uuid4()
-                sample_unit = {
-                    f"sample_unit: {sample_unit_id}": self._create_sample_unit_json(sample_unit_id, sample_row)}
                 rabbit.publish_message(
-                    message=str(self._jinja_template.render(sample=sample_row,
-                                                            sample_unit_id=sample_unit_id,
-                                                            collection_exercise_id=collection_exercise_id,
-                                                            action_plan_id=action_plan_id,
-                                                            collection_instrument_id=collection_instrument_id)),
+                    message=self._case_message_template.render(sample=sample_row,
+                                                               sample_unit_id=sample_unit_id,
+                                                               collection_exercise_id=collection_exercise_id,
+                                                               action_plan_id=action_plan_id,
+                                                               collection_instrument_id=collection_instrument_id),
                     content_type='text/xml')
+                sample_unit = {
+                    f'sample_unit: {sample_unit_id}': self._create_sample_unit_json(sample_unit_id, sample_row)}
                 redis_pipeline.set_names_to_values(sample_unit)
 
                 if count % 5000 == 0:
-                    sys.stdout.write(f"\r{count} sample units loaded")
+                    sys.stdout.write(f'\r{count} sample units loaded')
                     sys.stdout.flush()
         print(f'\nAll sample units have been added to the queue {rabbit.queue_name} and Redis')
 
     @staticmethod
     def _create_sample_unit_json(sample_unit_id, sample_unit) -> str:
-        sample_unit = {"id": str(sample_unit_id), "attributes": sample_unit}
+        sample_unit = {'id': str(sample_unit_id), 'attributes': sample_unit}
         return json.dumps(sample_unit)
