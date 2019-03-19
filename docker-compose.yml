@@ -14,16 +14,3 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-
-  sample-stub:
-    container_name: sample-stub
-    image: eu.gcr.io/census-rm-ci/census-rm-samplesvc-stub
-    ports:
-      - "8125:8125"
-    environment:
-      - REDIS_SERVICE_HOST=redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8125/info"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3

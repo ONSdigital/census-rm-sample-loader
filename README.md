@@ -39,7 +39,6 @@ docker-compose up -d
 ```
 
 Once running Redis and RabbitMQ are running you can now run the sample loader.
-This also runs the stub sample service to retrieve the sample units via an API.
 
 ## Usage
 ```
