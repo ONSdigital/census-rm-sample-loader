@@ -1,3 +1,4 @@
+import json
 import os
 from unittest import TestCase
 from unittest.mock import patch
@@ -43,22 +44,23 @@ class TestSampleLoader(TestCase):
 
         patch_redis_context = patch_redis.return_value.__enter__.return_value
         self.assertEqual(patch_redis_context.set_names_to_values.call_count, 2)
+        redis_set_call_args_list = patch_redis_context.set_names_to_values.call_args_list
 
-        first_call_attributes = tuple(patch_redis_context.set_names_to_values.call_args_list[0][0][0].values())[0]
-        self.assertIn('"ARID": "DDR190314000000195675"', first_call_attributes)
-        self.assertIn('"UPRN": ""', first_call_attributes)
-        self.assertIn('"ADDRESS_TYPE": "HH"', first_call_attributes)
-        self.assertIn('"ADDRESS_LINE1": "123 Fake Street"', first_call_attributes)
-        self.assertIn('"POSTCODE": "AB1 2CD"', first_call_attributes)
-        self.assertIn('"TEST_ATTRIBUTE": "abc"', first_call_attributes)
+        first_call_attributes = json.loads(tuple(redis_set_call_args_list[0][0][0].values())[0])['attributes']
+        self.assertEqual('DDR190314000000195675', first_call_attributes['ARID'])
+        self.assertEqual('', first_call_attributes['UPRN'])
+        self.assertEqual('HH', first_call_attributes['ADDRESS_TYPE'])
+        self.assertEqual('123 Fake Street', first_call_attributes['ADDRESS_LINE1'])
+        self.assertEqual('AB1 2CD', first_call_attributes['POSTCODE'])
+        self.assertEqual('abc', first_call_attributes['TEST_ATTRIBUTE'])
 
-        second_call_attributes = tuple(patch_redis_context.set_names_to_values.call_args_list[1][0][0].values())[0]
-        self.assertIn('"ARID": "DDR190314000000239595"', second_call_attributes)
-        self.assertIn('"UPRN": ""', second_call_attributes)
-        self.assertIn('"ADDRESS_TYPE": "HH"', second_call_attributes)
-        self.assertIn('"ADDRESS_LINE1": "13 O\'Made-up Lane"', second_call_attributes)
-        self.assertIn('"POSTCODE": "AB123CD"', second_call_attributes)
-        self.assertIn('"TEST_ATTRIBUTE": "123"', second_call_attributes)
+        second_call_attributes = json.loads(tuple(redis_set_call_args_list[1][0][0].values())[0])['attributes']
+        self.assertEqual('DDR190314000000239595', second_call_attributes['ARID'])
+        self.assertEqual('', second_call_attributes['UPRN'])
+        self.assertEqual('HH', second_call_attributes['ADDRESS_TYPE'])
+        self.assertEqual('13 O\'Made-up Lane', second_call_attributes['ADDRESS_LINE1'])
+        self.assertEqual('AB123CD', second_call_attributes['POSTCODE'])
+        self.assertEqual('123', second_call_attributes['TEST_ATTRIBUTE'])
 
     def test_ARID_is_used_as_sample_unit_ref_in_case(self, _, patch_rabbit):
         sample_file = ('ARID\n'

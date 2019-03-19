@@ -5,7 +5,7 @@ from sample_loader import SampleLoader
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
-    parser.add_argument('sample_file_path', help='Path to the sample file', type=str)
+    parser.add_argument('sample_file_path', help='path to the sample file', type=str)
     parser.add_argument('collection_exercise_id', help='collection exercise ID', type=str)
     parser.add_argument('action_plan_id', help='action plan ID', type=str)
     parser.add_argument('collection_instrument_id', help='collection instrument ID', type=str)
