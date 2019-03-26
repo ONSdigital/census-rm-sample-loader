@@ -48,7 +48,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, collect
                                                      collection_instrument_id=collection_instrument_id),
                 content_type='text/xml')
             sample_unit = {
-                f'sample_unit: {sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
+                f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
             redis_pipeline.set_names_to_values(sample_unit)
 
             if count % 5000 == 0:
@@ -62,7 +62,11 @@ def _create_sample_unit_json(sample_unit_id, sample_unit) -> str:
     return json.dumps(sample_unit)
 
 
-if __name__ == "__main__":
+def main():
     args = parse_arguments()
     load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id,
                      args.collection_instrument_id)
+
+
+if __name__ == "__main__":
+    main()
