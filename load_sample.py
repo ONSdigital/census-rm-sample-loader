@@ -1,109 +1,72 @@
+import argparse
 import csv
 import json
 import os
 import sys
 import uuid
+from typing import Iterable
 
 import jinja2
-import pika
-import redis
 
-# get rabbitmq env vars
-rabbitmq_host = os.environ.get('RABBITMQ_SERVICE_HOST', 'localhost')
-rabbitmq_port = os.environ.get('RABBITMQ_SERVICE_PORT', '5672')
-rabbitmq_vhost = os.environ.get('RABBITMQ_VHOST', '/')
-rabbitmq_queue = os.environ.get('RABBITMQ_QUEUE', 'localtest')
-rabbitmq_exchange = os.environ.get('RABBITMQ_EXCHANGE', '')
-rabbitmq_user = os.environ.get('RABBITMQ_USER', 'guest')
-rabbitmq_password = os.environ.get('RABBITMQ_PASSWORD', 'guest')
-
-# rabbit global vars
-rabbitmq_credentials = None
-rabbitmq_connection = None
-rabbitmq_channel = None
-
-# get redis env vars
-redis_host = os.environ.get('REDIS_SERVICE_HOST', 'localhost')
-redis_port = os.environ.get('REDIS_SERVICE_PORT', '6379')
-redis_db = os.environ.get('REDIS_DB', '0')
-
-# globally load sampleunit message template
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./"]))
-jinja_template = env.get_template("message_template.xml")
+from rabbit_context import RabbitContext
+from redis_pipeline_context import RedisPipelineContext
 
 
-def sample_reader(file_obj, ce_uuid, ap_uuid, ci_uuid):
-    sampleunits = {}
-    reader = csv.DictReader(file_obj, delimiter=',')
-    count = 0
-    for sampleunit in reader:
-        sample_id = uuid.uuid4()
-        sampleunits.update({"sampleunit:" + str(sample_id): create_json(sample_id, sampleunit)})
-        publish_sampleunit(
-            jinja_template.render(sample=sampleunit, uuid=sample_id, ce_uuid=ce_uuid, ap_uuid=ap_uuid, ci_uuid=ci_uuid))
-        count += 1
-        if count % 5000 == 0:
-            sys.stdout.write("\r" + str(count) + " samples loaded")
-            sys.stdout.flush()
-
-    print('\nAll Sample Units have been added to the queue ' + rabbitmq_queue)
-    rabbitmq_connection.close()
-    write_sampleunits_to_redis(sampleunits)
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Load a sample file into response management.')
+    parser.add_argument('sample_file_path', help='path to the sample file', type=str)
+    parser.add_argument('collection_exercise_id', help='collection exercise ID', type=str)
+    parser.add_argument('action_plan_id', help='action plan ID', type=str)
+    parser.add_argument('collection_instrument_id', help='collection instrument ID', type=str)
+    return parser.parse_args()
 
 
-def create_json(sample_id, sampleunit):
-    sampleunit = {"id": str(sample_id), "attributes": sampleunit}
-
-    return json.dumps(sampleunit)
-
-
-def publish_sampleunit(message):
-    rabbitmq_channel.basic_publish(exchange=rabbitmq_exchange,
-                                   routing_key=rabbitmq_queue,
-                                   body=str(message),
-                                   properties=pika.BasicProperties(content_type='text/xml'))
+def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, collection_instrument_id):
+    with open(sample_file_path) as sample_file:
+        load_sample(sample_file, collection_exercise_id, action_plan_id, collection_instrument_id)
 
 
-def init_rabbit():
-    global rabbitmq_credentials, rabbitmq_connection, rabbitmq_channel
-    rabbitmq_credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
-    rabbitmq_connection = pika.BlockingConnection(
-        pika.ConnectionParameters(rabbitmq_host,
-                                  rabbitmq_port,
-                                  rabbitmq_vhost,
-                                  rabbitmq_credentials))
-    rabbitmq_channel = rabbitmq_connection.channel()
-
-    if rabbitmq_queue == 'localtest':
-        rabbitmq_channel.queue_declare(queue=rabbitmq_queue)
+def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str,
+                collection_instrument_id: str):
+    sample_file_reader = csv.DictReader(sample_file, delimiter=',')
+    _load_sample_units(action_plan_id, collection_exercise_id, collection_instrument_id, sample_file_reader)
 
 
-def write_sampleunits_to_redis(sampleunits):
-    redis_connection = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
+def _load_sample_units(action_plan_id: str, collection_exercise_id: str, collection_instrument_id: str,
+                       sample_file_reader: Iterable[str]):
+    case_message_template = jinja2.Environment(
+        loader=jinja2.FileSystemLoader([os.path.dirname(__file__)])).get_template('message_template.xml')
+    with RabbitContext() as rabbit, RedisPipelineContext() as redis_pipeline:
+        print(f'Loading sample units to queue {rabbit.queue_name}')
+        for count, sample_row in enumerate(sample_file_reader):
+            sample_unit_id = uuid.uuid4()
+            rabbit.publish_message(
+                message=case_message_template.render(sample=sample_row,
+                                                     sample_unit_id=sample_unit_id,
+                                                     collection_exercise_id=collection_exercise_id,
+                                                     action_plan_id=action_plan_id,
+                                                     collection_instrument_id=collection_instrument_id),
+                content_type='text/xml')
+            sample_unit = {
+                f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
+            redis_pipeline.set_names_to_values(sample_unit)
 
-    print("Writing sampleunits to Redis")
-    count = 0
-    redis_pipeline = redis_connection.pipeline()
-    for key, attributes in sampleunits.items():
-        redis_connection.set(key, attributes)
-        count += 1
-        if count % 5000 == 0:
-            sys.stdout.write("\r" + str(count) + " samples loaded")
-            sys.stdout.flush()
-
-    redis_pipeline.execute()
-    print("Sample Units written to Redis")
+            if count % 5000 == 0:
+                sys.stdout.write(f'\r{count} sample units loaded')
+                sys.stdout.flush()
+    print(f'\nAll sample units have been added to the queue {rabbit.queue_name} and Redis')
 
 
-# ------------------------------------------------------------------------------------------------------------------
-# Usage python loadSample.py <SAMPLE.csv> <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>
-# ------------------------------------------------------------------------------------------------------------------
+def _create_sample_unit_json(sample_unit_id, sample_unit) -> str:
+    sample_unit = {'id': str(sample_unit_id), 'attributes': sample_unit}
+    return json.dumps(sample_unit)
+
+
+def main():
+    args = parse_arguments()
+    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id,
+                     args.collection_instrument_id)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print(
-            'Usage python loadSample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID> <COLLECTION_INSTRUMENT_UUID>')
-    else:
-        init_rabbit()
-        with open(sys.argv[1]) as f_obj:
-            sample_reader(f_obj, sys.argv[2], sys.argv[3], sys.argv[4])
+    main()

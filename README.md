@@ -10,17 +10,26 @@ Collection Exercises, Collection Instruments and Action Plans must currently be 
 
 
 ## Setting up the python environment
+This project uses pyenv and pipenv for python version and dependency management, install with
+```bash
+brew install pyenv pipenv
 ```
-brew install pyenv
-pyenv install
-pip install --upgrade pip setuptools pipenv
-pipenv install --dev
+
+Install dependencies with
+```bash
+make build
+```
+
+Enter the environment shell with
+```bash
 pipenv shell
 ```
 
 ## building and pushing the docker container
-docker build -t sdcplatform/census-sample-loader:latest .
-docker push sdcplatform/census-sample-loader:latest
+```bash
+docker build -t eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG> .
+docker push eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG>
+```
 
 ## Testing Locally with Docker
 To test the script locally you must run RabbitMQ and Redis containers. A docker-compose.yml file exists for this purpose.
@@ -29,7 +38,7 @@ To test the script locally you must run RabbitMQ and Redis containers. A docker-
 docker-compose up -d
 ```
 
-Once running Redis and RabbitMQ are running you can now run the sample loader
+Once running Redis and RabbitMQ are running you can now run the sample loader.
 
 ## Usage
 ```
@@ -65,6 +74,16 @@ To clear the contents of redis
 ## Running in Kubernetes
 To run the load_sample app in Kubernetes 
 
+```bash
+./run_in_kubernetes.sh
 ```
-kubectl run sampleloader --image sdcplatform/census-sample-loader -it --rm /bin/bash
+
+This will deploy a sample loader pod in the context your kubectl is currently set to and attach to the shell, allowing you to run the sample loader within the cluster. The pod is deleted when the shell is exited.
+
+### Copying across a sample file
+To get a sample file into a pod in kubernetes you can use the `kubectl cp` command
+
+While the sample loader pod is running, from another shell run
+```bash
+kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
 ```
