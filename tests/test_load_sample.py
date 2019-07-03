@@ -1,100 +1,38 @@
+from load_sample import load_sample
+
 import csv
 import json
-import os
 from unittest import TestCase
 from unittest.mock import patch
-from xml.etree import ElementTree
-
-from load_sample import load_sample_file, load_sample
 
 
 @patch('load_sample.RabbitContext')
-@patch('load_sample.RedisPipelineContext')
 class TestLoadSample(TestCase):
-    sample_5_file_path = f'{os.path.dirname(__file__)}/resources/sample_5.csv'
 
-    def test_load_sample_file_publishes_cases_to_rabbit(self, _, patch_rabbit):
-        load_sample_file(self.sample_5_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
+    def test_load_sample_publishes_case_to_rabbit(self, patch_rabbit):
+        sample_file = (
+            'ARID,ESTAB_ARID,UPRN,ADDRESS_TYPE,ESTAB_TYPE,ADDRESS_LEVEL,ABP_CODE,ORGANISATION_NAME,ADDRESS_LINE1,'
+            'ADDRESS_LINE2,ADDRESS_LINE3,TOWN_NAME,POSTCODE,LATITUDE,LONGITUDE,OA,LSOA,MSOA,LAD,REGION,HTC_WILLINGNESS,'
+            'HTC_DIGITAL,FIELDCOORDINATOR_ID,FIELDOFFICER_ID,TREATMENT_CODE,CE_EXPECTED_CAPACITY',
+            'DDR190314000000195675,DDR190314000000113740,10008677190,HH,Household,U,RD06,,Flat 56 Francombe House,'
+            'Commercial Road,,Windleybury,XX1 0XX,51.4463421,-2.5924477,E00073438,E01014540,E02003043,E06000023,'
+            'E12000009,1,5,1,2,HH_LF3R2E,3',
+            'DDR190314000000239595,DDR190314000000060908,10008677190,HH,Household,U,RD06,,First And Second Floor Flat,'
+            '39 Cranbrook Road,,Windleybury,XX1 0XX,51.4721166,-2.5970579,E00074083,E01014669,E02003031,E06000023,'
+            'E12000009,2,4,4,5,HH_LF3R3AE,6')
 
-        patch_rabbit_context = patch_rabbit.return_value.__enter__.return_value
-        publish_message_call_args = patch_rabbit_context.publish_message.call_args_list
-
-        with open(self.sample_5_file_path) as sample_file:
-            self._check_published_cases_contain_required_data(publish_message_call_args, sample_file)
-
-    def test_load_sample_file_writes_all_attributes_to_redis(self, patch_redis, _):
-        load_sample_file(self.sample_5_file_path, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
-
-        patch_redis_context = patch_redis.return_value.__enter__.return_value
-        redis_set_call_args_list = patch_redis_context.set_names_to_values.call_args_list
-
-        with open(self.sample_5_file_path) as sample_file:
-            self._check_attributes_sent_to_redis_match_sample_file(redis_set_call_args_list, sample_file)
-
-    def test_load_sample_publishes_case_to_rabbit(self, _, patch_rabbit):
-        sample_file = ('ARID,UPRN,ADDRESS_TYPE,ADDRESS_LINE1,POSTCODE,TEST_ATTRIBUTE',
-                       'DDR190314000000195675,,HH,123 Fake Street,AB1 2CD,abc',
-                       'DDR190314000000239595,,HH,13 O\'Made-up Lane,AB123CD,123')
-        load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
+        load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid')
 
         patch_rabbit_context = patch_rabbit.return_value.__enter__.return_value
 
-        self.assertEqual(patch_rabbit_context.publish_message.call_count, 2)
+        self.assertEqual(2, patch_rabbit_context.publish_message.call_count)
         publish_message_call_args = patch_rabbit_context.publish_message.call_args_list
 
         self._check_published_cases_contain_required_data(publish_message_call_args, sample_file)
 
-    def test_load_sample_writes_all_attributes_to_redis(self, patch_redis, _):
-        sample_file = ('ARID,UPRN,ADDRESS_TYPE,ADDRESS_LINE1,POSTCODE,TEST_ATTRIBUTE',
-                       'DDR190314000000195675,,HH,123 Fake Street,AB1 2CD,abc',
-                       'DDR190314000000239595,,HH,13 O\'Made-up Lane,AB123CD,123')
-        load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
-
-        patch_redis_context = patch_redis.return_value.__enter__.return_value
-        self.assertEqual(patch_redis_context.set_names_to_values.call_count, 2)
-        redis_set_call_args_list = patch_redis_context.set_names_to_values.call_args_list
-        self._check_attributes_sent_to_redis_match_sample_file(redis_set_call_args_list, sample_file)
-
-    def test_ARID_is_used_as_sample_unit_ref_in_case(self, _, patch_rabbit):
-        sample_file = ('ARID',
-                       'DDR190314000000195675')
-        load_sample(sample_file, 'ce_uuid', 'ap_uuid', 'ci_uuid')
-
-        patch_rabbit_context = patch_rabbit.return_value.__enter__.return_value
-        case_xml = patch_rabbit_context.publish_message.call_args_list[0][1]['message']
-        case_tree = ElementTree.fromstring(case_xml)
-        sample_unit_ref = next(element.text for element in case_tree if element.tag == 'sampleUnitRef')
-        self.assertEqual('DDR190314000000195675', sample_unit_ref)
-
-    def test_redis_key_format(self, patch_redis, _):
-        # Given
-        sample_file = ('ARID,UPRN,ADDRESS_TYPE,ADDRESS_LINE1,POSTCODE,TEST_ATTRIBUTE',
-                       'DDR190314000000195675,,HH,123 Fake Street,AB1 2CD,abc')
-
-        # When
-        load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid', 'test_ci_uuid')
-
-        # Then
-        patch_redis_context = patch_redis.return_value.__enter__.return_value
-        redis_set_call = patch_redis_context.set_names_to_values.call_args_list[0][0][0]
-        sample_unit_id = json.loads(tuple(redis_set_call.values())[0])['id']
-
-        self.assertEqual(f'sampleunit:{sample_unit_id}', tuple(redis_set_call.keys())[0])
-
-    def _check_published_cases_contain_required_data(self, publish_message_call_args, sample_file,
-                                                     ce_id='test_ce_uuid',
-                                                     ap_id='test_ap_uuid',
-                                                     ci_id='test_ci_uuid'):
+    def _check_published_cases_contain_required_data(self, publish_message_call_args, sample_file):
         sample_file_rows = csv.DictReader(sample_file)
         for row_number, sample_row in enumerate(sample_file_rows):
-            self.assertIn(sample_row['ARID'], publish_message_call_args[row_number][1]['message'])
-            self.assertIn(ce_id, publish_message_call_args[row_number][1]['message'])
-            self.assertIn(ap_id, publish_message_call_args[row_number][1]['message'])
-            self.assertIn(ci_id, publish_message_call_args[row_number][1]['message'])
-
-    def _check_attributes_sent_to_redis_match_sample_file(self, redis_set_call_args_list, sample_file):
-        sample_file_rows = csv.DictReader(sample_file)
-        for row_number, sample_row in enumerate(sample_file_rows):
-            loaded_sample_unit = json.loads(tuple(redis_set_call_args_list[row_number][0][0].values())[0])
-            for attribute, value in sample_row.items():
-                self.assertEqual(value, loaded_sample_unit['attributes'][attribute])
+            message_contents = json.loads(publish_message_call_args[row_number][0][0])
+            self.assertEqual(sample_row['ARID'], message_contents['arid'])
+            self.assertEqual(sample_row['ADDRESS_LINE1'], message_contents['addressLine1'])

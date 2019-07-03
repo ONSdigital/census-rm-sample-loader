@@ -1,15 +1,10 @@
 import argparse
 import csv
 import json
-import os
 import sys
-import uuid
 from typing import Iterable
 
-import jinja2
-
 from rabbit_context import RabbitContext
-from redis_pipeline_context import RedisPipelineContext
 
 
 def parse_arguments():
@@ -26,40 +21,50 @@ def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, c
         load_sample(sample_file, collection_exercise_id, action_plan_id, collection_instrument_id)
 
 
-def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str,
-                collection_instrument_id: str):
+def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-    _load_sample_units(action_plan_id, collection_exercise_id, collection_instrument_id, sample_file_reader)
+    _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader)
 
 
-def _load_sample_units(action_plan_id: str, collection_exercise_id: str, collection_instrument_id: str,
-                       sample_file_reader: Iterable[str]):
-    case_message_template = jinja2.Environment(
-        loader=jinja2.FileSystemLoader([os.path.dirname(__file__)])).get_template('message_template.xml')
-    with RabbitContext() as rabbit, RedisPipelineContext() as redis_pipeline:
+def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str]):
+    with RabbitContext() as rabbit:
         print(f'Loading sample units to queue {rabbit.queue_name}')
+
         for count, sample_row in enumerate(sample_file_reader):
-            sample_unit_id = uuid.uuid4()
-            rabbit.publish_message(
-                message=case_message_template.render(sample=sample_row,
-                                                     sample_unit_id=sample_unit_id,
-                                                     collection_exercise_id=collection_exercise_id,
-                                                     action_plan_id=action_plan_id,
-                                                     collection_instrument_id=collection_instrument_id),
-                content_type='text/xml')
-            sample_unit = {
-                f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
-            redis_pipeline.set_names_to_values(sample_unit)
+            rabbit.publish_message(_create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
+                                                     action_plan_id=action_plan_id),
+                                   content_type='application/json')
 
             if count % 5000 == 0:
                 sys.stdout.write(f'\r{count} sample units loaded')
                 sys.stdout.flush()
-    print(f'\nAll sample units have been added to the queue {rabbit.queue_name} and Redis')
+
+        sys.stdout.write(f'\r{count} sample units loaded')
+        sys.stdout.flush()
+
+    print(f'\nAll sample units have been added to the queue {rabbit.queue_name}')
 
 
-def _create_sample_unit_json(sample_unit_id, sample_unit) -> str:
-    sample_unit = {'id': str(sample_unit_id), 'attributes': sample_unit}
-    return json.dumps(sample_unit)
+def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str:
+    create_case = {'arid': sample_row['ARID'], 'estabArid': sample_row['ESTAB_ARID'], 'uprn': sample_row['UPRN'],
+                   'addressType': sample_row['ADDRESS_TYPE'], 'estabType': sample_row['ESTAB_TYPE'],
+                   'addressLevel': sample_row['ADDRESS_LEVEL'], 'abpCode': sample_row['ABP_CODE'],
+                   'organisationName': sample_row['ORGANISATION_NAME'],
+                   'addressLine1': sample_row['ADDRESS_LINE1'], 'addressLine2': sample_row['ADDRESS_LINE2'],
+                   'addressLine3': sample_row['ADDRESS_LINE3'], 'townName': sample_row['TOWN_NAME'],
+                   'postcode': sample_row['POSTCODE'], 'latitude': sample_row['LATITUDE'],
+                   'longitude': sample_row['LONGITUDE'], 'oa': sample_row['OA'],
+                   'lsoa': sample_row['LSOA'], 'msoa': sample_row['MSOA'],
+                   'lad': sample_row['LAD'], 'region': sample_row['REGION'],
+                   'htcWillingness': sample_row['HTC_WILLINGNESS'], 'htcDigital': sample_row['HTC_DIGITAL'],
+                   'fieldCoordinatorId': sample_row['FIELDCOORDINATOR_ID'],
+                   'fieldOfficerId': sample_row['FIELDOFFICER_ID'],
+                   'treatmentCode': sample_row['TREATMENT_CODE'],
+                   'ceExpectedCapacity': sample_row['CE_EXPECTED_CAPACITY'],
+                   'collectionExerciseId': collection_exercise_id,
+                   'actionPlanId': action_plan_id}
+
+    return json.dumps(create_case)
 
 
 def main():

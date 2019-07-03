@@ -5,8 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-flake8 = "*"
+"flake8" = "*"
+codecov = "*"
 pytest-cov = "*"
+requests-mock = "*"
+v = {editable = true,version = "*"}
 
 [packages]
 pika = "*"
