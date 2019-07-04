@@ -16,9 +16,9 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, collection_instrument_id):
+def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id):
     with open(sample_file_path) as sample_file:
-        load_sample(sample_file, collection_exercise_id, action_plan_id, collection_instrument_id)
+        load_sample(sample_file, collection_exercise_id, action_plan_id)
 
 
 def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str):
