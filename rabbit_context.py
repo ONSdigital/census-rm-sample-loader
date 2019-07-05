@@ -38,6 +38,13 @@ class RabbitContext:
         if self.queue_name == 'localtest':
             self._channel.queue_declare(queue=self.queue_name)
 
+        return self._connection
+
+    def close_connection(self):
+        self._connection.close()
+        del self._channel
+        del self._connection
+
     def publish_message(self, message: str, content_type: str):
         if not self._connection.is_open:
             raise RabbitConnectionClosedError
