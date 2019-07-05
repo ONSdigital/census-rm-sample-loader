@@ -27,7 +27,7 @@ class RabbitContext:
     def channel(self):
         return self._channel
 
-    def _open_connection(self):
+    def open_connection(self):
         self._connection = pika.BlockingConnection(
             pika.ConnectionParameters(self._host,
                                       self._port,
