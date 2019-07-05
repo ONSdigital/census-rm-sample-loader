@@ -26,10 +26,10 @@ def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_
     return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader)
 
 
-def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str]):
+def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str], **kwargs):
     sample_units = {}
 
-    with RabbitContext() as rabbit:
+    with RabbitContext(**kwargs) as rabbit:
         print(f'Loading sample units to queue {rabbit.queue_name}')
 
         for count, sample_row in enumerate(sample_file_reader):
