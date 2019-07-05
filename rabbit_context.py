@@ -17,7 +17,7 @@ class RabbitContext:
         self.queue_name = kwargs.get('queue_name') or os.getenv('RABBITMQ_QUEUE', 'localtest')
 
     def __enter__(self):
-        self._open_connection()
+        self.open_connection()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
