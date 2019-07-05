@@ -16,14 +16,14 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id):
+def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, **kwargs):
     with open(sample_file_path) as sample_file:
-        return load_sample(sample_file, collection_exercise_id, action_plan_id)
+        return load_sample(sample_file, collection_exercise_id, action_plan_id, **kwargs)
 
 
-def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str):
+def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str, **kwargs):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader)
+    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader, **kwargs)
 
 
 def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str], **kwargs):
