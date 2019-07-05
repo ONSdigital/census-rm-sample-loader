@@ -23,6 +23,10 @@ class RabbitContext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._connection.close()
 
+    @property
+    def channel(self):
+        return self._channel
+
     def _open_connection(self):
         self._connection = pika.BlockingConnection(
             pika.ConnectionParameters(self._host,
