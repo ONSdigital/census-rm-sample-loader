@@ -294,15 +294,24 @@ def validate_mmtopo_toid(count, sample_row):
 
 
 def validate_bng_northing(count, sample_row):
+    # not included in file to rm
     pass
 
 
 def validate_bng_easting(count, sample_row):
+    # not included in file to rm
     pass
 
 
 def validate_ce_expected_capacity(count, sample_row):
-    pass
+    column = 'CE_EXPECTED_CAPACITY'
+    maximum_length = 4
+    mandatory = False
+    if _check_column_exists(column, mandatory, sample_row):
+        value = sample_row[column]
+        _check_length(column, value, count, maximum_length)
+        if not value.isnumeric():
+            print(f'Line {count}: {column}: {value} is not a valid integer.')
 
 
 def _check_column_exists(column, mandatory, sample_row):
