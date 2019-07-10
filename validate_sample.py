@@ -132,6 +132,7 @@ def validate_org_name(count, sample_row):
 def validate_address_line(count, sample_row):
     maximum_length = 60
     for column in ['ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3']:
+        # only address line 1 is mandatory
         if _check_column_exists(column, column == 'ADDRESS_LINE1', sample_row):
             address_line = sample_row[column]
             _check_length(column, address_line, count, maximum_length)
