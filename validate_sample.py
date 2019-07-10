@@ -45,6 +45,7 @@ def load_sample(sample_file):
         validate_mmtopo_toid(count, sample_row)
         validate_ce_expected_capacity(count, sample_row)
 
+
 def validate_arid(count, sample_row):
     column = 'ARID'
     maximum_length = 21
