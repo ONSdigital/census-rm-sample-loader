@@ -236,7 +236,7 @@ def validate_htc_willingness(count, sample_row):
         htc_willingness = sample_row[column]
         if htc_willingness.isnumeric and len(htc_willingness) == 1:
             return
-        print(f'Line {count}: HTC_WILLINGNESS {htc_willingness} is not valid.')
+        print(f'Line {count}: {column} {htc_willingness} is not valid.')
 
 
 def validate_htc_digital(count, sample_row):
@@ -246,7 +246,7 @@ def validate_htc_digital(count, sample_row):
         htc_digital = sample_row[column]
         if htc_digital.isnumeric and len(htc_digital) == 1:
             return
-        print(f'Line {count}: HTC_DIGITAL {htc_digital} is not valid.')
+        print(f'Line {count}: {column} {htc_digital} is not valid.')
 
 
 def validate_fieldcordinator_id(count, sample_row):
