@@ -4,7 +4,8 @@ import random
 COUNTRIES = ['E', 'W', 'N']
 ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
 CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
-LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+           'W', 'X', 'Y', 'Z']
 WORDS = []
 arid_numbers = set()
 
@@ -85,7 +86,8 @@ def get_random_post_town():
 def get_random_post_code():
     first_random_number = random.randint(1, 9)
     second_random_number = random.randint(1, 9)
-    return f'{get_random_letter()}{get_random_letter()}{first_random_number} {second_random_number}{get_random_letter()}{get_random_letter()}'
+    return f'{get_random_letter()}{get_random_letter()}{first_random_number} {second_random_number}' +\
+           f'{get_random_letter()}{get_random_letter()}'
 
 
 def get_random_lat_or_long():
@@ -102,11 +104,14 @@ def main():
     with open('sample_file.csv', 'w') as file:
         for item in treatment_code_quantities:
             for _ in range(item["quantity"]):
-                file.write(f'{get_random_arid()},{get_random_arid()},{get_random_uprn()},HH,Household,U,{get_random_abp_code()},,' +
-                      f'{get_random_address_line()},,,{get_random_post_town()},{get_random_post_code()},' +
-                      f'{get_random_lat_or_long()},{get_random_lat_or_long()},{get_random_regiony_type_thing()},' +
-                      f'{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},' +
-                      f'{get_random_regiony_type_thing()},{get_random_htc()},{get_random_htc()},{item["treatment_code"]},,,\n')
+                file.write(
+                    f'{get_random_arid()},{get_random_arid()},{get_random_uprn()},HH,Household,U,' +
+                    f'{get_random_abp_code()},,{get_random_address_line()},,,{get_random_post_town()},' +
+                    f'{get_random_post_code()},{get_random_lat_or_long()},{get_random_lat_or_long()},' +
+                    f'{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},' +
+                    f'{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},' +
+                    f'{get_random_regiony_type_thing()},{get_random_htc()},{get_random_htc()},' +
+                    f'{item["treatment_code"]},,,\n')
 
 
 if __name__ == '__main__':
