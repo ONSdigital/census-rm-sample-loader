@@ -54,7 +54,7 @@ def validate_arid(count, sample_row):
     if _check_column_exists(column, mandatory, sample_row):
         arid = sample_row[column]
         _check_length(column, arid, count, maximum_length)
-        if sample_row[column] in ARID:
+        if arid in ARID:
             print(f'Line {count}: {column}: {arid} is duplicated in sample file.')
         else:
             ARID.add(sample_row[column])
