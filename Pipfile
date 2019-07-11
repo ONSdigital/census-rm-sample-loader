@@ -1,3 +1,4 @@
+
 [[source]]
 url = "https://pypi.python.org/simple"
 name = "pypi"
@@ -5,11 +6,8 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-"flake8" = "*"
-codecov = "*"
+flake8 = "*"
 pytest-cov = "*"
-requests-mock = "*"
-v = {editable = true,version = "*"}
 
 [packages]
 pika = "*"
