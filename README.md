@@ -34,7 +34,7 @@ To test the script locally you must run a RabbitMQ container. A docker-compose.y
 docker-compose up -d
 ```
 
-Once RabbitMQ is running you can now run the sample loader.
+Once RabbitMQ is running you can run the sample loader.
 
 ## Usage
 ```
