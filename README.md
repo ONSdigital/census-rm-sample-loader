@@ -28,7 +28,7 @@ docker push eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG>
 ```
 
 ## Testing Locally with Docker
-To test the script locally you must run a RabbitMQ containers A docker-compose.yml file exists for this purpose.
+To test the script locally you must run a RabbitMQ container. A docker-compose.yml file exists for this purpose.
 
 ```
 docker-compose up -d
