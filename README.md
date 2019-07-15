@@ -38,11 +38,11 @@ Once RabbitMQ is running you can run the sample loader.
 
 ## Usage
 ```
-python load_sample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID>
+pipenv run python load_sample.py sample.csv <COLLECTION_EXERCISE_UUID> <ACTIONPLAN_UUID>
 ```
 e.g.
 ```
-python load_sample.py sample_100000.csv 2fc107ee-96f5-465b-923e-38914ce63e3e 2c64c460-2543-4abe-8728-01bbb0449807
+pipenv run python load_sample.py sample_100000.csv 2fc107ee-96f5-465b-923e-38914ce63e3e 2c64c460-2543-4abe-8728-01bbb0449807
 ```
 
 ## Vewing messages in the Rabbit queue
