@@ -4,6 +4,14 @@ import csv
 
 ARID = set()
 
+# do we need all now?
+VALID_TREATMENT_CODES = set(
+    ['HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
+     'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
+     'HH_LF3R1W', 'HH_LF3R2W', 'HH_LF3R3AW', 'HH_LF3R3BW', 'HH_LFNR1W', 'HH_LFNR2W', 'HH_LFNR3AW', 'HH_LFNR3BW',
+     'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
+     'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
+     'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'])
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
@@ -276,6 +284,7 @@ def validate_treatment_code(count, sample_row):
     if _check_column_exists(column, mandatory, sample_row):
         treatment_code = sample_row[column]
         _check_length(column, treatment_code, count, maximum_length)
+        _is_valid_treatment_code(count, treatment_code)
 
 
 def validate_mmstreet_toid(count, sample_row):
@@ -329,6 +338,11 @@ def _check_column_exists(column, mandatory, sample_row):
 def _check_length(name, value, count, maximum_length):
     if len(value) > maximum_length:
         print(f'Line {count}: {name}: {value} exceeds maximum length of {maximum_length}.')
+
+
+def _is_valid_treatment_code(count, treatment_code):
+    if treatment_code not in VALID_TREATMENT_CODES:
+        print(f'Line {count}: TREATMENT_CODE: {treatment_code} is invalid.')
 
 
 def main():
