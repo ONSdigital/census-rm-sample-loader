@@ -4,6 +4,18 @@ import csv
 
 ARID = set()
 
+VALID_ESTABLISHMENT_TYPES = set(
+    ['Household'
+     'Sheltered Accommodation',
+     'Hall of Residence',
+     'Care Home',
+     'Boarding School',
+     'Hotel',
+     'Hostel',
+     'Residential Caravanner',
+     'Gypsy Roma Traveller',
+     'Residential Boater'])
+
 # do we need all now?
 VALID_TREATMENT_CODES = set(
     ['HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
@@ -104,6 +116,7 @@ def validate_estab_type(count, sample_row):
     if _check_column_exists(column, mandatory, sample_row):
         estab_type = sample_row[column]
         _check_length(column, estab_type, count, maximum_length)
+        _is_valid_estab_type(count, estab_type)
 
 
 def validate_address_level(count, sample_row):
@@ -323,6 +336,11 @@ def _check_length(name, value, count, maximum_length):
 def _is_valid_treatment_code(count, treatment_code):
     if treatment_code not in VALID_TREATMENT_CODES:
         print(f'Line {count}: TREATMENT_CODE: {treatment_code} is invalid.')
+
+
+def _is_valid_estab_type(count, estab_type):
+    if estab_type not in VALID_ESTABLISHMENT_TYPES:
+        print(f'Line {count}: ESTAB_TYPE: {estab_type} is invalid.')
 
 
 def main():
