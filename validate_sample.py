@@ -50,8 +50,6 @@ def load_sample(sample_file):
         validate_fieldcordinator_id(count, sample_row)
         validate_fieldofficer_id(count, sample_row)
         validate_treatment_code(count, sample_row)
-        validate_mmstreet_toid(count, sample_row)
-        validate_mmtopo_toid(count, sample_row)
         validate_ce_expected_capacity(count, sample_row)
 
 
@@ -285,24 +283,6 @@ def validate_treatment_code(count, sample_row):
         treatment_code = sample_row[column]
         _check_length(column, treatment_code, count, maximum_length)
         _is_valid_treatment_code(count, treatment_code)
-
-
-def validate_mmstreet_toid(count, sample_row):
-    column = 'MMSTREET_TOID'
-    maximum_length = 20
-    mandatory = False
-    if _check_column_exists(column, mandatory, sample_row):
-        mmstreet_toid = sample_row[column]
-        _check_length(column, mmstreet_toid, count, maximum_length)
-
-
-def validate_mmtopo_toid(count, sample_row):
-    column = 'MMTOPO_TOID'
-    maximum_length = 20
-    mandatory = False
-    if _check_column_exists(column, mandatory, sample_row):
-        mmtopo_toid = sample_row[column]
-        _check_length(column, mmtopo_toid, count, maximum_length)
 
 
 def validate_bng_northing(count, sample_row):
