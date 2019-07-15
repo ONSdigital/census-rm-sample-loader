@@ -102,9 +102,9 @@ def main():
     treatment_code_quantities = read_treatment_code_quantities()
 
     with open('sample_file.csv', 'w') as file:
-        file.write('ARID, ESTAB_ARID, UPRN, ADDRESS_TYPE, ESTAB_TYPE, ADDRESS_LEVEL, ABP_CODE, ORGANISATION_NAME, '\
-                   'ADDRESS_LINE1, ADDRESS_LINE2, ADDRESS_LINE3, TOWN_NAME, POSTCODE, LATITUDE, LONGITUDE, OA, LSOA, '\
-                   'MSOA, LAD, REGION, HTC_WILLINGNESS, HTC_DIGITAL, TREATMENT_CODE, FIELDCOORDINATOR_ID, '\
+        file.write('ARID, ESTAB_ARID, UPRN, ADDRESS_TYPE, ESTAB_TYPE, ADDRESS_LEVEL, ABP_CODE, ORGANISATION_NAME, '
+                   'ADDRESS_LINE1, ADDRESS_LINE2, ADDRESS_LINE3, TOWN_NAME, POSTCODE, LATITUDE, LONGITUDE, OA, LSOA, '
+                   'MSOA, LAD, REGION, HTC_WILLINGNESS, HTC_DIGITAL, TREATMENT_CODE, FIELDCOORDINATOR_ID, '
                    'FIELDOFFICER_ID, CE_EXPECTED_CAPACITY\n')
 
         for item in treatment_code_quantities:
