@@ -298,16 +298,6 @@ def validate_treatment_code(count, sample_row):
         _is_valid_treatment_code(count, treatment_code)
 
 
-def validate_bng_northing(count, sample_row):
-    # not included in file to rm
-    pass
-
-
-def validate_bng_easting(count, sample_row):
-    # not included in file to rm
-    pass
-
-
 def validate_ce_expected_capacity(count, sample_row):
     column = 'CE_EXPECTED_CAPACITY'
     maximum_length = 4
