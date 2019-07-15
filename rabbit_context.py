@@ -8,7 +8,7 @@ from exceptions import RabbitConnectionClosedError
 class RabbitContext:
 
     def __init__(self, **kwargs):
-        self._host = kwargs.get('host') or os.getenv('RABBITMQ_SERVICE_HOST', 'rabbitmq')
+        self._host = kwargs.get('host') or os.getenv('RABBITMQ_SERVICE_HOST', 'localhost')
         self._port = kwargs.get('port') or os.getenv('RABBITMQ_SERVICE_PORT', '6672')
         self._vhost = kwargs.get('vhost') or os.getenv('RABBITMQ_VHOST', '/')
         self._exchange = kwargs.get('exchange') or os.getenv('RABBITMQ_EXCHANGE', '')
