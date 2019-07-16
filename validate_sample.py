@@ -4,6 +4,7 @@ import csv
 
 ARID = set()
 
+# TODO not yet complete
 VALID_ESTABLISHMENT_TYPES = set(
     ['Household'
      'Sheltered Accommodation',
@@ -16,7 +17,7 @@ VALID_ESTABLISHMENT_TYPES = set(
      'Gypsy Roma Traveller',
      'Residential Boater'])
 
-# do we need all now?
+# TODO do we need all now?
 VALID_TREATMENT_CODES = set(
     ['HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
      'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
@@ -24,6 +25,9 @@ VALID_TREATMENT_CODES = set(
      'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
      'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
      'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'])
+
+
+# todo check all minimum lengths
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
@@ -68,10 +72,11 @@ def load_sample(sample_file):
 def validate_arid(count, sample_row):
     column = 'ARID'
     maximum_length = 21
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         arid = sample_row[column]
-        _check_length(column, arid, count, maximum_length)
+        _check_length(column, arid, count, mandatory, minimum_length, maximum_length)
         if arid in ARID:
             print(f'Line {count}: {column}: {arid} is duplicated in sample file.')
         else:
@@ -81,19 +86,21 @@ def validate_arid(count, sample_row):
 def validate_estab_arid(count, sample_row):
     column = 'ESTAB_ARID'
     maximum_length = 21
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         estab_arid = sample_row[column]
-        _check_length(column, estab_arid, count, maximum_length)
+        _check_length(column, estab_arid, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_uprn(count, sample_row):
     column = 'UPRN'
     maximum_length = 12
+    minimum_length = 0
     mandatory = False
     if _check_column_exists(column, mandatory, sample_row):
         uprn = sample_row[column]
-        _check_length(column, uprn, count, maximum_length)
+        _check_length(column, uprn, count, mandatory, minimum_length, maximum_length)
         if not uprn.isnumeric():
             print(f'Line {count}: {column}: {uprn} is not a valid integer.')
 
@@ -101,10 +108,11 @@ def validate_uprn(count, sample_row):
 def validate_address_type(count, sample_row):
     column = 'ADDRESS_TYPE'
     maximum_length = 3
+    minimum_length = 2
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         address_type = sample_row[column]
-        _check_length(column, address_type, count, maximum_length)
+        _check_length(column, address_type, count, mandatory, minimum_length, maximum_length)
         if address_type not in {"HH", "CE", "SPG"}:
             print(f'Line {count}: {column}: {address_type} is not valid.')
 
@@ -112,20 +120,22 @@ def validate_address_type(count, sample_row):
 def validate_estab_type(count, sample_row):
     column = 'ESTAB_TYPE'
     maximum_length = 30
+    minimum_length = 5
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         estab_type = sample_row[column]
-        _check_length(column, estab_type, count, maximum_length)
+        _check_length(column, estab_type, count, mandatory, minimum_length, maximum_length)
         _is_valid_estab_type(count, estab_type)
 
 
 def validate_address_level(count, sample_row):
     column = 'ADDRESS_LEVEL'
     maximum_length = 1
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         address_level = sample_row[column]
-        _check_length(column, address_level, count, maximum_length)
+        _check_length(column, address_level, count, mandatory, minimum_length, maximum_length)
         if address_level not in {"E", "U"}:
             print(f'Line {count}: {column}: {address_level} is not valid.')
 
@@ -133,46 +143,54 @@ def validate_address_level(count, sample_row):
 def validate_abp_code(count, sample_row):
     column = 'ABP_CODE'
     maximum_length = 6
+    minimum_length = 4
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         abp_code = sample_row[column]
-        _check_length(column, abp_code, count, maximum_length)
+        _check_length(column, abp_code, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_org_name(count, sample_row):
     column = 'ORGANISATION_NAME'
     maximum_length = 60
+    minimum_length = 0
     mandatory = False
     if _check_column_exists(column, mandatory, sample_row):
         org_name = sample_row[column]
-        _check_length('ORGANISATION_NAME', org_name, count, maximum_length)
+        _check_length('ORGANISATION_NAME', org_name, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_address_line(count, sample_row):
     maximum_length = 60
+    minimum_length = 10
     for column in ['ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3']:
         # only address line 1 is mandatory
         if _check_column_exists(column, column == 'ADDRESS_LINE1', sample_row):
             address_line = sample_row[column]
-            _check_length(column, address_line, count, maximum_length)
+            if column == 'ADDRESS_LINE1':
+                _check_length(column, address_line, count, True, minimum_length, maximum_length)
+            else:
+                _check_length(column, address_line, count, False, minimum_length, maximum_length)
 
 
 def validate_town_name(count, sample_row):
     column = 'TOWN_NAME'
     maximum_length = 30
+    minimum_length = 10
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         town_name = sample_row[column]
-        _check_length(column, town_name, count, maximum_length)
+        _check_length(column, town_name, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_postcode(count, sample_row):
     column = 'POSTCODE'
     maximum_length = 8
+    minimum_length = 7
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         postcode = sample_row[column]
-        _check_length(column, postcode, count, maximum_length)
+        _check_length(column, postcode, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_latitude(count, sample_row):
@@ -208,46 +226,51 @@ def validate_longitude(count, sample_row):
 def validate_oa(count, sample_row):
     column = 'OA'
     maximum_length = 9
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         oa = sample_row[column]
-        _check_length(column, oa, count, maximum_length)
+        _check_length(column, oa, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_lsoa(count, sample_row):
     column = 'LSOA'
     maximum_length = 9
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         lsoa = sample_row[column]
-        _check_length(column, lsoa, count, maximum_length)
+        _check_length(column, lsoa, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_msoa(count, sample_row):
     column = 'MSOA'
     maximum_length = 9
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         msoa = sample_row[column]
-        _check_length(column, msoa, count, maximum_length)
+        _check_length(column, msoa, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_lad(count, sample_row):
     column = 'LAD'
     maximum_length = 9
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         lad = sample_row[column]
-        _check_length(column, lad, count, maximum_length)
+        _check_length(column, lad, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_region(count, sample_row):
     column = 'REGION'
     maximum_length = 9
+    minimum_length = maximum_length
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         region = sample_row[column]
-        _check_length(column, region, count, maximum_length)
+        _check_length(column, region, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_htc_willingness(count, sample_row):
@@ -273,38 +296,42 @@ def validate_htc_digital(count, sample_row):
 def validate_fieldcordinator_id(count, sample_row):
     column = 'FIELDCOORDINATOR_ID'
     maximum_length = 7
+    minimum_length = 1
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         fieldcordinator_id = sample_row[column]
-        _check_length(column, fieldcordinator_id, count, maximum_length)
+        _check_length(column, fieldcordinator_id, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_fieldofficer_id(count, sample_row):
     column = 'FIELDOFFICER_ID'
     maximum_length = 10
+    minimum_length = 1
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         fieldofficer_id = sample_row[column]
-        _check_length(column, fieldofficer_id, count, maximum_length)
+        _check_length(column, fieldofficer_id, count, mandatory, minimum_length, maximum_length)
 
 
 def validate_treatment_code(count, sample_row):
     column = 'TREATMENT_CODE'
     maximum_length = 10
+    minimum_length = 8
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         treatment_code = sample_row[column]
-        _check_length(column, treatment_code, count, maximum_length)
+        _check_length(column, treatment_code, count, mandatory, minimum_length, maximum_length)
         _is_valid_treatment_code(count, treatment_code)
 
 
 def validate_ce_expected_capacity(count, sample_row):
     column = 'CE_EXPECTED_CAPACITY'
-    maximum_length = 4
+    maximum_length = 9
+    minimum_length = 0
     mandatory = False
     if _check_column_exists(column, mandatory, sample_row):
         value = sample_row[column]
-        _check_length(column, value, count, maximum_length)
+        _check_length(column, value, count, mandatory, minimum_length, maximum_length)
         if not value.isnumeric():
             print(f'Line {count}: {column}: {value} is not a valid integer.')
 
@@ -318,10 +345,15 @@ def _check_column_exists(column, mandatory, sample_row):
         return True
 
 
-def _check_length(name, value, count, maximum_length):
+def _check_length(name, value, count, mandatory, minimum_length, maximum_length):
     trimmed_value = value.strip()
-    if len(trimmed_value) > maximum_length:
+    field_len = len(trimmed_value)
+    if field_len > maximum_length:
         print(f'Line {count}: {name}: {value} exceeds maximum length of {maximum_length}.')
+    else:
+        if mandatory:
+            if field_len < minimum_length:
+                print(f'Line {count}: {name}: {value} is less than minimum length of {minimum_length}.')
 
 
 def _is_valid_treatment_code(count, treatment_code):
