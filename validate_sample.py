@@ -1,7 +1,6 @@
 import argparse
 import csv
 
-
 ARID = set()
 
 
@@ -11,14 +10,28 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def validate_header_row(sample_file_path):
+    with open(sample_file_path) as f:
+        first_line = f.readline()
+        result = [x.strip() for x in first_line.split(',')]
+
+        valid_header = ['ARID','ESTAB_ARID','UPRN','ADDRESS_TYPE','ESTAB_TYPE','ADDRESS_LEVEL','ABP_CODE','ORGANISATION_NAME','ADDRESS_LINE1','ADDRESS_LINE2','ADDRESS_LINE3',
+                'TOWN_NAME','POSTCODE','LATITUDE','LONGITUDE','OA','LSOA','MSOA','LAD','REGION','HTC_WILLINGNESS','HTC_DIGITAL','FIELDCOORDINATOR_ID','FIELDOFFICER_ID',
+                'TREATMENT_CODE','CE_EXPECTED_CAPACITY']
+
+        if valid_header != result:
+            print(f'Header is invalid.')
+            exit(-1)
+
 def validate_sample_file(sample_file_path):
-    with open(sample_file_path) as sample_file:
+    with open(sample_file_path, encoding="latin-1") as sample_file:
         return load_sample(sample_file)
 
 
 def load_sample(sample_file):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
     for count, sample_row in enumerate(sample_file_reader, 2):
+        print(f'Line: {count}')
         validate_arid(count, sample_row)
         validate_estab_arid(count, sample_row)
         validate_uprn(count, sample_row)
@@ -313,7 +326,7 @@ def validate_ce_expected_capacity(count, sample_row):
     if _check_column_exists(column, mandatory, sample_row):
         value = sample_row[column]
         _check_length(column, value, count, maximum_length)
-        if not value.isnumeric():
+        if not value == "" and not value.isnumeric():
             print(f'Line {count}: {column}: {value} is not a valid integer.')
 
 
@@ -333,6 +346,7 @@ def _check_length(name, value, count, maximum_length):
 
 def main():
     args = parse_arguments()
+    validate_header_row(args.sample_file_path)
     validate_sample_file(args.sample_file_path)
 
 
