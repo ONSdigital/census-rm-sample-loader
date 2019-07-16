@@ -319,7 +319,8 @@ def _check_column_exists(column, mandatory, sample_row):
 
 
 def _check_length(name, value, count, maximum_length):
-    if len(value) > maximum_length:
+    trimmed_value = value.strip()
+    if len(trimmed_value) > maximum_length:
         print(f'Line {count}: {name}: {value} exceeds maximum length of {maximum_length}.')
 
 
