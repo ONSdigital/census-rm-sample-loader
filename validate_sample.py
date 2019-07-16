@@ -21,7 +21,7 @@ def validate_header_row(sample_file_path):
                         'HTC_DIGITAL', 'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'TREATMENT_CODE',
                         'CE_EXPECTED_CAPACITY']
 
-        if valid_header != result:
+        if valid_header.sort() != result.sort():
             print(f'Header is invalid.')
             exit(-1)
 
@@ -34,7 +34,6 @@ def validate_sample_file(sample_file_path):
 def load_sample(sample_file):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
     for count, sample_row in enumerate(sample_file_reader, 2):
-        print(f'Line: {count}')
         validate_arid(count, sample_row)
         validate_estab_arid(count, sample_row)
         validate_uprn(count, sample_row)
