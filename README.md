@@ -87,3 +87,11 @@ While the sample loader pod is running, from another shell run
 ```bash
 kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
 ```
+
+### Validating a sample file
+The is a validation script provided which performs a basic sanity check of the sample file. 
+
+To run the sample validation locally run
+```bash
+pipenv run python validate_sample.py <sample_file>
+```
