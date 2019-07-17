@@ -3,6 +3,27 @@ import csv
 
 ARID = set()
 
+VALID_ESTABLISHMENT_TYPES = {
+    'Household',
+    'Sheltered Accommodation',
+    'Hall of Residence',
+    'Care Home',
+    'Boarding School',
+    'Hotel',
+    'Hostel',
+    'Residential Caravanner',
+    'Gypsy Roma Traveller',
+    'Residential Boater'}
+
+
+VALID_TREATMENT_CODES = {
+    'HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
+    'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
+    'HH_LF3R1W', 'HH_LF3R2W', 'HH_LF3R3AW', 'HH_LF3R3BW', 'HH_LFNR1W', 'HH_LFNR2W', 'HH_LFNR3AW', 'HH_LFNR3BW',
+    'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
+    'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
+    'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'}
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
@@ -111,6 +132,7 @@ def validate_estab_type(count, sample_row):
     if _check_column_exists(count, column, mandatory, sample_row):
         estab_type = sample_row[column]
         _check_length(column, estab_type, count, maximum_length)
+        _is_valid_estab_type(count, estab_type)
 
 
 def validate_address_level(count, sample_row):
@@ -267,7 +289,7 @@ def validate_htc_digital(count, sample_row):
 def validate_fieldcordinator_id(count, sample_row):
     column = 'FIELDCOORDINATOR_ID'
     maximum_length = 7
-    mandatory = True
+    mandatory = False
     if _check_column_exists(count, column, mandatory, sample_row):
         fieldcordinator_id = sample_row[column]
         _check_length(column, fieldcordinator_id, count, maximum_length)
@@ -276,7 +298,7 @@ def validate_fieldcordinator_id(count, sample_row):
 def validate_fieldofficer_id(count, sample_row):
     column = 'FIELDOFFICER_ID'
     maximum_length = 10
-    mandatory = True
+    mandatory = False
     if _check_column_exists(count, column, mandatory, sample_row):
         fieldofficer_id = sample_row[column]
         _check_length(column, fieldofficer_id, count, maximum_length)
@@ -289,6 +311,7 @@ def validate_treatment_code(count, sample_row):
     if _check_column_exists(count, column, mandatory, sample_row):
         treatment_code = sample_row[column]
         _check_length(column, treatment_code, count, maximum_length)
+        _is_valid_treatment_code(count, treatment_code)
 
 
 def validate_ce_expected_capacity(count, sample_row):
@@ -318,6 +341,16 @@ def _check_column_exists(count, column, mandatory, sample_row):
 def _check_length(name, value, count, maximum_length):
     if len(value) > maximum_length:
         print(f'Line {count}: {name}: {value} exceeds maximum length of {maximum_length}.')
+
+
+def _is_valid_treatment_code(count, treatment_code):
+    if treatment_code not in VALID_TREATMENT_CODES:
+        print(f'Line {count}: TREATMENT_CODE: {treatment_code} is invalid.')
+
+
+def _is_valid_estab_type(count, estab_type):
+    if estab_type not in VALID_ESTABLISHMENT_TYPES:
+        print(f'Line {count}: ESTAB_TYPE: {estab_type} is invalid.')
 
 
 def main():
