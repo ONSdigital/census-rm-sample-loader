@@ -3,6 +3,7 @@ import csv
 
 ARID = set()
 
+
 VALID_ESTABLISHMENT_TYPES = {
     'Household',
     'Sheltered Accommodation',
@@ -28,7 +29,11 @@ VALID_TREATMENT_CODES = {
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
+    parser.add_argument("-v", "--verbose", help="Turn on all warnings", action="store_true")
     return parser.parse_args()
+
+
+args = parse_arguments()
 
 
 def validate_header_row(sample_file_path):
@@ -344,17 +349,16 @@ def _check_length(name, value, count, maximum_length):
 
 
 def _is_valid_treatment_code(count, treatment_code):
-    if treatment_code not in VALID_TREATMENT_CODES:
+    if args.verbose and treatment_code not in VALID_TREATMENT_CODES:
         print(f'Line {count}: TREATMENT_CODE: {treatment_code} is invalid.')
 
 
 def _is_valid_estab_type(count, estab_type):
-    if estab_type not in VALID_ESTABLISHMENT_TYPES:
+    if args.verbose and estab_type not in VALID_ESTABLISHMENT_TYPES:
         print(f'Line {count}: ESTAB_TYPE: {estab_type} is invalid.')
 
 
 def main():
-    args = parse_arguments()
     validate_header_row(args.sample_file_path)
     validate_sample_file(args.sample_file_path)
 
