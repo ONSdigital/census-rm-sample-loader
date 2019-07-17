@@ -296,8 +296,8 @@ def validate_htc_digital(count, sample_row):
 def validate_fieldcordinator_id(count, sample_row):
     column = 'FIELDCOORDINATOR_ID'
     maximum_length = 7
-    minimum_length = 1
-    mandatory = True
+    minimum_length = 0
+    mandatory = False
     if _check_column_exists(column, mandatory, sample_row):
         fieldcordinator_id = sample_row[column]
         _check_length(column, fieldcordinator_id, count, mandatory, minimum_length, maximum_length)
@@ -306,8 +306,8 @@ def validate_fieldcordinator_id(count, sample_row):
 def validate_fieldofficer_id(count, sample_row):
     column = 'FIELDOFFICER_ID'
     maximum_length = 10
-    minimum_length = 1
-    mandatory = True
+    minimum_length = 0
+    mandatory = False
     if _check_column_exists(column, mandatory, sample_row):
         fieldofficer_id = sample_row[column]
         _check_length(column, fieldofficer_id, count, mandatory, minimum_length, maximum_length)
