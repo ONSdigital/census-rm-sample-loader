@@ -6,7 +6,7 @@ ARID = set()
 
 # TODO not yet complete
 VALID_ESTABLISHMENT_TYPES = set(
-    ['Household'
+    ['Household',
      'Sheltered Accommodation',
      'Hall of Residence',
      'Care Home',
@@ -332,8 +332,9 @@ def validate_ce_expected_capacity(count, sample_row):
     if _check_column_exists(column, mandatory, sample_row):
         value = sample_row[column]
         _check_length(column, value, count, mandatory, minimum_length, maximum_length)
-        if not value.isnumeric():
-            print(f'Line {count}: {column}: {value} is not a valid integer.')
+        if value != '':
+            if not value.isnumeric():
+                print(f'Line {count}: {column}: {value} is not a valid integer.')
 
 
 def _check_column_exists(column, mandatory, sample_row):
