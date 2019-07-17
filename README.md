@@ -56,6 +56,11 @@ To run the load_sample app in Kubernetes
 ./run_in_kubernetes.sh
 ```
 
+You can also run it with a specific image rather than the default with
+```bash
+IMAGE=fullimagelocation ./run_in_kubernetes.sh
+```
+
 This will deploy a sample loader pod in the context your kubectl is currently set to and attach to the shell, allowing you to run the sample loader within the cluster. The pod is deleted when the shell is exited.
 
 ### Copying across a sample file
