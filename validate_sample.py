@@ -176,7 +176,7 @@ def validate_address_line(count, sample_row):
 def validate_town_name(count, sample_row):
     column = 'TOWN_NAME'
     maximum_length = 30
-    minimum_length = 10
+    minimum_length = 9
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         town_name = sample_row[column]
