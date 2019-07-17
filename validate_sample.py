@@ -199,13 +199,7 @@ def validate_latitude(count, sample_row):
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         latitude = sample_row[column]
-        scale, precision = latitude.split(".")
-        if scale[0] == '-':
-            scale = scale[1:]
-        if scale.isnumeric() and len(scale) <= 10:
-            if precision.isnumeric() and len(precision) <= 7:
-                return
-        print(f'Line {count}: {column}: {latitude} is not valid.')
+        _validate_float(count, column, latitude, 10, 7)
 
 
 def validate_longitude(count, sample_row):
@@ -214,13 +208,7 @@ def validate_longitude(count, sample_row):
     mandatory = True
     if _check_column_exists(column, mandatory, sample_row):
         longitude = sample_row[column]
-        scale, precision = longitude.split(".")
-        if scale[0] == '-':
-            scale = scale[1:]
-        if scale.isnumeric() and len(scale) <= 9:
-            if precision.isnumeric() and len(precision) <= 7:
-                return
-        print(f'Line {count}: {column}: {longitude} is not valid.')
+        _validate_float(count, column, longitude, 9, 7)
 
 
 def validate_oa(count, sample_row):
@@ -365,6 +353,17 @@ def _is_valid_treatment_code(count, treatment_code):
 def _is_valid_estab_type(count, estab_type):
     if estab_type not in VALID_ESTABLISHMENT_TYPES:
         print(f'Line {count}: ESTAB_TYPE: {estab_type} is invalid.')
+
+
+def _validate_float(count, column, float_in, max_precision_len, max_scale_len):
+    integer_part, scale = float_in.split(".")
+    if integer_part[0] == '-':
+        integer_part = integer_part[1:]
+    precision = integer_part + scale
+    if precision.isnumeric() and len(precision) <= max_precision_len:
+        if scale.isnumeric() and len(scale) <= max_scale_len:
+            return
+    print(f'Line {count}: {column}: {float_in} is not valid.')
 
 
 def main():
