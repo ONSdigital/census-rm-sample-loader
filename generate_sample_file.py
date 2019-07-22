@@ -1,6 +1,12 @@
 import csv
 import random
 
+
+FIELDNAMES = ('ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
+              'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3',
+              'TOWN_NAME', 'POSTCODE', 'LATITUDE', 'LONGITUDE', 'OA', 'LSOA',
+              'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS', 'HTC_DIGITAL', 'TREATMENT_CODE',
+              'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'CE_EXPECTED_CAPACITY')
 COUNTRIES = ['E', 'W', 'N']
 ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
 CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
@@ -86,7 +92,7 @@ def get_random_post_town():
 def get_random_post_code():
     first_random_number = random.randint(1, 9)
     second_random_number = random.randint(1, 9)
-    return f'{get_random_letter()}{get_random_letter()}{first_random_number} {second_random_number}' +\
+    return f'{get_random_letter()}{get_random_letter()}{first_random_number} {second_random_number}' + \
            f'{get_random_letter()}{get_random_letter()}'
 
 
@@ -101,17 +107,40 @@ def main():
     read_words()
     treatment_code_quantities = read_treatment_code_quantities()
 
-    with open('sample_file.csv', 'w') as file:
+    with open('sample_file.csv', 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES)
+        writer.writeheader()
+
         for item in treatment_code_quantities:
             for _ in range(item["quantity"]):
-                file.write(
-                    f'{get_random_arid()},{get_random_arid()},{get_random_uprn()},HH,Household,U,' +
-                    f'{get_random_abp_code()},,{get_random_address_line()},,,{get_random_post_town()},' +
-                    f'{get_random_post_code()},{get_random_lat_or_long()},{get_random_lat_or_long()},' +
-                    f'{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},' +
-                    f'{get_random_regiony_type_thing()},{get_random_regiony_type_thing()},' +
-                    f'{get_random_regiony_type_thing()},{get_random_htc()},{get_random_htc()},' +
-                    f'{item["treatment_code"]},,,\n')
+                writer.writerow({
+                    'ARID': f'{get_random_arid()}',
+                    'ESTAB_ARID': f'{get_random_arid()}',
+                    'UPRN': f'{get_random_uprn()}',
+                    'ADDRESS_TYPE': 'HH',
+                    'ESTAB_TYPE': 'Household',
+                    'ADDRESS_LEVEL': 'U',
+                    'ABP_CODE': f'{get_random_abp_code()}',
+                    'ORGANISATION_NAME': '',
+                    'ADDRESS_LINE1': f'{get_random_address_line()}',
+                    'ADDRESS_LINE2': '',
+                    'ADDRESS_LINE3': '',
+                    'TOWN_NAME': f'{get_random_post_town()}',
+                    'POSTCODE': f'{get_random_post_code()}',
+                    'LATITUDE': f'{get_random_lat_or_long()}',
+                    'LONGITUDE': f'{get_random_lat_or_long()}',
+                    'OA': f'{get_random_regiony_type_thing()}',
+                    'LSOA': f'{get_random_regiony_type_thing()}',
+                    'MSOA': f'{get_random_regiony_type_thing()}',
+                    'LAD': f'{get_random_regiony_type_thing()}',
+                    'REGION': f'{get_random_regiony_type_thing()}',
+                    'HTC_WILLINGNESS': f'{get_random_regiony_type_thing()}',
+                    'HTC_DIGITAL': f'{get_random_htc()},{get_random_htc()}',
+                    'TREATMENT_CODE': f'{item["treatment_code"]}',
+                    'FIELDCOORDINATOR_ID': '',
+                    'FIELDOFFICER_ID': '',
+                    'CE_EXPECTED_CAPACITY': '',
+                })
 
 
 if __name__ == '__main__':
