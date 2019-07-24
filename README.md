@@ -70,3 +70,6 @@ While the sample loader pod is running, from another shell run
 ```bash
 kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
 ```
+
+## Logging
+You can set the global log level with the `LOG_LEVEL` environment variable, when the sample loader runs as a script it defaults to `INFO` logging from script itself and `ERROR` for other log sources (e.g. pika).

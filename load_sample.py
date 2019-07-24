@@ -1,11 +1,16 @@
 import argparse
 import csv
 import json
+import logging
+import os
 import sys
 import uuid
 from typing import Iterable
 
 from rabbit_context import RabbitContext
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def parse_arguments():
@@ -30,9 +35,9 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
     sample_units = {}
 
     with RabbitContext(**kwargs) as rabbit:
-        print(f'Loading sample units to queue {rabbit.queue_name}')
+        logger.info(f'Loading sample units to queue {rabbit.queue_name}')
 
-        for count, sample_row in enumerate(sample_file_reader):
+        for count, sample_row in enumerate(sample_file_reader, 1):
             sample_unit_id = uuid.uuid4()
 
             rabbit.publish_message(_create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
@@ -44,15 +49,12 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
             sample_units.update(sample_unit)
 
             if count % 5000 == 0:
-                sys.stdout.write(f'\r{count} sample units loaded')
-                sys.stdout.flush()
+                logger.info(f'{count} sample units loaded')
 
-            sample_units.update(sample_unit)
+        if count % 5000:
+            logger.info(f'{count} sample units loaded')
 
-        sys.stdout.write(f'\r{count} sample units loaded')
-        sys.stdout.flush()
-
-    print(f'\nAll sample units have been added to the queue {rabbit.queue_name}')
+    logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
 
     return sample_units
 
@@ -85,6 +87,9 @@ def _create_sample_unit_json(sample_unit_id, sample_unit) -> str:
 
 
 def main():
+    log_level = os.getenv('LOG_LEVEL')
+    logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], level=log_level or logging.ERROR)
+    logger.setLevel(log_level or logging.INFO)
     args = parse_arguments()
     load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id)
 
