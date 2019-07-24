@@ -29,7 +29,6 @@ VALID_TREATMENT_CODES = {
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
-    parser.add_argument("-v", "--verbose", dest='verbose', help="Turn on all warnings", action="store_true")
     return parser.parse_args()
 
 
@@ -50,8 +49,12 @@ def validate_header_row(fieldnames):
 
 
 def validate_sample_file(sample_file_path):
-    with open(sample_file_path, encoding="latin-1") as sample_file:
-        return load_sample(sample_file)
+    try:
+        with open(sample_file_path, encoding="utf-8") as sample_file:
+            return load_sample(sample_file)
+    except UnicodeDecodeError:
+        print(f'Invalid file format')
+        exit(-1)
 
 
 def load_sample(sample_file):
@@ -85,6 +88,7 @@ def load_sample(sample_file):
 
 
 def validate_arid(count, sample_row):
+    global error_count
     column = 'ARID'
     maximum_length = 21
     mandatory = True
@@ -93,7 +97,6 @@ def validate_arid(count, sample_row):
         _check_length(column, arid, count, maximum_length)
         if arid in ARID:
             print(f'Line {count}: {column}: {arid} is duplicated in sample file.')
-            global error_count
             error_count += 1
         else:
             ARID.add(sample_row[column])
@@ -109,6 +112,7 @@ def validate_estab_arid(count, sample_row):
 
 
 def validate_uprn(count, sample_row):
+    global error_count
     column = 'UPRN'
     maximum_length = 12
     mandatory = False
@@ -117,11 +121,11 @@ def validate_uprn(count, sample_row):
         _check_length(column, uprn, count, maximum_length)
         if not uprn.isnumeric() and uprn != '':
             print(f'Line {count}: {column}: {uprn} is not a valid integer.')
-            global error_count
             error_count += 1
 
 
 def validate_address_type(count, sample_row):
+    global error_count
     column = 'ADDRESS_TYPE'
     maximum_length = 3
     mandatory = True
@@ -130,7 +134,6 @@ def validate_address_type(count, sample_row):
         _check_length(column, address_type, count, maximum_length)
         if address_type not in {"HH", "CE", "SPG"}:
             print(f'Line {count}: {column}: {address_type} is not valid.')
-            global error_count
             error_count += 1
 
 
@@ -145,6 +148,7 @@ def validate_estab_type(count, sample_row):
 
 
 def validate_address_level(count, sample_row):
+    global error_count
     column = 'ADDRESS_LEVEL'
     maximum_length = 1
     mandatory = True
@@ -153,7 +157,6 @@ def validate_address_level(count, sample_row):
         _check_length(column, address_level, count, maximum_length)
         if address_level not in {"E", "U"}:
             print(f'Line {count}: {column}: {address_level} is not valid.')
-            global error_count
             error_count += 1
 
 
@@ -204,6 +207,7 @@ def validate_postcode(count, sample_row):
 
 def validate_latitude(count, sample_row):
     # must be between -90 and 90 but we are not validating
+    global error_count
     column = 'LATITUDE'
     mandatory = True
     if _check_column_exists(count, column, mandatory, sample_row):
@@ -215,12 +219,12 @@ def validate_latitude(count, sample_row):
             if precision.isnumeric() and len(precision) <= 7:
                 return
         print(f'Line {count}: {column}: {latitude} is not valid.')
-        global error_count
         error_count += 1
 
 
 def validate_longitude(count, sample_row):
     # must be between -180 and 180 but we are not validating
+    global error_count
     column = 'LONGITUDE'
     mandatory = True
     if _check_column_exists(count, column, mandatory, sample_row):
@@ -232,7 +236,6 @@ def validate_longitude(count, sample_row):
             if precision.isnumeric() and len(precision) <= 7:
                 return
         print(f'Line {count}: {column}: {longitude} is not valid.')
-        global error_count
         error_count += 1
 
 
@@ -282,6 +285,7 @@ def validate_region(count, sample_row):
 
 
 def validate_htc_willingness(count, sample_row):
+    global error_count
     column = 'HTC_WILLINGNESS'
     mandatory = True
     if _check_column_exists(count, column, mandatory, sample_row):
@@ -289,11 +293,11 @@ def validate_htc_willingness(count, sample_row):
         if htc_willingness.isnumeric and len(htc_willingness) == 1:
             return
         print(f'Line {count}: {column} {htc_willingness} is not valid.')
-        global error_count
         error_count += 1
 
 
 def validate_htc_digital(count, sample_row):
+    global error_count
     column = 'HTC_DIGITAL'
     mandatory = True
     if _check_column_exists(count, column, mandatory, sample_row):
@@ -301,7 +305,6 @@ def validate_htc_digital(count, sample_row):
         if htc_digital.isnumeric and len(htc_digital) == 1:
             return
         print(f'Line {count}: {column} {htc_digital} is not valid.')
-        global error_count
         error_count += 1
 
 
@@ -334,6 +337,7 @@ def validate_treatment_code(count, sample_row):
 
 
 def validate_ce_expected_capacity(count, sample_row):
+    global error_count
     column = 'CE_EXPECTED_CAPACITY'
     maximum_length = 4
     mandatory = False
@@ -342,7 +346,6 @@ def validate_ce_expected_capacity(count, sample_row):
         _check_length(column, value, count, maximum_length)
         if not value == "" and not value.isnumeric():
             print(f'Line {count}: {column}: {value} is not a valid integer.')
-            global error_count
             error_count += 1
 
 
@@ -363,20 +366,24 @@ def _check_column_exists(count, column, mandatory, sample_row):
 
 
 def _check_length(name, value, count, maximum_length):
+    global error_count
     if len(value) > maximum_length:
         print(f'Line {count}: {name}: {value} exceeds maximum length of {maximum_length}.')
-        global error_count
         error_count += 1
 
 
 def _is_valid_treatment_code(count, treatment_code):
-    if args.verbose and treatment_code not in VALID_TREATMENT_CODES:
+    global error_count
+    if treatment_code not in VALID_TREATMENT_CODES:
         print(f'Line {count}: TREATMENT_CODE: {treatment_code} is invalid.')
+        error_count += 1
 
 
 def _is_valid_estab_type(count, estab_type):
-    if args.verbose and estab_type not in VALID_ESTABLISHMENT_TYPES:
+    global error_count
+    if estab_type not in VALID_ESTABLISHMENT_TYPES:
         print(f'Line {count}: ESTAB_TYPE: {estab_type} is invalid.')
+        error_count += 1
 
 
 def main():
@@ -385,6 +392,7 @@ def main():
         print(f'Sample file is OK.')
     else:
         print(f'{error_count} error(s) found in sample file')
+        exit(-1)
 
 
 if __name__ == "__main__":
