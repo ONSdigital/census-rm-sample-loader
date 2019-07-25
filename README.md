@@ -78,3 +78,7 @@ To run the sample validation locally run
 ```bash
 pipenv run python validate_sample.py <sample_file>
 ```
+=======
+## Logging
+You can set the global log level with the `LOG_LEVEL` environment variable, when the sample loader runs as a script it defaults to `INFO` logging from script itself and `ERROR` for other log sources (e.g. pika).
+
