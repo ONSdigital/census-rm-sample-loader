@@ -37,13 +37,13 @@ error_count = 0
 
 
 def validate_header_row(fieldnames):
-    valid_header = ['ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
+    valid_header = {'ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
                     'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3', 'TOWN_NAME', 'POSTCODE',
                     'LATITUDE', 'LONGITUDE', 'OA', 'LSOA', 'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS',
                     'HTC_DIGITAL', 'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'TREATMENT_CODE',
-                    'CE_EXPECTED_CAPACITY']
+                    'CE_EXPECTED_CAPACITY'}
 
-    if not set(fieldnames) == set(valid_header):
+    if not set(fieldnames) == valid_header:
         print(f'Header is invalid.')
         exit(-1)
 
