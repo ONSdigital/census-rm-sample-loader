@@ -98,7 +98,7 @@ def get_random_post_code():
 
 def get_random_lat_or_long():
     random_degrees = random.randint(-180, 180)
-    random_minutes = random.randint(999, 999999)
+    random_minutes = random.randint(999, 9999)
     return f'{random_degrees}.{random_minutes}'
 
 
