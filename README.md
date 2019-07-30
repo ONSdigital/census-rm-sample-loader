@@ -21,7 +21,7 @@ Enter the environment shell with
 pipenv shell
 ```
 
-## building and pushing the docker container
+## Building and pushing the docker container
 ```bash
 docker build -t eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG> .
 docker push eu.gcr.io/census-rm-ci/census-rm-sample-loader:<TAG>
@@ -70,3 +70,15 @@ While the sample loader pod is running, from another shell run
 ```bash
 kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
 ```
+
+## Validating a sample file
+The is a validation script provided which performs a basic sanity check of the sample file. 
+
+To run the sample validation locally run
+```bash
+pipenv run python validate_sample.py <sample_file>
+```
+
+## Logging
+You can set the global log level with the `LOG_LEVEL` environment variable, when the sample loader runs as a script it defaults to `INFO` logging from script itself and `ERROR` for other log sources (e.g. pika).
+
