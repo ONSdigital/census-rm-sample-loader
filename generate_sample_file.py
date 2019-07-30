@@ -98,7 +98,7 @@ def get_random_post_code():
 
 def get_random_lat_or_long():
     random_degrees = random.randint(-180, 180)
-    random_minutes = random.randint(999, 999999)
+    random_minutes = random.randint(999, 9999)
     return f'{random_degrees}.{random_minutes}'
 
 
@@ -134,8 +134,8 @@ def main():
                     'MSOA': f'{get_random_regiony_type_thing()}',
                     'LAD': f'{get_random_regiony_type_thing()}',
                     'REGION': f'{get_random_regiony_type_thing()}',
-                    'HTC_WILLINGNESS': f'{get_random_regiony_type_thing()}',
-                    'HTC_DIGITAL': f'{get_random_htc()},{get_random_htc()}',
+                    'HTC_WILLINGNESS': f'{get_random_htc()}',
+                    'HTC_DIGITAL': f'{get_random_htc()}',
                     'TREATMENT_CODE': f'{item["treatment_code"]}',
                     'FIELDCOORDINATOR_ID': '',
                     'FIELDOFFICER_ID': '',
