@@ -262,14 +262,14 @@ def validate_htc_digital(line_number, sample_row):
 def validate_fieldcordinator_id(line_number, sample_row):
     column = 'FIELDCOORDINATOR_ID'
     maximum_length = 7
-    if _check_mandatory_value_exists(line_number, column, mandatory=False, sample_row=sample_row):
+    if _check_mandatory_value_exists(line_number, column, mandatory=True, sample_row=sample_row):
         _check_length(column, sample_row[column], line_number, maximum_length)
 
 
 def validate_fieldofficer_id(line_number, sample_row):
     column = 'FIELDOFFICER_ID'
     maximum_length = 10
-    if _check_mandatory_value_exists(line_number, column, mandatory=False, sample_row=sample_row):
+    if _check_mandatory_value_exists(line_number, column, mandatory=True, sample_row=sample_row):
         _check_length(column, sample_row[column], line_number, maximum_length)
 
 
