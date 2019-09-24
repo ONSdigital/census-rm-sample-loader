@@ -66,10 +66,9 @@ def get_random_uprn():
     return f'{random_number:011}'
 
 
-def get_random_regiony_type_thing():
-    random_country = COUNTRIES[random.randint(0, len(COUNTRIES) - 1)]
+def get_random_regiony_type_thing(country):
     random_number = random.randint(10000000, 99999999)
-    return f'{random_country}{random_number}'
+    return f'{country}{random_number}'
 
 
 def get_random_htc():
@@ -113,6 +112,7 @@ def main():
 
         for item in treatment_code_quantities:
             for _ in range(item["quantity"]):
+                country = item["treatment_code"][-1:]
                 writer.writerow({
                     'ARID': f'{get_random_arid()}',
                     'ESTAB_ARID': f'{get_random_arid()}',
@@ -129,11 +129,11 @@ def main():
                     'POSTCODE': f'{get_random_post_code()}',
                     'LATITUDE': f'{get_random_lat_or_long()}',
                     'LONGITUDE': f'{get_random_lat_or_long()}',
-                    'OA': f'{get_random_regiony_type_thing()}',
-                    'LSOA': f'{get_random_regiony_type_thing()}',
-                    'MSOA': f'{get_random_regiony_type_thing()}',
-                    'LAD': f'{get_random_regiony_type_thing()}',
-                    'REGION': f'{get_random_regiony_type_thing()}',
+                    'OA': f'{get_random_regiony_type_thing(country)}',
+                    'LSOA': f'{get_random_regiony_type_thing(country)}',
+                    'MSOA': f'{get_random_regiony_type_thing(country)}',
+                    'LAD': f'{get_random_regiony_type_thing(country)}',
+                    'REGION': f'{country}',
                     'HTC_WILLINGNESS': f'{get_random_htc()}',
                     'HTC_DIGITAL': f'{get_random_htc()}',
                     'TREATMENT_CODE': f'{item["treatment_code"]}',
