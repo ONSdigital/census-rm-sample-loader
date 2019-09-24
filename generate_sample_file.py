@@ -133,7 +133,7 @@ def main():
                     'LSOA': f'{get_random_regiony_type_thing(country)}',
                     'MSOA': f'{get_random_regiony_type_thing(country)}',
                     'LAD': f'{get_random_regiony_type_thing(country)}',
-                    'REGION': f'{country}',
+                    'REGION': f'{get_random_regiony_type_thing(country)}',
                     'HTC_WILLINGNESS': f'{get_random_htc()}',
                     'HTC_DIGITAL': f'{get_random_htc()}',
                     'TREATMENT_CODE': f'{item["treatment_code"]}',
