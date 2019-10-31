@@ -32,7 +32,7 @@ class TestRabbitContext(TestCase):
         with RabbitContext() as rabbit:
             rabbit.publish_message('Test message body', 'text')
 
-        patch_pika.BasicProperties.assert_called_once_with(content_type='text')
+        patch_pika.BasicProperties.assert_called_once_with(content_type='text', delivery_mode=2)
         patched_basic_publish = patch_pika.BlockingConnection.return_value.channel.return_value.basic_publish
         patched_basic_publish.assert_called_once_with(exchange=rabbit._exchange,
                                                       routing_key=rabbit.queue_name,

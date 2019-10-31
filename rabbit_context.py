@@ -1,6 +1,7 @@
 import os
 
 import pika
+from pika.spec import PERSISTENT_DELIVERY_MODE
 
 from exceptions import RabbitConnectionClosedError
 
@@ -51,4 +52,5 @@ class RabbitContext:
         self._channel.basic_publish(exchange=self._exchange,
                                     routing_key=self.queue_name,
                                     body=message,
-                                    properties=pika.BasicProperties(content_type=content_type))
+                                    properties=pika.BasicProperties(content_type=content_type,
+                                                                    delivery_mode=PERSISTENT_DELIVERY_MODE))
