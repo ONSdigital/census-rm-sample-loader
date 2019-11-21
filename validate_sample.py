@@ -13,9 +13,6 @@ def parse_arguments():
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
     return parser.parse_args()
 
-
-args = parse_arguments()
-
 ESTAB_TYPES = {
     'Household',
     'Sheltered Accommodation',
@@ -107,6 +104,7 @@ def validate_sample_file(sample_file_path) -> list:
 
 
 def main():
+    args = parse_arguments()
     failures = validate_sample_file(args.sample_file_path)
     if failures:
         print(f'{len(failures)} validation failure(s):')
