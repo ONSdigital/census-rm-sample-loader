@@ -2,8 +2,9 @@ import argparse
 import csv
 from collections import namedtuple
 
-from validators import MaxLength, Unique, ValidationError, Mandatory, IsNumeric, InSet, SetEqual, IsFloat, \
-    MaxDecimalScale, MaxDecimalPrecision
+from validr import T, Invalid
+
+from validators import ValidationError, COMPILER
 
 ARID = set()
 
@@ -13,7 +14,8 @@ def parse_arguments():
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
     return parser.parse_args()
 
-ESTAB_TYPES = {
+
+ESTAB_TYPES = ','.join({
     'Household',
     'Sheltered Accommodation',
     'Hall of Residence',
@@ -23,54 +25,62 @@ ESTAB_TYPES = {
     'Hostel',
     'Residential Caravanner',
     'Gypsy Roma Traveller',
-    'Residential Boater'}
+    'Residential Boater'})
 
-TREATMENT_CODES = {
+TREATMENT_CODES = ','.join({
     'HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
     'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
     'HH_LF3R1W', 'HH_LF3R2W', 'HH_LF3R3AW', 'HH_LF3R3BW', 'HH_LFNR1W', 'HH_LFNR2W', 'HH_LFNR3AW', 'HH_LFNR3BW',
     'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
     'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
-    'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'}
+    'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'})
 
-COLUMN_VALIDATORS = {
-    'ARID': (Mandatory(), MaxLength(21), Unique()),
-    'ESTAB_ARID': (Mandatory(), MaxLength(21)),
-    'UPRN': (Mandatory(), MaxLength(12), IsNumeric()),
-    'ADDRESS_TYPE': (Mandatory(), InSet({"HH", "CE", "SPG"})),
-    'ESTAB_TYPE': (Mandatory(), InSet(ESTAB_TYPES)),
-    'ADDRESS_LEVEL': (Mandatory(), InSet({'E', 'U'})),
-    'ABP_CODE': (Mandatory(), MaxLength(6)),
-    'ORGANISATION_NAME': (MaxLength(60),),
-    'ADDRESS_LINE1': (Mandatory(), MaxLength(60)),
-    'ADDRESS_LINE2': (MaxLength(60),),
-    'ADDRESS_LINE3': (MaxLength(60),),
-    'TOWN_NAME': (Mandatory(), MaxLength(30)),
-    'POSTCODE': (Mandatory(), MaxLength(8)),
-    'LATITUDE': (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(9)),
-    'LONGITUDE': (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(10)),
-    'OA': (Mandatory(), MaxLength(9)),
-    'LSOA': (Mandatory(), MaxLength(9)),
-    'MSOA': (Mandatory(), MaxLength(9)),
-    'LAD': (Mandatory(), MaxLength(9)),
-    'REGION': (Mandatory(), MaxLength(9)),
-    'HTC_WILLINGNESS': (Mandatory(), MaxLength(9), InSet({'0', '1', '2', '3', '4', '5'})),
-    'HTC_DIGITAL': (Mandatory(), MaxLength(9), InSet({'0', '1', '2', '3', '4', '5'})),
-    'FIELDCOORDINATOR_ID': (MaxLength(7),),
-    'FIELDOFFICER_ID': (MaxLength(10),),
-    'TREATMENT_CODE': (Mandatory(), MaxLength(10), InSet(TREATMENT_CODES)),
-    'CE_EXPECTED_CAPACITY': (MaxLength(4), IsNumeric()),
-}
 
-ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
+SAMPLE_ROW_VALIDATOR = COMPILER.compile(
+    T.dict(
+        ARID=T.globally_unique_str.minlen(1).maxlen(21),  # (Mandatory(), MaxLength(21), Unique()),
+        ESTAB_ARID=T.str.minlen(1).maxlen(21),  # (Mandatory(), MaxLength(21)),
+        UPRN=T.numeric_str.minlen(1).maxlen(12),  # (Mandatory(), MaxLength(12), IsNumeric()),
+        ADDRESS_TYPE=T.in_set("HH,CE,SPG"),  # (Mandatory(), InSet({"HH", "CE", "SPG"})),
+        ESTAB_TYPE=T.in_set(ESTAB_TYPES),  # (Mandatory(), InSet(ESTAB_TYPES)),
+        ADDRESS_LEVEL=T.in_set('E,U'),  # (Mandatory(), InSet({'E', 'U'})),
+        ABP_CODE=T.str.minlen(1).maxlen(6),  # (Mandatory(), MaxLength(6)),
+        ORGANISATION_NAME=T.str.optional(True).maxlen(60),  # (MaxLength(60),),
+        ADDRESS_LINE1=T.str.minlen(1).maxlen(60),  # (Mandatory(), MaxLength(60)),
+        ADDRESS_LINE2=T.str.optional(True).maxlen(60),  # (MaxLength(60),),
+        ADDRESS_LINE3=T.str.optional(True).maxlen(60),  # (MaxLength(60),),
+        TOWN_NAME=T.str.minlen(1).maxlen(30),  # (Mandatory(), MaxLength(30)),
+        POSTCODE=T.str.minlen(1).maxlen(8),  # (Mandatory(), MaxLength(8)),
+        LATITUDE=T.float,  # (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(9)),
+        LONGITUDE=T.float,  # (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(10)),
+        OA=T.str.minlen(1).maxlen(9),  # (Mandatory(), MaxLength(9)),
+        LSOA=T.str.minlen(1).maxlen(9),  # (Mandatory(), MaxLength(9)),
+        MSOA=T.str.minlen(1).maxlen(9),  # (Mandatory(), MaxLength(9)),
+        LAD=T.str.minlen(1).maxlen(9),  # (Mandatory(), MaxLength(9)),
+        REGION=T.str.minlen(1).maxlen(9),
+        HTC_WILLINGNESS=T.in_set('0,1,2,3,4,5'),
+        HTC_DIGITAL=T.in_set('0,1,2,3,4,5'),
+        FIELDCOORDINATOR_ID=T.str.optional(True).maxlen(7),  # (MaxLength(7),),
+        FIELDOFFICER_ID=T.str.optional(True).maxlen(10),  # (MaxLength(10),),
+        TREATMENT_CODE=T.in_set(TREATMENT_CODES),  # (Mandatory(), MaxLength(10), InSet(TREATMENT_CODES)),
+        CE_EXPECTED_CAPACITY=T.numeric_str.optional(True).maxlen(4)  # (MaxLength(4), IsNumeric()),
+    )
+)
+
+ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'description'))
 
 
 def validate_fieldnames(fieldnames):
-    valid_header = set(COLUMN_VALIDATORS.keys())
+    valid_header = {'ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
+                    'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3', 'TOWN_NAME', 'POSTCODE',
+                    'LATITUDE', 'LONGITUDE', 'OA', 'LSOA', 'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS',
+                    'HTC_DIGITAL', 'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'TREATMENT_CODE',
+                    'CE_EXPECTED_CAPACITY'}
+
     try:
-        SetEqual(valid_header)(fieldnames)
+        valid_header == fieldnames
     except ValidationError as err:
-        return ValidationFailure(1, None, str(err))
+        return ValidationFailure(1, str(err))
 
 
 def find_validation_failures(sample_file_reader) -> list:
@@ -82,12 +92,10 @@ def find_validation_failures(sample_file_reader) -> list:
 
 def find_row_validation_failures(line_number, row):
     failures = []
-    for column, validators in COLUMN_VALIDATORS.items():
-        for validator in validators:
-            try:
-                validator(row[column])
-            except ValidationError as validation_failure:
-                failures.append(ValidationFailure(line_number, column, validation_failure))
+    try:
+        SAMPLE_ROW_VALIDATOR(row)
+    except Invalid as validation_failure:
+        failures.append(ValidationFailure(line_number, validation_failure))
     return failures
 
 
@@ -100,7 +108,7 @@ def validate_sample_file(sample_file_path) -> list:
                 return [header_failures]
             return find_validation_failures(sample_file_reader)
     except UnicodeDecodeError as err:
-        return [ValidationFailure(None, None, f'Invalid file encoding, requires utf-8, error: {err}')]
+        return [ValidationFailure(None, f'Invalid file encoding, requires utf-8, error: {err}')]
 
 
 def main():
@@ -109,9 +117,7 @@ def main():
     if failures:
         print(f'{len(failures)} validation failure(s):')
         for failure in failures:
-            failure_log = (f'line: {failure.line_number}, column: {failure.column}, description: {failure.description}'
-                           if failure.column else
-                           f'line: Header, description: {failure.description}'
+            failure_log = (f'line: {failure.line_number}, description: {failure.description}'
                            if failure.line_number else
                            failure.description)
             print(failure_log)
