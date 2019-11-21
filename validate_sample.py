@@ -80,15 +80,21 @@ def validate_fieldnames(fieldnames):
         return ValidationFailure(1, None, str(err))
 
 
-def validate_rows(sample_file_reader, column_validators) -> list:
+def find_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
-        for column, validators in column_validators.items():
-            for validator in validators:
-                try:
-                    validator(row[column])
-                except ValidationError as validation_failure:
-                    failures.append(ValidationFailure(line_number, column, validation_failure))
+        failures.append(find_row_validation_failures(line_number, row))
+    return failures
+
+
+def find_row_validation_failures(line_number, row):
+    failures = []
+    for column, validators in COLUMN_VALIDATORS.items():
+        for validator in validators:
+            try:
+                validator(row[column])
+            except ValidationError as validation_failure:
+                failures.append(ValidationFailure(line_number, column, validation_failure))
     return failures
 
 
@@ -99,7 +105,7 @@ def validate_sample_file(sample_file_path) -> list:
             header_failures = validate_fieldnames(sample_file_reader.fieldnames)
             if header_failures:
                 return [header_failures]
-            return validate_rows(sample_file_reader, COLUMN_VALIDATORS)
+            return find_validation_failures(sample_file_reader)
     except UnicodeDecodeError as err:
         return [ValidationFailure(None, None, f'Invalid file encoding, requires utf-8, error: {err}')]
 
@@ -115,9 +121,9 @@ def main():
                            if failure.line_number else
                            failure.description)
             print(failure_log)
-        print('❌')
+        print(f'{args.sample_file_path} is not valid ❌')
         exit(1)
-    print('Success! ✅')
+    print(f'Success! No validation failures in {args.sample_file_path} ✅')
 
 
 if __name__ == "__main__":

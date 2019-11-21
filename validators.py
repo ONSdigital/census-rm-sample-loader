@@ -27,7 +27,7 @@ class MaxLength(Validator):
         self.max_length = max_length
 
     def validate(self, value):
-        if not len(value) <= self.max_length:
+        if len(value) > self.max_length:
             raise ValidationError(f'Value has length {len(value)}, exceeds maximum length of {self.max_length}')
 
 
