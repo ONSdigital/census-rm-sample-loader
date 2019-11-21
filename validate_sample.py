@@ -69,11 +69,7 @@ ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'd
 
 
 def validate_fieldnames(fieldnames):
-    valid_header = {'ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
-                    'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3', 'TOWN_NAME', 'POSTCODE',
-                    'LATITUDE', 'LONGITUDE', 'OA', 'LSOA', 'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS',
-                    'HTC_DIGITAL', 'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'TREATMENT_CODE',
-                    'CE_EXPECTED_CAPACITY'}
+    valid_header = set(COLUMN_VALIDATORS.keys())
     try:
         SetEqual(valid_header)(fieldnames)
     except ValidationError as err:
@@ -83,7 +79,7 @@ def validate_fieldnames(fieldnames):
 def find_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
-        failures.append(find_row_validation_failures(line_number, row))
+        failures.extend(find_row_validation_failures(line_number, row))
     return failures
 
 
@@ -123,7 +119,7 @@ def main():
             print(failure_log)
         print(f'{args.sample_file_path} is not valid ❌')
         exit(1)
-    print(f'Success! No validation failures in {args.sample_file_path} ✅')
+    print(f'Success! {args.sample_file_path} passed validation ✅')
 
 
 if __name__ == "__main__":
