@@ -86,9 +86,11 @@ def find_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
         failures.extend(find_row_validation_failures(line_number, row))
-        if not line_number % 100000:
+        if not line_number % 10000:
             print(f"Validation progress: {str(line_number).rjust(9)} lines checked, "
                   f"Failures: {len(failures)}", end='\r', flush=True)
+    print(f"Validation progress: {str(line_number).rjust(9)} lines checked, "
+          f"Failures: {len(failures)}")
     return failures
 
 
