@@ -8,18 +8,19 @@ class ValidationError(Exception):
 @validator(accept=str, output=str)
 def numeric_str_validator(compiler, maxlen=None, minlen=0):
     def validate(value):
-        if maxlen:
-            assert len(value) <= maxlen
-        assert len(value) >= minlen
+        if maxlen and len(value) > maxlen:
+            raise Invalid('Value exceeds max length')
+        if len(value) < minlen:
+            raise Invalid('Value shorter than min length')
         if value and not value.isnumeric():
-            raise Invalid(f'Value "{value}" is non numeric')
+            raise Invalid(f'Value is non numeric')
 
     return validate
 
 
 @validator(accept=str, output=str)
-def in_set_validator(compiler, items):
-    item_set = set(items.split(','))
+def in_set_validator(compiler, items, delimiter=','):
+    item_set = set(items.split(delimiter))
 
     def validate(value):
         if value in item_set:
@@ -34,11 +35,12 @@ def globally_unique_str_validator(compiler, maxlen=None, minlen=0):
     previous_values = set()
 
     def validate(value):
-        if maxlen:
-            assert len(value) <= maxlen
-        assert len(value) >= minlen
+        if maxlen and len(value) > maxlen:
+            raise Invalid('Value exceeds max length')
+        if len(value) < minlen:
+            raise Invalid('Value shorter than min length')
         if value in previous_values:
-            raise Invalid(f'Value "{value}" is not unique')
+            raise Invalid(f'Value is not unique')
         previous_values.add(value)
 
     return validate
@@ -53,9 +55,9 @@ def decimal_validator(compiler, max_scale=None, max_precision=None):
         precision = len(integer) + len(decimal)
         failures = []
         if precision > max_precision:
-            failures.append(f'Value {value} has precision {precision}, exceeds max of {max_precision}')
+            failures.append(f'Value exceeds max decimal precision')
         if scale > max_scale:
-            failures.append(f'Value {value} has scale {scale}, exceeds max of {max_scale}')
+            failures.append(f'Value exceeds max decimal scale')
         if failures:
             raise Invalid(', '.join(failures))
 

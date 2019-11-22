@@ -15,7 +15,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-ESTAB_TYPES = ','.join({
+ESTAB_TYPES = '|'.join({
     'Household',
     'Sheltered Accommodation',
     'Hall of Residence',
@@ -27,7 +27,7 @@ ESTAB_TYPES = ','.join({
     'Gypsy Roma Traveller',
     'Residential Boater'})
 
-TREATMENT_CODES = ','.join({
+TREATMENT_CODES = '|'.join({
     'HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
     'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
     'HH_LF3R1W', 'HH_LF3R2W', 'HH_LF3R3AW', 'HH_LF3R3BW', 'HH_LFNR1W', 'HH_LFNR2W', 'HH_LFNR3AW', 'HH_LFNR3BW',
@@ -41,7 +41,7 @@ sample_row_validator = COMPILER.compile(
         ESTAB_ARID=T.str.minlen(1).maxlen(21),
         UPRN=T.numeric_str.minlen(1).maxlen(12),
         ADDRESS_TYPE=T.in_set("HH,CE,SPG"),
-        ESTAB_TYPE=T.in_set(ESTAB_TYPES),
+        ESTAB_TYPE=T.in_set(ESTAB_TYPES).delimiter('|'),
         ADDRESS_LEVEL=T.in_set('E,U'),
         ABP_CODE=T.str.minlen(1).maxlen(6),
         ORGANISATION_NAME=T.str.optional(True).maxlen(60),
@@ -61,7 +61,7 @@ sample_row_validator = COMPILER.compile(
         HTC_DIGITAL=T.in_set('0,1,2,3,4,5'),
         FIELDCOORDINATOR_ID=T.str.optional(True).maxlen(7),
         FIELDOFFICER_ID=T.str.optional(True).maxlen(10),
-        TREATMENT_CODE=T.in_set(TREATMENT_CODES),
+        TREATMENT_CODE=T.in_set(TREATMENT_CODES).delimiter('|'),
         CE_EXPECTED_CAPACITY=T.numeric_str.optional(True).maxlen(4),
     )
 )
