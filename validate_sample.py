@@ -35,7 +35,6 @@ TREATMENT_CODES = ','.join({
     'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
     'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'})
 
-
 SAMPLE_ROW_VALIDATOR = COMPILER.compile(
     T.dict(
         ARID=T.globally_unique_str.minlen(1).maxlen(21),
@@ -87,6 +86,9 @@ def find_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
         failures.extend(find_row_validation_failures(line_number, row))
+        if not line_number % 10000:
+            print(f"Validation progress: {str(line_number).rjust(9)} lines checked, "
+                  f"Failures: {len(failures)}", end='\r', flush=True)
     return failures
 
 
