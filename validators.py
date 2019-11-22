@@ -44,8 +44,27 @@ def globally_unique_str_validator(compiler, maxlen=None, minlen=0):
     return validate
 
 
+@validator(accept=str, output=str)
+def decimal_validator(compiler, max_scale=None, max_precision=None):
+    def validate(value):
+        integer, decimal = value.split('.')
+        scale = len(decimal)
+        integer = integer.strip('-')
+        precision = len(integer) + len(decimal)
+        failures = []
+        if precision > max_precision:
+            failures.append(f'Value {value} has precision {precision}, exceeds max of {max_precision}')
+        if scale > max_scale:
+            failures.append(f'Value {value} has scale {scale}, exceeds max of {max_scale}')
+        if failures:
+            raise Invalid(', '.join(failures))
+
+    return validate
+
+
 COMPILER = Compiler(validators={
     "numeric_str": numeric_str_validator,
     "in_set": in_set_validator,
     "globally_unique_str": globally_unique_str_validator,
+    "decimal": decimal_validator,
 })

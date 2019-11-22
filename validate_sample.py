@@ -35,7 +35,7 @@ TREATMENT_CODES = ','.join({
     'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
     'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'})
 
-SAMPLE_ROW_VALIDATOR = COMPILER.compile(
+sample_row_validator = COMPILER.compile(
     T.dict(
         ARID=T.globally_unique_str.minlen(1).maxlen(21),
         ESTAB_ARID=T.str.minlen(1).maxlen(21),
@@ -50,8 +50,8 @@ SAMPLE_ROW_VALIDATOR = COMPILER.compile(
         ADDRESS_LINE3=T.str.optional(True).maxlen(60),
         TOWN_NAME=T.str.minlen(1).maxlen(30),
         POSTCODE=T.str.minlen(1).maxlen(8),
-        LATITUDE=T.float,  # (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(9)),
-        LONGITUDE=T.float,  # (Mandatory(), IsFloat(), MaxDecimalScale(7), MaxDecimalPrecision(10)),
+        LATITUDE=T.decimal.max_scale(7).max_precision(9),
+        LONGITUDE=T.decimal.max_scale(7).max_precision(10),
         OA=T.str.minlen(1).maxlen(9),
         LSOA=T.str.minlen(1).maxlen(9),
         MSOA=T.str.minlen(1).maxlen(9),
@@ -86,7 +86,7 @@ def find_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
         failures.extend(find_row_validation_failures(line_number, row))
-        if not line_number % 10000:
+        if not line_number % 100000:
             print(f"Validation progress: {str(line_number).rjust(9)} lines checked, "
                   f"Failures: {len(failures)}", end='\r', flush=True)
     return failures
@@ -95,7 +95,7 @@ def find_validation_failures(sample_file_reader) -> list:
 def find_row_validation_failures(line_number, row):
     failures = []
     try:
-        SAMPLE_ROW_VALIDATOR(row)
+        sample_row_validator(row)
     except Invalid as validation_failure:
         failures.append(ValidationFailure(line_number, validation_failure))
     return failures
