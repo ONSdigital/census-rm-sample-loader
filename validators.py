@@ -8,7 +8,7 @@ class Invalid(Exception):
 def max_length(max_len: int):
     def validate(value):
         if len(value) > max_len:
-            raise Invalid(f'Value has length {len(value)}, exceeds maximum length of {max_len}')
+            raise Invalid(f'Value has length {len(value)}, exceeds max of {max_len}')
 
     return validate
 
@@ -52,11 +52,11 @@ def latitude_longitude(max_precision: int, max_scale: int):
         precision = len(integer) + len(decimal)
         errors = []
         if precision > max_precision:
-            errors.append(f'Value has precision {precision}, exceeds max of {max_precision}')
+            errors.append(f'Precision {precision} exceeds max of {max_precision}')
         if scale > max_scale:
-            errors.append(f'Value has scale {scale}, exceeds max of {max_scale}')
+            errors.append(f'Scale {scale} exceeds max of {max_scale}')
         if errors:
-            raise Invalid(f"{','.join(errors)}, Value = {value}")
+            raise Invalid(f"{', '.join(errors)}, Value = {value}")
 
     return validate
 

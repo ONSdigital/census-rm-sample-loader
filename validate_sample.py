@@ -63,10 +63,10 @@ SAMPLE_ROW_SCHEMA = {
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
 
-def validate_fieldnames(fieldnames):
+def validate_header(header):
     valid_header = set(SAMPLE_ROW_SCHEMA.keys())
     try:
-        set_equal(valid_header)(fieldnames)
+        set_equal(valid_header)(header)
     except Invalid as invalid:
         return ValidationFailure(line_number=1, column=None, description=str(invalid))
 
@@ -98,7 +98,7 @@ def validate_sample_file(sample_file_path) -> list:
     try:
         with open(sample_file_path, encoding="utf-8") as sample_file:
             sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-            header_failures = validate_fieldnames(sample_file_reader.fieldnames)
+            header_failures = validate_header(sample_file_reader.fieldnames)
             if header_failures:
                 return [header_failures]
             return find_sample_validation_failures(sample_file_reader)
