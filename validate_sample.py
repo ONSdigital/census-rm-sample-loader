@@ -31,7 +31,7 @@ TREATMENT_CODES = {
     'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
     'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN'}
 
-ROW_SCHEMA = {
+SAMPLE_ROW_SCHEMA = {
     'ARID': [mandatory(), max_length(21), unique()],
     'ESTAB_ARID': [mandatory(), max_length(21)],
     'UPRN': [mandatory(), max_length(12), numeric()],
@@ -64,7 +64,7 @@ ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'd
 
 
 def validate_fieldnames(fieldnames):
-    valid_header = set(ROW_SCHEMA.keys())
+    valid_header = set(SAMPLE_ROW_SCHEMA.keys())
     try:
         set_equal(valid_header)(fieldnames)
     except Invalid as invalid:
@@ -75,12 +75,17 @@ def find_sample_validation_failures(sample_file_reader) -> list:
     failures = []
     for line_number, row in enumerate(sample_file_reader, 2):
         failures.extend(find_row_validation_failures(line_number, row))
+        if not line_number % 10000:
+            print(f"Validation progress: {str(line_number).rjust(8)} lines checked, "
+                  f"Failures: {len(failures)}", end='\r', flush=True)
+    print(f"Validation progress: {str(line_number).rjust(8)} lines checked, "
+          f"Failures: {len(failures)}")
     return failures
 
 
 def find_row_validation_failures(line_number, row):
     failures = []
-    for column, validators in ROW_SCHEMA.items():
+    for column, validators in SAMPLE_ROW_SCHEMA.items():
         for validator in validators:
             try:
                 validator(row[column])
