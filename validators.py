@@ -56,7 +56,7 @@ def latitude_longitude(max_precision: int, max_scale: int):
         if scale > max_scale:
             errors.append(f'Scale {scale} exceeds max of {max_scale}')
         if errors:
-            raise Invalid(f"{', '.join(errors)}, Value = {value}")
+            raise Invalid(f'{", ".join(errors)}, Value = "{value}"')
 
     return validate
 
