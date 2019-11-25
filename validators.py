@@ -1,108 +1,80 @@
 from typing import Iterable
 
 
-class ValidationError(Exception):
+class Invalid(Exception):
     pass
 
 
-class Singleton(type):
-    _instances = {}
+def max_length(max_len: int):
+    def validate(value):
+        if len(value) > max_len:
+            raise Invalid(f'Value has length {len(value)}, exceeds maximum length of {max_len}')
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class Validator:
-    def __call__(self, value) -> None:
-        return self.validate(value)
-
-    def validate(self, value) -> None:
-        pass
+    return validate
 
 
-class MaxLength(Validator):
-    def __init__(self, max_length):
-        self.max_length = max_length
+def unique():
+    previous_values = set()
 
-    def validate(self, value):
-        if len(value) > self.max_length:
-            raise ValidationError(f'Value has length {len(value)}, exceeds maximum length of {self.max_length}')
+    def validate(value):
+        if value in previous_values:
+            raise Invalid(f'Value "{value}" is not unique')
+        previous_values.add(value)
 
-
-class Unique(Validator):
-    def __init__(self):
-        self.previous_values = set()
-
-    def validate(self, value):
-        if value in self.previous_values:
-            raise ValidationError(f'Value "{value}" is not unique')
-        self.previous_values.add(value)
+    return validate
 
 
-class Mandatory(Validator, metaclass=Singleton):
-    def validate(self, value):
+def mandatory():
+    def validate(value):
         if not value:
-            raise ValidationError(f'Empty mandatory value')
+            raise Invalid(f'Empty mandatory value')
+
+    return validate
 
 
-class IsNumeric(Validator, metaclass=Singleton):
-    def validate(self, value):
+def numeric():
+    def validate(value):
         if value and not value.isnumeric():
-            raise ValidationError(f'Value "{value}" is non numeric')
+            raise Invalid(f'Value "{value}" is non numeric')
+
+    return validate
 
 
-class IsFloat(Validator, metaclass=Singleton):
-    def validate(self, value) -> None:
+def latitude_longitude(max_precision: int, max_scale: int):
+    def validate(value):
         try:
             float(value)
         except ValueError:
-            raise ValidationError(f'Value "{value}" is not a valid float')
-
-
-class MaxDecimalPrecision(Validator):
-    def __init__(self, max_decimal_precision):
-        self.max_decimal_precision = max_decimal_precision
-
-    def validate(self, value) -> None:
+            raise Invalid(f'Value "{value}" is not a valid float')
         integer, decimal = value.split('.')
         integer = integer.strip('-')
+        scale = len(decimal)
         precision = len(integer) + len(decimal)
-        if precision > self.max_decimal_precision:
-            raise ValidationError(
-                f'Value {value} as a precision of {precision},'
-                f' exceeds max of {self.max_decimal_precision}')
+        errors = []
+        if precision > max_precision:
+            errors.append(f'Value has precision {precision}, exceeds max of {max_precision}')
+        if scale > max_scale:
+            errors.append(f'Value has scale {scale}, exceeds max of {max_scale}')
+        if errors:
+            raise Invalid(f"{','.join(errors)}, Value = {value}")
+
+    return validate
 
 
-class MaxDecimalScale(Validator):
-    def __init__(self, max_decimal_scale):
-        self.max_decimal_scale = max_decimal_scale
+def in_set(valid_value_set: set):
+    def validate(value):
+        if value not in valid_value_set:
+            raise Invalid(f'Value "{value}" is not valid')
 
-    def validate(self, value) -> None:
-        scale = len(value.split('.')[1])
-        if scale > self.max_decimal_scale:
-            raise ValidationError(
-                f'Value {value} as a scale of {scale},'
-                f' exceeds max of {self.max_decimal_scale}')
+    return validate
 
 
-class InSet(Validator):
-    def __init__(self, valid_value_set):
-        self.value_set = valid_value_set
-
-    def validate(self, value) -> None:
-        if value not in self.value_set:
-            raise ValidationError(f'Value "{value}" is not valid')
-
-
-class SetEqual(Validator):
-    def __init__(self, expected_set):
-        self.expected_set = expected_set
-
-    def validate(self, value: Iterable) -> None:
+def set_equal(expected_set):
+    def validate(value: Iterable) -> None:
         value_as_set = set(value)
-        if value_as_set != self.expected_set:
-            raise ValidationError((f"Values don't match expected set, "
-                                   f'missing values: {self.expected_set.difference(value_as_set)},'
-                                   f' unexpected values: {value_as_set.difference(self.expected_set)}'))
+        if value_as_set != expected_set:
+            raise Invalid((f"Values don't match expected set, "
+                           f'missing values: {expected_set.difference(value_as_set)}, '
+                           f'unexpected values: {value_as_set.difference(expected_set)}'))
+
+    return validate
