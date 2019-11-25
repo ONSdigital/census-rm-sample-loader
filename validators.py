@@ -64,7 +64,7 @@ def latitude_longitude(max_precision: int, max_scale: int):
 def in_set(valid_value_set: set):
     def validate(value):
         if value not in valid_value_set:
-            raise Invalid(f'Value "{value}" is not valid')
+            raise Invalid(f'Value "{value}" is not in the valid set')
 
     return validate
 
