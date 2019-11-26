@@ -154,7 +154,7 @@ def main(output_file_path: Path, treatment_code_quantities_path: Path, sequentia
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
     parser.add_argument('--sequential_arid',
-                        help='Use sequential arids to speed up generation',
+                        help="Use sequential ARID's to speed up generation",
                         default=False,
                         action='store_true',
                         required=False)
@@ -162,7 +162,7 @@ def parse_arguments():
                         help='Path to treatment code quantities csv config file',
                         default='treatment_code_quantities.csv', required=False)
     parser.add_argument('--output_file_path', '-o',
-                        help='Path write generated output file to',
+                        help='Path write generated sample file to',
                         default='sample_file.csv', required=False)
     return parser.parse_args()
 
