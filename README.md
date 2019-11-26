@@ -51,7 +51,7 @@ pipenv run python load_sample.py sample_100000.csv 2fc107ee-96f5-465b-923e-38914
 You can set the global log level with the `LOG_LEVEL` environment variable, when the sample loader runs as a script it defaults to `INFO` logging from script itself and `ERROR` for other log sources (e.g. pika).
 
 
-### Vewing messages in the Rabbit queue
+### Viewing messages in the Rabbit queue
 The Rabbit docker image included in docker-compose.yml has the management plugin enabled. This can be accessed when runnning on http://localhost:15672 use guest:guest as the credentials.
 
 
