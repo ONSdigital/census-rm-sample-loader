@@ -108,18 +108,39 @@ def validate_sample_file(sample_file_path) -> list:
                               description=f'Invalid file encoding, requires utf-8, error: {err}')]
 
 
+def build_failure_log(failure):
+    return (f'line: {failure.line_number}, column: {failure.column}, description: {failure.description}'
+            if failure.column else
+            f'line: Header, description: {failure.description}'
+            if failure.line_number else
+            failure.description)
+
+
+def print_failures_summary(failures, print_limit):
+    for failure in failures[:print_limit]:
+        print(build_failure_log(failure))
+    response = input(f'Showing first {print_limit} of {len(failures)}. '
+                     f'Show remaining {len(failures) - print_limit} [Y/n]?\n')
+    if response.lower() in {'y', 'yes'}:
+        for failure in failures[print_limit:]:
+            print(build_failure_log(failure))
+
+
+def print_failures(failures):
+    print_limit = 20
+    print(f'{len(failures)} validation failure(s):')
+    if len(failures) > print_limit:
+        print_failures_summary(failures, print_limit)
+    else:
+        for failure in failures:
+            print(build_failure_log(failure))
+
+
 def main():
     args = parse_arguments()
     failures = validate_sample_file(args.sample_file_path)
     if failures:
-        print(f'{len(failures)} validation failure(s):')
-        for failure in failures:
-            failure_log = (f'line: {failure.line_number}, column: {failure.column}, description: {failure.description}'
-                           if failure.column else
-                           f'line: Header, description: {failure.description}'
-                           if failure.line_number else
-                           failure.description)
-            print(failure_log)
+        print_failures(failures)
         print(f'{args.sample_file_path} is not valid ❌')
         exit(1)
     print(f'Success! {args.sample_file_path} passed validation ✅')
