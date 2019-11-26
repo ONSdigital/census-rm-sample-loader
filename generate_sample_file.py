@@ -1,6 +1,7 @@
+import argparse
 import csv
 import random
-
+from pathlib import Path
 
 FIELDNAMES = ('ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
               'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3',
@@ -14,13 +15,14 @@ LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
            'W', 'X', 'Y', 'Z']
 WORDS = []
 arid_numbers = set()
+arid_sequence = 0
 
 
-def read_treatment_code_quantities():
+def read_treatment_code_quantities(treatment_code_quantities_path: Path):
     treatment_code_quantities = []
 
-    with open('treatment_code_quantities.csv') as file:
-        file_reader = csv.DictReader(file)
+    with open(treatment_code_quantities_path) as treatment_code_quantities_file:
+        file_reader = csv.DictReader(treatment_code_quantities_file)
         for row in file_reader:
             treatment_code = row['Treatment Code']
             quantity = int(row['Quantity'])
@@ -54,6 +56,12 @@ def get_random_arid():
     arid_numbers.add(random_number)
 
     return f'DDR190314{random_number:012}'
+
+
+def get_sequential_arid():
+    global arid_sequence
+    arid_sequence += 1
+    return f'DDR190314{arid_sequence:012}'
 
 
 def get_random_abp_code():
@@ -102,19 +110,19 @@ def get_random_lat_or_long():
     return f'{random_degrees}.{random_minutes}'
 
 
-def main():
+def main(output_file_path: Path, treatment_code_quantities_path: Path, sequential_arid=False):
     print('Generating sample...')
     read_words()
-    treatment_code_quantities = read_treatment_code_quantities()
+    treatment_code_quantities = read_treatment_code_quantities(treatment_code_quantities_path)
 
-    with open('sample_file.csv', 'w', newline='') as csvfile:
+    with open(output_file_path, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES)
         writer.writeheader()
 
         for item in treatment_code_quantities:
             for _ in range(item["quantity"]):
                 writer.writerow({
-                    'ARID': f'{get_random_arid()}',
+                    'ARID': f'{get_sequential_arid() if sequential_arid else get_random_arid()}',
                     'ESTAB_ARID': f'{get_random_arid()}',
                     'UPRN': f'{get_random_uprn()}',
                     'ADDRESS_TYPE': 'HH',
@@ -143,5 +151,24 @@ def main():
                 })
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Load a sample file into response management.')
+    parser.add_argument('--sequential_arid',
+                        help="Use sequential ARID's to speed up generation",
+                        default=False,
+                        action='store_true',
+                        required=False)
+    parser.add_argument('--treatment_code_quantities_path', '-t',
+                        help='Path to treatment code quantities csv config file',
+                        default='treatment_code_quantities.csv', required=False)
+    parser.add_argument('--output_file_path', '-o',
+                        help='Path write generated sample file to',
+                        default='sample_file.csv', required=False)
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    main()
+    args = parse_arguments()
+    main(output_file_path=args.output_file_path,
+         treatment_code_quantities_path=args.treatment_code_quantities_path,
+         sequential_arid=args.sequential_arid)
