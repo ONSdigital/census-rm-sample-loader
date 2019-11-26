@@ -118,8 +118,7 @@ def print_failures_summary(failures, print_limit):
             print(build_failure_log(failure))
 
 
-def print_failures(failures):
-    print_limit = 20
+def print_failures(failures, print_limit=20):
     print(f'{len(failures)} validation failure(s):')
     if len(failures) > print_limit:
         print_failures_summary(failures, print_limit)
