@@ -9,6 +9,7 @@ from load_sample import load_sample
 class TestLoadSample(TestCase):
 
     def test_load_sample_publishes_case_to_rabbit(self, patch_rabbit):
+        
         sample_file = (
             'ARID,ESTAB_ARID,UPRN,ADDRESS_TYPE,ESTAB_TYPE,ADDRESS_LEVEL,ABP_CODE,ORGANISATION_NAME,ADDRESS_LINE1,'
             'ADDRESS_LINE2,ADDRESS_LINE3,TOWN_NAME,POSTCODE,LATITUDE,LONGITUDE,OA,LSOA,MSOA,LAD,REGION,HTC_WILLINGNESS,'

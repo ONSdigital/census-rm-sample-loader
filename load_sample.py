@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import uuid
+from time import sleep
 from typing import Iterable
 from rabbit_context import RabbitContext
 
@@ -17,26 +18,42 @@ def parse_arguments():
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
     parser.add_argument('collection_exercise_id', help='collection exercise ID', type=str)
     parser.add_argument('action_plan_id', help='action plan ID', type=str)
+    parser.add_argument('load_from_line_number', help='load sample from specified line number', type=int, default=1)
     return parser.parse_args()
 
 
-def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, **kwargs):
+def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, load_from_line_number, **kwargs):
     with open(sample_file_path) as sample_file:
-        return load_sample(sample_file, collection_exercise_id, action_plan_id, **kwargs)
+        return load_sample(sample_file, collection_exercise_id, action_plan_id, load_from_line_number, **kwargs)
 
 
-def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str, **kwargs):
+def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str,
+                load_from_line_number: int, **kwargs):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader, **kwargs)
+    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader, load_from_line_number,
+                              **kwargs)
 
 
-def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str], **kwargs):
+def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str],
+                       load_from_line_number: int, **kwargs):
     sample_units = {}
 
     with RabbitContext(**kwargs) as rabbit:
         logger.info(f'Loading sample units to queue {rabbit.queue_name}')
 
+        logger.info(f'loading from line {load_from_line_number}')
+
         for count, sample_row in enumerate(sample_file_reader, 1):
+
+            # j = _create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
+            #                       action_plan_id=action_plan_id)
+
+            if count < load_from_line_number:
+                # logging.error(f"skipping row number: {count - 1}, row {j['arid']}")
+                continue
+
+            # logging.error(f"attempting to add row number: {count - 1}, row {j['arid']}")
+
             sample_unit_id = uuid.uuid4()
 
             try:
@@ -44,6 +61,8 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                                                          action_plan_id=action_plan_id),
                                        content_type='application/json')
             except Exception as e:
+                lines_loaded = count - 1
+                logging.error(f"Failed after correctly loading: {lines_loaded} lines, restart at {count}")
                 logging.exception(e)
                 raise e
 
@@ -51,8 +70,9 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                 f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
             sample_units.update(sample_unit)
 
-            if count % 5000 == 0:
+            if count % 100 == 0:
                 logger.info(f'{count} sample units loaded')
+                # sleep(1)
 
         if count % 5000:
             logger.info(f'{count} sample units loaded')
@@ -94,7 +114,8 @@ def main():
     logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], level=log_level or logging.ERROR)
     logger.setLevel(log_level or logging.INFO)
     args = parse_arguments()
-    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id)
+    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id,
+                     args.load_from_line_number)
 
 
 if __name__ == "__main__":
