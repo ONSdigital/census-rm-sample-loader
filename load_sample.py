@@ -6,7 +6,6 @@ import os
 import sys
 import uuid
 from typing import Iterable
-
 from rabbit_context import RabbitContext
 
 logger = logging.getLogger(__name__)
@@ -40,9 +39,13 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
         for count, sample_row in enumerate(sample_file_reader, 1):
             sample_unit_id = uuid.uuid4()
 
-            rabbit.publish_message(_create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
-                                                     action_plan_id=action_plan_id),
-                                   content_type='application/json')
+            try:
+                rabbit.publish_message(_create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
+                                                         action_plan_id=action_plan_id),
+                                       content_type='application/json')
+            except Exception as e:
+                logging.exception(e)
+                raise e
 
             sample_unit = {
                 f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
