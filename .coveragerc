@@ -1,4 +1,3 @@
 [run]
 omit =
     tests/*
-    generate_sample_file.py
