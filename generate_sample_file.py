@@ -161,6 +161,6 @@ def parse_arguments():
 
 if __name__ == '__main__':
     args = parse_arguments()
-    SampleGenerator.generate_sample_file(output_file_path=args.output_file_path,
-                                         treatment_code_quantities_path=args.treatment_code_quantities_path,
-                                         sequential_arid=args.sequential_arid)
+    SampleGenerator().generate_sample_file(output_file_path=args.output_file_path,
+                                           treatment_code_quantities_path=args.treatment_code_quantities_path,
+                                           sequential_arid=args.sequential_arid)
