@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ns2:sampleUnitParent xmlns:ns2="http://ons.gov.uk/ctp/response/casesvc/message/sampleunitnotification">
-    <id>e43d14f3-8e14-46ba-b433-293f87848cea</id>
-    <sampleUnitRef>DDR190314000000195675</sampleUnitRef>
-    <sampleUnitType>H</sampleUnitType>
-    <collectionInstrumentId>7eadd7b2-ccf1-46c3-acb8-9db450df5521</collectionInstrumentId>
-    <actionPlanId>4f5e6db7-6f55-4998-b4e5-db234c8740ac</actionPlanId>
-    <collectionExerciseId>ed3b1381-efb5-4162-9af6-3d95ca0c543c</collectionExerciseId>
-</ns2:sampleUnitParent>
