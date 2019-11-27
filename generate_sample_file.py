@@ -14,8 +14,7 @@ class SampleGenerator:
     ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
     CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
     LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-               'V',
-               'W', 'X', 'Y', 'Z']
+               'V', 'W', 'X', 'Y', 'Z']
     WORDS = []
     ARIDS = set()
     ARID_SEQUENCE = 0
