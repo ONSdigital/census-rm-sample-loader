@@ -5,7 +5,6 @@ import logging
 import os
 import sys
 import uuid
-from time import sleep
 from typing import Iterable
 from rabbit_context import RabbitContext
 
@@ -45,14 +44,8 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
 
         for count, sample_row in enumerate(sample_file_reader, 1):
 
-            # j = _create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
-            #                       action_plan_id=action_plan_id)
-
             if count < load_from_line_number:
-                # logging.error(f"skipping row number: {count - 1}, row {j['arid']}")
                 continue
-
-            # logging.error(f"attempting to add row number: {count - 1}, row {j['arid']}")
 
             sample_unit_id = uuid.uuid4()
 
@@ -61,8 +54,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                                                          action_plan_id=action_plan_id),
                                        content_type='application/json')
             except Exception as e:
-                lines_loaded = count - 1
-                logging.error(f"Failed after correctly loading: {lines_loaded} lines, restart at {count}")
+                logging.error(f"Failed after correctly loading: {count} lines, restart at {count + 1}")
                 logging.exception(e)
                 raise e
 
@@ -72,7 +64,6 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
 
             if count % 100 == 0:
                 logger.info(f'{count} sample units loaded')
-                # sleep(1)
 
         if count % 5000:
             logger.info(f'{count} sample units loaded')

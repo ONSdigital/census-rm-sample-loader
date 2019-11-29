@@ -37,4 +37,5 @@ class TestRabbitContext(TestCase):
         patched_basic_publish.assert_called_once_with(exchange=rabbit._exchange,
                                                       routing_key=rabbit.queue_name,
                                                       body='Test message body',
-                                                      properties=patch_pika.BasicProperties.return_value)
+                                                      properties=patch_pika.BasicProperties.return_value,
+                                                      mandatory=True)

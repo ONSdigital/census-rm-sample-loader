@@ -34,7 +34,9 @@ class RabbitContext:
                                       self._port,
                                       self._vhost,
                                       pika.PlainCredentials(self._user, self._password)))
+
         self._channel = self._connection.channel()
+        self._channel.tx_select()
 
         if self.queue_name == 'localtest':
             self._channel.queue_declare(queue=self.queue_name)
@@ -49,8 +51,11 @@ class RabbitContext:
     def publish_message(self, message: str, content_type: str):
         if not self._connection.is_open:
             raise RabbitConnectionClosedError
+
         self._channel.basic_publish(exchange=self._exchange,
                                     routing_key=self.queue_name,
                                     body=message,
                                     properties=pika.BasicProperties(content_type=content_type,
-                                                                    delivery_mode=PERSISTENT_DELIVERY_MODE))
+                                                                    delivery_mode=PERSISTENT_DELIVERY_MODE),
+                                    mandatory=True)
+        self._channel.tx_commit()
