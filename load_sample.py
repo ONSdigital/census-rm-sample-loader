@@ -6,6 +6,9 @@ import os
 import sys
 import uuid
 from typing import Iterable
+
+import pika
+
 from rabbit_context import RabbitContext
 
 logger = logging.getLogger(__name__)
@@ -53,20 +56,21 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                 rabbit.publish_message(_create_case_json(sample_row, collection_exercise_id=collection_exercise_id,
                                                          action_plan_id=action_plan_id),
                                        content_type='application/json')
+            except pika.exceptions.UnroutableError as e:
+                logging.error('Message was returned, UnroutableError')
+                logging.exception(e)
+                raise e
             except Exception as e:
                 logging.error(f"Failed after correctly loading: {count} lines, restart at {count + 1}")
                 logging.exception(e)
                 raise e
 
+            if count % 1000 == 0:
+                logger.info(f'{count} sample units loaded')
+
             sample_unit = {
                 f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
             sample_units.update(sample_unit)
-
-            if count % 100 == 0:
-                logger.info(f'{count} sample units loaded')
-
-        if count % 5000:
-            logger.info(f'{count} sample units loaded')
 
     logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
 
