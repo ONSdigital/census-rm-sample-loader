@@ -67,9 +67,6 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                 f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
             sample_units.update(sample_unit)
 
-
-
-
     logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
 
     return sample_units
