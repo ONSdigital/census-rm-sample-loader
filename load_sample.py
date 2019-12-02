@@ -57,7 +57,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                                                          action_plan_id=action_plan_id),
                                        content_type='application/json')
             except pika.exceptions.UnroutableError as e:
-                logging.error('Message was returned, UnroutableError')
+                logging.error('UnroutableError, Failed after correctly loading: {count} lines, restart at {count + 1}')
                 logging.exception(e)
                 raise e
             except Exception as e:
