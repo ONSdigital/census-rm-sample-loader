@@ -56,6 +56,7 @@ class RabbitContext:
                                     routing_key=self.queue_name,
                                     body=message,
                                     properties=pika.BasicProperties(content_type=content_type,
-                                                                    delivery_mode=PERSISTENT_DELIVERY_MODE),
-                                    mandatory=True)
+                                                                    delivery_mode=PERSISTENT_DELIVERY_MODE))
+
+    def commit(self):
         self._channel.tx_commit()
