@@ -17,7 +17,15 @@ class SampleGenerator:
                'V', 'W', 'X', 'Y', 'Z']
     WORDS = []
 
-    CE_TYPES = ['Prison', 'NursingHome', 'ONS', 'Eton', 'ServantsQuarters']
+    CE_TYPES = ['Sheltered Accommodation',
+                'Hall of Residence',
+                'Care Home',
+                'Boarding School',
+                'Hotel',
+                'Hostel',
+                'Residential Caravanner',
+                'Gypsy Roma Traveller',
+                'Residential Boater']
 
     ARIDS = set()
     ARID_SEQUENCE = 0
@@ -130,7 +138,6 @@ class SampleGenerator:
 
             for item in treatment_code_quantities:
                 for _ in range(item["quantity"]):
-
                     community_establishment = self.random_is_community_estab()
 
                     writer.writerow({
@@ -138,8 +145,8 @@ class SampleGenerator:
                         'ESTAB_ARID': self.get_random_arid(),
                         'UPRN': self.get_random_uprn(),
                         'ADDRESS_TYPE': 'CE' if community_establishment else "HH",
-                        'ESTAB_TYPE':  self.get_random_ce_type() if community_establishment else 'Household',
-                        'ADDRESS_LEVEL': 'U',
+                        'ESTAB_TYPE': self.get_random_ce_type() if community_establishment else 'Household',
+                        'ADDRESS_LEVEL': 'E' if community_establishment else 'U',
                         'ABP_CODE': self.get_random_abp_code(),
                         'ORGANISATION_NAME': '',
                         'ADDRESS_LINE1': self.get_random_address_line(),
