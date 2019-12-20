@@ -107,13 +107,19 @@ class SampleGenerator:
         return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
 
     @staticmethod
+    def random_is_community_estab():
+        if random.randint(0, 10) > 9:
+            return True
+        else:
+            return False
+
+    @staticmethod
     def get_random_lat_or_long():
         random_degrees = random.randint(-180, 180)
         random_minutes = random.randint(999, 9999)
         return f'{random_degrees}.{random_minutes}'
 
-    def generate_sample_file(self, output_file_path: Path, treatment_code_quantities_path: Path, sequential_arid=False,
-                             community_establishment=False):
+    def generate_sample_file(self, output_file_path: Path, treatment_code_quantities_path: Path, sequential_arid=False):
         print('Generating sample...')
         self.read_words()
         treatment_code_quantities = self.read_treatment_code_quantities(treatment_code_quantities_path)
@@ -124,6 +130,9 @@ class SampleGenerator:
 
             for item in treatment_code_quantities:
                 for _ in range(item["quantity"]):
+
+                    community_establishment = self.random_is_community_estab()
+
                     writer.writerow({
                         'ARID': self.get_sequential_arid() if sequential_arid else self.get_random_arid(),
                         'ESTAB_ARID': self.get_random_arid(),
@@ -167,11 +176,6 @@ def parse_arguments():
     parser.add_argument('--output_file_path', '-o',
                         help='Path write generated sample file to',
                         default='sample_file.csv', required=False)
-    parser.add_argument('--ce',
-                        help="make file type CE, sets correct address type, address level and random ce capacity",
-                        default=False,
-                        action='store_true',
-                        required=False)
     return parser.parse_args()
 
 
@@ -179,5 +183,4 @@ if __name__ == '__main__':
     args = parse_arguments()
     SampleGenerator().generate_sample_file(output_file_path=args.output_file_path,
                                            treatment_code_quantities_path=args.treatment_code_quantities_path,
-                                           sequential_arid=args.sequential_arid,
-                                           community_establishment=args.ce)
+                                           sequential_arid=args.sequential_arid)
