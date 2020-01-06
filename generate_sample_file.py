@@ -16,6 +16,17 @@ class SampleGenerator:
     LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
                'V', 'W', 'X', 'Y', 'Z']
     WORDS = []
+
+    CE_TYPES = ['Sheltered Accommodation',
+                'Hall of Residence',
+                'Care Home',
+                'Boarding School',
+                'Hotel',
+                'Hostel',
+                'Residential Caravanner',
+                'Gypsy Roma Traveller',
+                'Residential Boater']
+
     ARIDS = set()
     ARID_SEQUENCE = 0
 
@@ -96,6 +107,18 @@ class SampleGenerator:
                f'{self.get_random_letter()}{self.get_random_letter()}'
 
     @staticmethod
+    def get_random_ce_capacity():
+        random_ce = random.randint(5, 1000)
+        return f'{random_ce}'
+
+    def get_random_ce_type(self):
+        return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
+
+    @staticmethod
+    def random_is_community_estab():
+        return random.randint(0, 10) > 9
+
+    @staticmethod
     def get_random_lat_or_long():
         random_degrees = random.randint(-180, 180)
         random_minutes = random.randint(999, 9999)
@@ -112,13 +135,15 @@ class SampleGenerator:
 
             for item in treatment_code_quantities:
                 for _ in range(item["quantity"]):
+                    community_establishment = self.random_is_community_estab()
+
                     writer.writerow({
                         'ARID': self.get_sequential_arid() if sequential_arid else self.get_random_arid(),
                         'ESTAB_ARID': self.get_random_arid(),
                         'UPRN': self.get_random_uprn(),
-                        'ADDRESS_TYPE': 'HH',
-                        'ESTAB_TYPE': 'Household',
-                        'ADDRESS_LEVEL': 'U',
+                        'ADDRESS_TYPE': 'CE' if community_establishment else "HH",
+                        'ESTAB_TYPE': self.get_random_ce_type() if community_establishment else 'Household',
+                        'ADDRESS_LEVEL': 'E' if community_establishment else 'U',
                         'ABP_CODE': self.get_random_abp_code(),
                         'ORGANISATION_NAME': '',
                         'ADDRESS_LINE1': self.get_random_address_line(),
@@ -138,7 +163,7 @@ class SampleGenerator:
                         'TREATMENT_CODE': item["treatment_code"],
                         'FIELDCOORDINATOR_ID': '',
                         'FIELDOFFICER_ID': '',
-                        'CE_EXPECTED_CAPACITY': '',
+                        'CE_EXPECTED_CAPACITY': self.get_random_ce_capacity() if community_establishment else '',
                     })
 
 
