@@ -116,10 +116,7 @@ class SampleGenerator:
 
     @staticmethod
     def random_is_community_estab():
-        if random.randint(0, 10) > 9:
-            return True
-        else:
-            return False
+        return random.randint(0, 10) > 9
 
     @staticmethod
     def get_random_lat_or_long():
