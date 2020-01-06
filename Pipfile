@@ -13,8 +13,6 @@ codecov = "*"
 pika = "*"
 jinja2 = "*"
 redis = "*"
-python = "*"
-generate-sample-file-py = "*"
 
 [requires]
 python_version = "3.7"
