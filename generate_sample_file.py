@@ -133,38 +133,42 @@ class SampleGenerator:
             writer = csv.DictWriter(output_file, fieldnames=self.FIELDNAMES)
             writer.writeheader()
 
-            for item in treatment_code_quantities:
-                for _ in range(item["quantity"]):
+            for treatment_code in treatment_code_quantities:
+                for _ in range(treatment_code["quantity"]):
 
                     # randomly decide whether to create a CE case or not
                     if self.random_1_in_11():
-                        self._write_estab_case(writer, sequential_arid, item)
+                        self._write_estab_case(writer, sequential_arid, treatment_code)
                         continue
 
-                    # otherwise write a non CE case
-                    self._write_row(writer, sequential_arid, False, 'U', item,
-                                    0)  # have to change this when introducing SPG cases as they can be 'E' or 'U'
+                    # otherwise write a non-CE case - have to change this when adding SPG cases as can be 'E' or 'U'
+                    self._write_row(writer, sequential_arid, treatment_code, community_establishment=False,
+                                    community_level='U', expected_capacity=0)
 
-    def _write_estab_case(self, writer, sequential_arid, item):
+    def _write_estab_case(self, writer, sequential_arid, treatment_code):
         #  randomly decide if we want to create a CE/U case
         if self.random_1_in_11():
-            self._write_parent_and_unit_cases(writer, sequential_arid, item)
+            self._write_parent_and_unit_cases(writer, sequential_arid, treatment_code)
             return
 
         # otherwise write CE/E case
-        self._write_row(writer, sequential_arid, True, 'E', item, self.get_random_ce_capacity())
+        self._write_row(writer, sequential_arid, treatment_code,
+                        self.get_random_ce_capacity(), community_establishment=True, community_level='E')
 
-    def _write_parent_and_unit_cases(self, writer, sequential_arid, item):
+    def _write_parent_and_unit_cases(self, writer, sequential_arid, treatment_code):
         # create parent case
-        parent_arid, estab_type = self._write_row(writer, sequential_arid, True, 'E', item, 0)
+        parent_arid, estab_type = self._write_row(writer, sequential_arid, treatment_code, community_establishment=True,
+                                                  community_level='E', expected_capacity=0)
 
         # create child cases
         for _ in range(10):
-            self._write_row(writer, sequential_arid, True, 'U', item, self.get_random_ce_capacity(), parent_arid,
-                            estab_type)
+            self._write_row(writer, sequential_arid, treatment_code,
+                            self.get_random_ce_capacity(),
+                            community_establishment=True, community_level='U', estab_arid=parent_arid,
+                            estab_type=estab_type)
 
-    def _write_row(self, writer, sequential_arid, community_establishment, community_level, item, expected_capacity,
-                   estab_arid=None, estab_type=None):
+    def _write_row(self, writer, sequential_arid, treatment_code, expected_capacity, community_establishment,
+                   community_level, estab_arid=None, estab_type=None):
         arid = self.get_sequential_arid() if sequential_arid else self.get_random_arid()
 
         if estab_type is None:
@@ -196,7 +200,7 @@ class SampleGenerator:
             'REGION': self.get_random_regiony_type_thing(),
             'HTC_WILLINGNESS': self.get_random_htc(),
             'HTC_DIGITAL': self.get_random_htc(),
-            'TREATMENT_CODE': item["treatment_code"],
+            'TREATMENT_CODE': treatment_code["treatment_code"],
             'FIELDCOORDINATOR_ID': '',
             'FIELDOFFICER_ID': '',
             'CE_EXPECTED_CAPACITY': expected_capacity
