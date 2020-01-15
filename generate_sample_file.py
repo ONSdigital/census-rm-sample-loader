@@ -161,7 +161,7 @@ class SampleGenerator:
                                                   community_level='E', expected_capacity=0)
 
         # create child cases
-        for _ in range(10):
+        for _ in range(3):
             self._write_row(writer, sequential_arid, treatment_code,
                             self.get_random_ce_capacity(),
                             community_establishment=True, community_level='U', estab_arid=parent_arid,
