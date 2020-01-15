@@ -115,7 +115,7 @@ class SampleGenerator:
         return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
 
     @staticmethod
-    def random_is_community_estab_address_type_or_level():
+    def random_1_in_11():
         return random.randint(0, 10) > 9
 
     @staticmethod
@@ -137,17 +137,17 @@ class SampleGenerator:
                 for _ in range(item["quantity"]):
 
                     # randomly decide whether to create a CE case or not
-                    if self.random_is_community_estab_address_type_or_level():
+                    if self.random_1_in_11():
                         self._write_estab_case(writer, sequential_arid, item)
                         continue
 
                     # otherwise write a non CE case
                     self._write_row(writer, sequential_arid, False, 'U', item,
-                                    0)  # have to change this when intorducing SPG cases as they can be 'E' or 'U'
+                                    0)  # have to change this when introducing SPG cases as they can be 'E' or 'U'
 
     def _write_estab_case(self, writer, sequential_arid, item):
         #  randomly decide if we want to create a CE/U case
-        if self.random_is_community_estab_address_type_or_level():
+        if self.random_1_in_11():
             self._write_parent_and_unit_cases(writer, sequential_arid, item)
             return
 
