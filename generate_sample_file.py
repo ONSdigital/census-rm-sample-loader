@@ -135,44 +135,46 @@ class SampleGenerator:
 
             for treatment_code in treatment_code_quantities:
                 for _ in range(treatment_code["quantity"]):
-
-                    # randomly decide whether to create a CE case or not
-                    if self.random_1_in_11():
-                        self._write_estab_case(writer, sequential_arid, treatment_code)
+                    if treatment_code["treatment_code"][:3] == "SPG":
+                        self._write_estab_case(writer, sequential_arid, treatment_code, address_type='SPG')
                         continue
 
-                    # otherwise write a non-CE case - have to change this when adding SPG cases as can be 'E' or 'U'
-                    self._write_row(writer, sequential_arid, treatment_code, community_establishment=False,
-                                    community_level='U', expected_capacity=0)
+                    # Randomly decide whether to create a CE case or not
+                    if self.random_1_in_11():
+                        self._write_estab_case(writer, sequential_arid, treatment_code, address_type='CE')
+                        continue
 
-    def _write_estab_case(self, writer, sequential_arid, treatment_code):
-        #  randomly decide if we want to create a CE/U case
+                    # otherwise write a standard HH case
+                    self._write_row(writer, sequential_arid, treatment_code, address_type='HH',
+                                    address_level='U', expected_capacity=0)
+
+    def _write_estab_case(self, writer, sequential_arid, treatment_code, address_type):
+        #  randomly decide if we want to create an E case with child U cases
         if self.random_1_in_11():
-            self._write_parent_and_unit_cases(writer, sequential_arid, treatment_code)
+            self._write_parent_and_unit_cases(writer, sequential_arid, treatment_code, address_type)
             return
 
-        # otherwise write CE/E case
-        self._write_row(writer, sequential_arid, treatment_code,
-                        self.get_random_ce_capacity(), community_establishment=True, community_level='E')
+        # otherwise write E case
+        self._write_row(writer, sequential_arid, treatment_code, address_type,
+                        expected_capacity=self.get_random_ce_capacity(), address_level='E')
 
-    def _write_parent_and_unit_cases(self, writer, sequential_arid, treatment_code):
+    def _write_parent_and_unit_cases(self, writer, sequential_arid, treatment_code, address_type):
         # create parent case
-        parent_arid, estab_type = self._write_row(writer, sequential_arid, treatment_code, community_establishment=True,
-                                                  community_level='E', expected_capacity=0)
+        parent_arid, estab_type = self._write_row(writer, sequential_arid, treatment_code, address_type,
+                                                  address_level='E', expected_capacity=0)
 
         # create child cases
         for _ in range(3):
             self._write_row(writer, sequential_arid, treatment_code,
-                            self.get_random_ce_capacity(),
-                            community_establishment=True, community_level='U', estab_arid=parent_arid,
-                            estab_type=estab_type)
+                            address_type, expected_capacity=self.get_random_ce_capacity(), estab_type=estab_type,
+                            address_level='U', estab_arid=parent_arid)
 
-    def _write_row(self, writer, sequential_arid, treatment_code, expected_capacity, community_establishment,
-                   community_level, estab_arid=None, estab_type=None):
+    def _write_row(self, writer, sequential_arid, treatment_code, address_type, expected_capacity,
+                   address_level=None, estab_arid=None, estab_type=None):
         arid = self.get_sequential_arid() if sequential_arid else self.get_random_arid()
 
         if estab_type is None:
-            estab_type = self.get_random_ce_type() if community_establishment else 'Household'
+            estab_type = self.get_random_ce_type() if address_type != 'HH' else 'Household'
 
         if estab_arid is None:
             estab_arid = self.get_random_arid()
@@ -181,9 +183,9 @@ class SampleGenerator:
             'ARID': arid,
             'ESTAB_ARID': estab_arid,
             'UPRN': self.get_random_uprn(),
-            'ADDRESS_TYPE': 'CE' if community_establishment else "HH",
+            'ADDRESS_TYPE': address_type,
             'ESTAB_TYPE': estab_type,
-            'ADDRESS_LEVEL': community_level if community_establishment else 'U',
+            'ADDRESS_LEVEL': address_level,
             'ABP_CODE': self.get_random_abp_code(),
             'ORGANISATION_NAME': '',
             'ADDRESS_LINE1': self.get_random_address_line(),
