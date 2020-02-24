@@ -32,8 +32,6 @@ def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_
 
 
 def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str], **kwargs):
-    sample_units = {}
-
     with RabbitContext(**kwargs) as rabbit:
         logger.info(f'Loading sample units to queue {rabbit.queue_name}')
 
@@ -44,9 +42,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                                                      action_plan_id=action_plan_id),
                                    content_type='application/json')
 
-            sample_unit = {
-                f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
-            sample_units.update(sample_unit)
+            yield {f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
 
             if count % 5000 == 0:
                 logger.info(f'{count} sample units loaded')
@@ -55,8 +51,6 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
             logger.info(f'{count} sample units loaded')
 
     logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
-
-    return sample_units
 
 
 def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str:
