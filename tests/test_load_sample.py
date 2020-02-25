@@ -20,7 +20,7 @@ class TestLoadSample(TestCase):
             '39 Cranbrook Road,,Windleybury,XX1 0XX,51.4721166,-2.5970579,E00074083,E01014669,E02003031,E06000023,'
             'E12000009,2,4,4,5,HH_LF3R3AE,6')
 
-        sample_units = list(load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid'))
+        sample_units = load_sample(sample_file, 'test_ce_uuid', 'test_ap_uuid', store_loaded_sample_units=True)
 
         self.assertEquals(len(sample_units), 2)
 

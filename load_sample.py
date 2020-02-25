@@ -21,17 +21,23 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id, **kwargs):
+def load_sample_file(sample_file_path, collection_exercise_id, action_plan_id,
+                     store_loaded_sample_units=False, **kwargs):
     with open(sample_file_path) as sample_file:
-        return load_sample(sample_file, collection_exercise_id, action_plan_id, **kwargs)
+        return load_sample(sample_file, collection_exercise_id, action_plan_id, store_loaded_sample_units, **kwargs)
 
 
-def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str, **kwargs):
+def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_plan_id: str,
+                store_loaded_sample_units=False, **kwargs):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader, **kwargs)
+    return _load_sample_units(action_plan_id, collection_exercise_id, sample_file_reader, store_loaded_sample_units,
+                              **kwargs)
 
 
-def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str], **kwargs):
+def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str],
+                       store_loaded_sample_units=False, **kwargs):
+    sample_units = {}
+
     with RabbitContext(**kwargs) as rabbit:
         logger.info(f'Loading sample units to queue {rabbit.queue_name}')
 
@@ -42,7 +48,10 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                                                      action_plan_id=action_plan_id),
                                    content_type='application/json')
 
-            yield {f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
+            if store_loaded_sample_units:
+                sample_unit = {
+                    f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
+                sample_units.update(sample_unit)
 
             if count % 5000 == 0:
                 logger.info(f'{count} sample units loaded')
@@ -51,6 +60,8 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
             logger.info(f'{count} sample units loaded')
 
     logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
+
+    return sample_units
 
 
 def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str:
