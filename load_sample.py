@@ -96,7 +96,8 @@ def main():
     logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], level=log_level or logging.ERROR)
     logger.setLevel(log_level or logging.INFO)
     args = parse_arguments()
-    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id)
+    load_sample_file(args.sample_file_path, args.collection_exercise_id, args.action_plan_id,
+                     store_loaded_sample_units=False)
 
 
 if __name__ == "__main__":
