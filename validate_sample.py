@@ -56,6 +56,7 @@ class SampleValidator:
             'FIELDOFFICER_ID': [max_length(10)],
             'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES)],
             'CE_EXPECTED_CAPACITY': [numeric(), max_length(4)],
+            'CE_SECURE': [mandatory(), max_length(2)]
         }
 
     def find_header_validation_failures(self, header):

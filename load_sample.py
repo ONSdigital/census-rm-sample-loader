@@ -80,6 +80,7 @@ def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str
                    'fieldOfficerId': sample_row['FIELDOFFICER_ID'],
                    'treatmentCode': sample_row['TREATMENT_CODE'],
                    'ceExpectedCapacity': sample_row['CE_EXPECTED_CAPACITY'],
+                   'secureEstablishment': sample_row['CE_SECURE'],
                    'collectionExerciseId': collection_exercise_id,
                    'actionPlanId': action_plan_id}
 
