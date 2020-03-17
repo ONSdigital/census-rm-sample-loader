@@ -9,7 +9,7 @@ class SampleGenerator:
                   'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3',
                   'TOWN_NAME', 'POSTCODE', 'LATITUDE', 'LONGITUDE', 'OA', 'LSOA',
                   'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS', 'HTC_DIGITAL', 'TREATMENT_CODE',
-                  'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'CE_EXPECTED_CAPACITY')
+                  'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'CE_EXPECTED_CAPACITY', 'CE_SECURE')
     COUNTRIES = ['E', 'W', 'N']
     ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
     CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
@@ -115,6 +115,11 @@ class SampleGenerator:
         return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
 
     @staticmethod
+    def get_random_ce_secure():
+        random_ce_secure = random.randint(0, 1)
+        return f'{random_ce_secure}'
+
+    @staticmethod
     def random_1_in_11():
         return random.randint(0, 10) > 9
 
@@ -205,7 +210,8 @@ class SampleGenerator:
             'TREATMENT_CODE': treatment_code["treatment_code"],
             'FIELDCOORDINATOR_ID': '',
             'FIELDOFFICER_ID': '',
-            'CE_EXPECTED_CAPACITY': expected_capacity
+            'CE_EXPECTED_CAPACITY': expected_capacity,
+            'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' else 0
         })
 
         return arid, estab_type
