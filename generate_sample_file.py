@@ -211,7 +211,7 @@ class SampleGenerator:
             'FIELDCOORDINATOR_ID': '',
             'FIELDOFFICER_ID': '',
             'CE_EXPECTED_CAPACITY': expected_capacity,
-            'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' else 0
+            'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' or address_type == 'SPG' else 0
         })
 
         return arid, estab_type
