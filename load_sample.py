@@ -65,7 +65,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
 
 
 def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str:
-    create_case = {'arid': sample_row['ARID'], 'estabArid': sample_row['ESTAB_ARID'], 'uprn': sample_row['UPRN'],
+    create_case = {'uprn': sample_row['UPRN'], 'estabUprn': sample_row['ESTAB_UPRN'],
                    'addressType': sample_row['ADDRESS_TYPE'], 'estabType': sample_row['ESTAB_TYPE'],
                    'addressLevel': sample_row['ADDRESS_LEVEL'], 'abpCode': sample_row['ABP_CODE'],
                    'organisationName': sample_row['ORGANISATION_NAME'],
@@ -81,6 +81,7 @@ def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str
                    'treatmentCode': sample_row['TREATMENT_CODE'],
                    'ceExpectedCapacity': sample_row['CE_EXPECTED_CAPACITY'],
                    'secureEstablishment': sample_row['CE_SECURE'],
+                   'printBatch':sample_row['PRINT_BATCH'],
                    'collectionExerciseId': collection_exercise_id,
                    'actionPlanId': action_plan_id}
 

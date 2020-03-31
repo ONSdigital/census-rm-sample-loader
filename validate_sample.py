@@ -30,9 +30,8 @@ class SampleValidator:
 
     def __init__(self):
         self.schema = {
-            'ARID': [mandatory(), max_length(21), unique()],
-            'ESTAB_ARID': [mandatory(), max_length(21)],
-            'UPRN': [mandatory(), max_length(12), numeric()],
+            'UPRN': [mandatory(), max_length(12), numeric(), unique()],
+            'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'})],
             'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES)],
             'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'})],
@@ -56,7 +55,8 @@ class SampleValidator:
             'FIELDOFFICER_ID': [max_length(10)],
             'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES)],
             'CE_EXPECTED_CAPACITY': [numeric(), max_length(4)],
-            'CE_SECURE': [mandatory(), in_set({'0', '1'})]
+            'CE_SECURE': [mandatory(), in_set({'0', '1'})],
+            'PRINT_BATCH': [numeric(), max_length(2)]
         }
 
     def find_header_validation_failures(self, header):

@@ -5,11 +5,11 @@ from pathlib import Path
 
 
 class SampleGenerator:
-    FIELDNAMES = ('ARID', 'ESTAB_ARID', 'UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
+    FIELDNAMES = ('UPRN', 'ESTAB_UPRN', 'ADDRESS_TYPE', 'ESTAB_TYPE', 'ADDRESS_LEVEL', 'ABP_CODE',
                   'ORGANISATION_NAME', 'ADDRESS_LINE1', 'ADDRESS_LINE2', 'ADDRESS_LINE3',
                   'TOWN_NAME', 'POSTCODE', 'LATITUDE', 'LONGITUDE', 'OA', 'LSOA',
                   'MSOA', 'LAD', 'REGION', 'HTC_WILLINGNESS', 'HTC_DIGITAL', 'TREATMENT_CODE',
-                  'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'CE_EXPECTED_CAPACITY', 'CE_SECURE')
+                  'FIELDCOORDINATOR_ID', 'FIELDOFFICER_ID', 'CE_EXPECTED_CAPACITY', 'CE_SECURE', 'PRINT_BATCH')
     COUNTRIES = ['E', 'W', 'N']
     ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
     CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
@@ -111,6 +111,10 @@ class SampleGenerator:
         random_ce = random.randint(5, 1000)
         return f'{random_ce}'
 
+    def get_random_print_batch(self):
+        print_batch = random.randint(1, 99)
+        return print_batch
+
     def get_random_ce_type(self):
         return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
 
@@ -165,29 +169,28 @@ class SampleGenerator:
 
     def _write_parent_and_unit_cases(self, writer, sequential_arid, treatment_code, address_type):
         # create parent case
-        parent_arid, estab_type = self._write_row(writer, sequential_arid, treatment_code, address_type,
+        parent_uprn, estab_type = self._write_row(writer, sequential_arid, treatment_code, address_type,
                                                   address_level='E', expected_capacity=0)
 
         # create child cases
         for _ in range(3):
             self._write_row(writer, sequential_arid, treatment_code,
                             address_type, expected_capacity=self.get_random_ce_capacity(), estab_type=estab_type,
-                            address_level='U', estab_arid=parent_arid)
+                            address_level='U', estab_uprn=parent_uprn)
 
     def _write_row(self, writer, sequential_arid, treatment_code, address_type, expected_capacity,
-                   address_level=None, estab_arid=None, estab_type=None):
-        arid = self.get_sequential_arid() if sequential_arid else self.get_random_arid()
+                   address_level=None, estab_uprn=None, estab_type=None):
+        uprn = self.get_sequential_arid() if sequential_arid else self.get_random_uprn()
 
         if estab_type is None:
             estab_type = self.get_random_ce_type() if address_type != 'HH' else 'Household'
 
-        if estab_arid is None:
-            estab_arid = self.get_random_arid()
+        if estab_uprn is None:
+            estab_uprn = self.get_random_uprn()
 
         writer.writerow({
-            'ARID': arid,
-            'ESTAB_ARID': estab_arid,
-            'UPRN': self.get_random_uprn(),
+            'UPRN': uprn,
+            'ESTAB_UPRN': estab_uprn,
             'ADDRESS_TYPE': address_type,
             'ESTAB_TYPE': estab_type,
             'ADDRESS_LEVEL': address_level,
@@ -211,10 +214,11 @@ class SampleGenerator:
             'FIELDCOORDINATOR_ID': '',
             'FIELDOFFICER_ID': '',
             'CE_EXPECTED_CAPACITY': expected_capacity,
-            'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' or address_type == 'SPG' else 0
+            'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' or address_type == 'SPG' else 0,
+            'PRINT_BATCH': self.get_random_print_batch()
         })
 
-        return arid, estab_type
+        return uprn, estab_type
 
 
 def parse_arguments():
