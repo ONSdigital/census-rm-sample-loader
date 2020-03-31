@@ -103,4 +103,4 @@ pipenv run python generate_sample_file.py -o /custom/path.csv -t /path/to/treatm
 ```
 Where the treatment code quantities file is a csv with headers `"Treatment Code"` and `"Quantity"` specifying the quantities of each treatment code to include in the generated sample
 
-An optional flag `-s` or `--sequential_arid` can be used to generate unique ARID's sequentially instead of randomly, making it faster to generate a massive file.
+An optional flag `-s` or `--sequential_uprn` can be used to generate unique ARID's sequentially instead of randomly, making it faster to generate a massive file.

@@ -27,8 +27,7 @@ class SampleGenerator:
                 'Gypsy Roma Traveller',
                 'Residential Boater']
 
-    ARIDS = set()
-    ARID_SEQUENCE = 0
+    UPRN_SEQUENCE = 0
 
     @staticmethod
     def read_treatment_code_quantities(treatment_code_quantities_path: Path):
@@ -56,19 +55,9 @@ class SampleGenerator:
     def get_random_letter(self):
         return self.LETTERS[random.randint(0, len(self.LETTERS) - 1)]
 
-    def get_random_arid(self):
-        random_number = random.randint(100000000, 999999999)
-
-        while random_number in self.ARIDS:
-            random_number = random.randint(100000000, 999999999)
-
-        self.ARIDS.add(random_number)
-
-        return f'DDR190314{random_number:012}'
-
-    def get_sequential_arid(self):
-        self.ARID_SEQUENCE += 1
-        return f'DDR190314{self.ARID_SEQUENCE:012}'
+    def get_sequential_uprn(self):
+        self.UPRN_SEQUENCE += 1
+        return f'{self.UPRN_SEQUENCE:012}'
 
     @staticmethod
     def get_random_abp_code():
@@ -133,7 +122,7 @@ class SampleGenerator:
         random_minutes = random.randint(999, 9999)
         return f'{random_degrees}.{random_minutes}'
 
-    def generate_sample_file(self, output_file_path: Path, treatment_code_quantities_path: Path, sequential_arid=False):
+    def generate_sample_file(self, output_file_path: Path, treatment_code_quantities_path: Path, sequential_uprn=False):
         print('Generating sample...')
         self.read_words()
         treatment_code_quantities = self.read_treatment_code_quantities(treatment_code_quantities_path)
@@ -145,42 +134,42 @@ class SampleGenerator:
             for treatment_code in treatment_code_quantities:
                 for _ in range(treatment_code["quantity"]):
                     if treatment_code["treatment_code"][:3] == "SPG":
-                        self._write_estab_case(writer, sequential_arid, treatment_code, address_type='SPG')
+                        self._write_estab_case(writer, sequential_uprn, treatment_code, address_type='SPG')
                         continue
 
                     # Randomly decide whether to create a CE case or not
                     if self.random_1_in_11():
-                        self._write_estab_case(writer, sequential_arid, treatment_code, address_type='CE')
+                        self._write_estab_case(writer, sequential_uprn, treatment_code, address_type='CE')
                         continue
 
                     # otherwise write a standard HH case
-                    self._write_row(writer, sequential_arid, treatment_code, address_type='HH',
+                    self._write_row(writer, sequential_uprn, treatment_code, address_type='HH',
                                     address_level='U', expected_capacity=0)
 
-    def _write_estab_case(self, writer, sequential_arid, treatment_code, address_type):
+    def _write_estab_case(self, writer, sequential_uprn, treatment_code, address_type):
         #  randomly decide if we want to create an E case with child U cases
         if self.random_1_in_11():
-            self._write_parent_and_unit_cases(writer, sequential_arid, treatment_code, address_type)
+            self._write_parent_and_unit_cases(writer, sequential_uprn, treatment_code, address_type)
             return
 
         # otherwise write E case
-        self._write_row(writer, sequential_arid, treatment_code, address_type,
+        self._write_row(writer, sequential_uprn, treatment_code, address_type,
                         expected_capacity=self.get_random_ce_capacity(), address_level='E')
 
-    def _write_parent_and_unit_cases(self, writer, sequential_arid, treatment_code, address_type):
+    def _write_parent_and_unit_cases(self, writer, sequential_uprn, treatment_code, address_type):
         # create parent case
-        parent_uprn, estab_type = self._write_row(writer, sequential_arid, treatment_code, address_type,
+        parent_uprn, estab_type = self._write_row(writer, sequential_uprn, treatment_code, address_type,
                                                   address_level='E', expected_capacity=0)
 
         # create child cases
         for _ in range(3):
-            self._write_row(writer, sequential_arid, treatment_code,
+            self._write_row(writer, sequential_uprn, treatment_code,
                             address_type, expected_capacity=self.get_random_ce_capacity(), estab_type=estab_type,
                             address_level='U', estab_uprn=parent_uprn)
 
-    def _write_row(self, writer, sequential_arid, treatment_code, address_type, expected_capacity,
+    def _write_row(self, writer, sequential_uprn, treatment_code, address_type, expected_capacity,
                    address_level=None, estab_uprn=None, estab_type=None):
-        uprn = self.get_sequential_arid() if sequential_arid else self.get_random_uprn()
+        uprn = self.get_sequential_uprn() if sequential_uprn else self.get_random_uprn()
 
         if estab_type is None:
             estab_type = self.get_random_ce_type() if address_type != 'HH' else 'Household'
@@ -223,8 +212,8 @@ class SampleGenerator:
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Load a sample file into response management.')
-    parser.add_argument('--sequential_arid',
-                        help="Use sequential ARID's to speed up generation",
+    parser.add_argument('--sequential_uprn',
+                        help="Use sequential UPRN's to speed up generation",
                         default=False,
                         action='store_true',
                         required=False)
@@ -241,4 +230,4 @@ if __name__ == '__main__':
     args = parse_arguments()
     SampleGenerator().generate_sample_file(output_file_path=args.output_file_path,
                                            treatment_code_quantities_path=args.treatment_code_quantities_path,
-                                           sequential_arid=args.sequential_arid)
+                                           sequential_uprn=args.sequential_uprn)
