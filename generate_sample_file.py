@@ -27,6 +27,7 @@ class SampleGenerator:
                 'Gypsy Roma Traveller',
                 'Residential Boater']
 
+    UPRNS = set()
     UPRN_SEQUENCE = 0
 
     @staticmethod
@@ -64,9 +65,14 @@ class SampleGenerator:
         random_number = random.randint(2, 6)
         return f'RD{random_number:02}'
 
-    @staticmethod
-    def get_random_uprn():
+    def get_random_uprn(self):
         random_number = random.randint(10000000000, 99999999999)
+
+        while random_number in self.UPRNS:
+            random_number = random.randint(10000000000, 99999999999)
+
+        self.UPRNS.add(random_number)
+
         return f'{random_number:011}'
 
     def get_random_regiony_type_thing(self):
