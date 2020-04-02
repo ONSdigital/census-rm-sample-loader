@@ -2,7 +2,7 @@ import argparse
 import csv
 from collections import namedtuple
 
-from validators import max_length, unique, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal
+from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -30,7 +30,7 @@ class SampleValidator:
 
     def __init__(self):
         self.schema = {
-            'UPRN': [mandatory(), max_length(12), numeric(), unique()],
+            'UPRN': [mandatory(), max_length(12), numeric()],
             'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'})],
             'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES)],

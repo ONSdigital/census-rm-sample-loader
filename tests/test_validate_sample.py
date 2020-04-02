@@ -28,20 +28,6 @@ class TestValidateSample(TestCase):
         # Then
         self.assertEqual(validation_failures, [])
 
-    def test_validate_sample_duplicate_uprns(self):
-        # Given
-        sample_validator = SampleValidator()
-        invalid_sample_file_path = self.RESOURCE_FILE_PATH.joinpath('sample_file_duplicate_uprn.csv')
-
-        # When
-        validation_failures = sample_validator.validate(invalid_sample_file_path)
-
-        # Then
-        self.assertEqual(len(validation_failures), 1)
-        failure = validation_failures[0]
-        self.assertEqual(failure.line_number, 3)
-        self.assertEqual(failure.column, 'UPRN')
-
     def test_validate_sample_invalid_treatment_code(self):
         # Given
         sample_validator = SampleValidator()
