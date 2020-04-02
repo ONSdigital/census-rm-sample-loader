@@ -26,7 +26,7 @@ def unique():
 
 def mandatory():
     def validate(value):
-        if not value:
+        if not value or value.replace(" ", "") == '':
             raise Invalid(f'Empty mandatory value')
 
     return validate
@@ -34,7 +34,9 @@ def mandatory():
 
 def numeric():
     def validate(value):
-        if value and not value.isnumeric():
+        if value and value.replace(" ", "") == '':
+            pass
+        elif value and not value.replace(" ", "").isnumeric():
             raise Invalid(f'Value "{value}" is non numeric')
 
     return validate
