@@ -2,39 +2,27 @@ import argparse
 import csv
 from collections import namedtuple
 
-from validators import max_length, unique, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal
+from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
 
 class SampleValidator:
-    ESTAB_TYPES = {
-        'Household',
-        'Sheltered Accommodation',
-        'Hall of Residence',
-        'Care Home',
-        'Boarding School',
-        'Hotel',
-        'Hostel',
-        'Residential Caravanner',
-        'Gypsy Roma Traveller',
-        'Residential Boater'}
-
     TREATMENT_CODES = {
         'HH_LF2R1E', 'HH_LF2R2E', 'HH_LF2R3AE', 'HH_LF2R3BE', 'HH_LF3R1E', 'HH_LF3R2E', 'HH_LF3R3AE', 'HH_LF3R3BE',
         'HH_LFNR1E', 'HH_LFNR2E', 'HH_LFNR3AE', 'HH_LFNR3BE', 'HH_LF2R1W', 'HH_LF2R2W', 'HH_LF2R3AW', 'HH_LF2R3BW',
         'HH_LF3R1W', 'HH_LF3R2W', 'HH_LF3R3AW', 'HH_LF3R3BW', 'HH_LFNR1W', 'HH_LFNR2W', 'HH_LFNR3AW', 'HH_LFNR3BW',
         'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
         'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
-        'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN', 'SPG_QDHSE', 'SPG_QDHSW'}
+        'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN', 'SPG_QDHSE', 'SPG_QDHSW', 'SPG_LPHUE',
+        'SPG_QDHUE', 'SPG_VDNEE', 'CE_QDIEE', 'SPG_VDNEW', 'CE_QDIEW', 'SPG_LPHUW', 'SPG_QDHUW'}
 
     def __init__(self):
         self.schema = {
-            'ARID': [mandatory(), max_length(21), unique()],
-            'ESTAB_ARID': [mandatory(), max_length(21)],
             'UPRN': [mandatory(), max_length(12), numeric()],
+            'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'})],
-            'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES)],
+            'ESTAB_TYPE': [mandatory(), max_length(255)],
             'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'})],
             'ABP_CODE': [mandatory(), max_length(6)],
             'ORGANISATION_NAME': [max_length(60)],
@@ -52,11 +40,12 @@ class SampleValidator:
             'REGION': [mandatory(), max_length(9)],
             'HTC_WILLINGNESS': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'})],
             'HTC_DIGITAL': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'})],
-            'FIELDCOORDINATOR_ID': [max_length(7)],
-            'FIELDOFFICER_ID': [max_length(10)],
+            'FIELDCOORDINATOR_ID': [max_length(10)],
+            'FIELDOFFICER_ID': [max_length(13)],
             'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES)],
             'CE_EXPECTED_CAPACITY': [numeric(), max_length(4)],
-            'CE_SECURE': [mandatory(), in_set({'0', '1'})]
+            'CE_SECURE': [mandatory(), in_set({'0', '1'})],
+            'PRINT_BATCH': [numeric(), max_length(2)]
         }
 
     def find_header_validation_failures(self, header):

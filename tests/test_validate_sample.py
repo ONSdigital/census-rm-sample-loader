@@ -28,20 +28,6 @@ class TestValidateSample(TestCase):
         # Then
         self.assertEqual(validation_failures, [])
 
-    def test_validate_sample_duplicate_arids(self):
-        # Given
-        sample_validator = SampleValidator()
-        invalid_sample_file_path = self.RESOURCE_FILE_PATH.joinpath('sample_file_duplicate_arid.csv')
-
-        # When
-        validation_failures = sample_validator.validate(invalid_sample_file_path)
-
-        # Then
-        self.assertEqual(len(validation_failures), 1)
-        failure = validation_failures[0]
-        self.assertEqual(failure.line_number, 3)
-        self.assertEqual(failure.column, 'ARID')
-
     def test_validate_sample_invalid_treatment_code(self):
         # Given
         sample_validator = SampleValidator()
@@ -56,7 +42,7 @@ class TestValidateSample(TestCase):
         self.assertEqual(failure.line_number, 2)
         self.assertEqual(failure.column, 'TREATMENT_CODE')
 
-    def test_generate_and_validate_random_arids(self):
+    def test_generate_and_validate_random_uprns(self):
         # Given
         sample_validator = SampleValidator()
         generated_sample_file_path = self.TMP_TEST_DIRECTORY_PATH.joinpath('generated_sample.csv')
@@ -64,13 +50,13 @@ class TestValidateSample(TestCase):
 
         # When
         SampleGenerator().generate_sample_file(generated_sample_file_path, treatment_code_quantities_path,
-                                               sequential_arid=False)
+                                               sequential_uprn=False)
         validation_failures = sample_validator.validate(generated_sample_file_path)
 
         # Then
         self.assertEqual(validation_failures, [])
 
-    def test_generate_and_validate_sequential_arids(self):
+    def test_generate_and_validate_sequential_uprns(self):
         # Given
         sample_validator = SampleValidator()
         generated_sample_file_path = self.TMP_TEST_DIRECTORY_PATH.joinpath('generated_sample.csv')
@@ -78,7 +64,7 @@ class TestValidateSample(TestCase):
 
         # When
         SampleGenerator().generate_sample_file(generated_sample_file_path, treatment_code_quantities_path,
-                                               sequential_arid=True)
+                                               sequential_uprn=True)
         validation_failures = sample_validator.validate(generated_sample_file_path)
 
         # Then
