@@ -2,7 +2,8 @@ import argparse
 import csv
 from collections import namedtuple
 
-from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, no_whitespace_check
+from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
+    no_whitespace_check
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
