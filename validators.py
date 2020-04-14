@@ -84,7 +84,7 @@ def set_equal(expected_set):
 
 def no_whitespace_check():
     def validate(value):
-        if value.startswith(" "):
+        if value != value.strip():
             raise Invalid(f'Value contains whitespace')
 
     return validate

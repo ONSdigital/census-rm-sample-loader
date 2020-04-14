@@ -77,10 +77,6 @@ class SampleValidator:
               f"Failures: {len(failures)}")
         return failures
 
-    def strip_whitespace(self, sample_file_reader):
-        for line_number, row in enumerate(sample_file_reader, 2):
-            for i in row:
-                row[i] = row[i].replace(" ", "")
 
     def validate(self, sample_file_path) -> list:
         try:
