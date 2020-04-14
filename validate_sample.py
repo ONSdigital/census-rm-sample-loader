@@ -77,7 +77,6 @@ class SampleValidator:
               f"Failures: {len(failures)}")
         return failures
 
-
     def validate(self, sample_file_path) -> list:
         try:
             with open(sample_file_path, encoding="utf-8") as sample_file:
