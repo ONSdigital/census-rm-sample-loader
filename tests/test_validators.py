@@ -170,3 +170,20 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             set_equal_validator(['a', 'b', 'c', 'blah'])
+
+    def test_no_whitespace_check_valid(self):
+        # Given
+        no_whitespace_check_validator = validators.no_whitespace_check()
+
+        # When
+        no_whitespace_check_validator('')
+
+        # Then no invalid exception is raised
+
+    def test_no_whitespace_check_invalid(self):
+        # Given
+        no_whitespace_check_validator = validators.no_whitespace_check()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            no_whitespace_check_validator('  ')

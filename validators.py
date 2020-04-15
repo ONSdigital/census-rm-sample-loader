@@ -80,3 +80,11 @@ def set_equal(expected_set):
                            f'unexpected values: {value_as_set.difference(expected_set)}'))
 
     return validate
+
+
+def no_whitespace_check():
+    def validate(value):
+        if value != value.strip():
+            raise Invalid(f'Value contains whitespace')
+
+    return validate
