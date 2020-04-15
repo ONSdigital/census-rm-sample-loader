@@ -35,7 +35,7 @@ def load_sample(sample_file: Iterable[str], collection_exercise_id: str, action_
 
 
 def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_file_reader: Iterable[str],
-                       store_loaded_sample_units=False, **kwargs):
+                       store_loaded_sample_units=False, sample_unit_log_frequency=5000, **kwargs):
     sample_units = {}
 
     with RabbitContext(**kwargs) as rabbit:
@@ -53,10 +53,10 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
                     f'sampleunit:{sample_unit_id}': _create_sample_unit_json(sample_unit_id, sample_row)}
                 sample_units.update(sample_unit)
 
-            if count % 5000 == 0:
+            if count % sample_unit_log_frequency == 0:
                 logger.info(f'{count} sample units loaded')
 
-        if count % 5000:
+        if count % sample_unit_log_frequency:
             logger.info(f'{count} sample units loaded')
 
     logger.info(f'All sample units have been added to the queue {rabbit.queue_name}')
