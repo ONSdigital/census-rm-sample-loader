@@ -173,7 +173,7 @@ class TestValidators(TestCase):
 
     def test_no_whitespace_check_valid(self):
         # Given
-        no_whitespace_check_validator = validators.no_whitespace_check()
+        no_whitespace_check_validator = validators.no_trailing_whitespace()
 
         # When
         no_whitespace_check_validator('')
@@ -182,7 +182,7 @@ class TestValidators(TestCase):
 
     def test_no_whitespace_check_invalid(self):
         # Given
-        no_whitespace_check_validator = validators.no_whitespace_check()
+        no_whitespace_check_validator = validators.no_trailing_whitespace()
 
         # When, then raises
         with pytest.raises(validators.Invalid):

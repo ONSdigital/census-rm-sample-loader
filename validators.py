@@ -6,7 +6,7 @@ class Invalid(Exception):
 
 
 def max_length(max_len: int):
-    def validate(value):
+    def validate(value, _row):
         if len(value) > max_len:
             raise Invalid(f'Value has length {len(value)}, exceeds max of {max_len}')
 
@@ -16,7 +16,7 @@ def max_length(max_len: int):
 def unique():
     previous_values = set()
 
-    def validate(value):
+    def validate(value, _row):
         if value in previous_values:
             raise Invalid(f'Value "{value}" is not unique')
         previous_values.add(value)
@@ -25,7 +25,7 @@ def unique():
 
 
 def mandatory():
-    def validate(value):
+    def validate(value, _row):
         if not value or value.replace(" ", "") == '':
             raise Invalid(f'Empty mandatory value')
 
@@ -33,7 +33,7 @@ def mandatory():
 
 
 def numeric():
-    def validate(value):
+    def validate(value, _row):
         if value and value.replace(" ", "") == '':
             pass
         elif value and not value.replace(" ", "").isnumeric():
@@ -43,7 +43,7 @@ def numeric():
 
 
 def latitude_longitude(max_precision: int, max_scale: int):
-    def validate(value):
+    def validate(value, _row):
         try:
             float(value)
         except ValueError:
@@ -64,7 +64,7 @@ def latitude_longitude(max_precision: int, max_scale: int):
 
 
 def in_set(valid_value_set: set):
-    def validate(value):
+    def validate(value, _row):
         if value not in valid_value_set:
             raise Invalid(f'Value "{value}" is not in the valid set')
 
@@ -82,9 +82,17 @@ def set_equal(expected_set):
     return validate
 
 
-def no_whitespace_check():
-    def validate(value):
+def no_trailing_whitespace():
+    def validate(value, _row):
         if value != value.strip():
-            raise Invalid(f'Value contains whitespace')
+            raise Invalid(f'Value "{value}" contains trailing whitespace')
+
+    return validate
+
+
+def region_matches_treatment_code():
+    def validate(region, row):
+        if region[0] != row['TREATMENT_CODE'][-1]:
+            raise Invalid(f'Region "{region}" does not match region in treatment code "{row["TREATMENT_CODE"]}"')
 
     return validate
