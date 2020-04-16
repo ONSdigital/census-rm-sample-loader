@@ -75,10 +75,11 @@ class SampleGenerator:
 
         return f'{random_number:011}'
 
-    def get_random_regiony_type_thing(self):
-        random_country = self.COUNTRIES[random.randint(0, len(self.COUNTRIES) - 1)]
+    @staticmethod
+    def generate_region_from_treatment_code(treatment_code):
+        region_code = treatment_code[-1]
         random_number = random.randint(10000000, 99999999)
-        return f'{random_country}{random_number}'
+        return f'{region_code}{random_number}'
 
     @staticmethod
     def get_random_htc():
@@ -198,11 +199,11 @@ class SampleGenerator:
             'POSTCODE': self.get_random_post_code(),
             'LATITUDE': self.get_random_lat_or_long(),
             'LONGITUDE': self.get_random_lat_or_long(),
-            'OA': self.get_random_regiony_type_thing(),
-            'LSOA': self.get_random_regiony_type_thing(),
-            'MSOA': self.get_random_regiony_type_thing(),
-            'LAD': self.get_random_regiony_type_thing(),
-            'REGION': self.get_random_regiony_type_thing(),
+            'OA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
+            'LSOA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
+            'MSOA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
+            'LAD': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
+            'REGION': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
             'HTC_WILLINGNESS': self.get_random_htc(),
             'HTC_DIGITAL': self.get_random_htc(),
             'TREATMENT_CODE': treatment_code["treatment_code"],
