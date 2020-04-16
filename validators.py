@@ -72,7 +72,7 @@ def in_set(valid_value_set: set):
 
 
 def set_equal(expected_set):
-    def validate(value: Iterable) -> None:
+    def validate(value: Iterable, _row) -> None:
         value_as_set = set(value)
         if value_as_set != expected_set:
             raise Invalid((f"Values don't match expected set, "
@@ -82,10 +82,10 @@ def set_equal(expected_set):
     return validate
 
 
-def no_trailing_whitespace():
+def no_padding_whitespace():
     def validate(value, _row):
         if value != value.strip():
-            raise Invalid(f'Value "{value}" contains trailing whitespace')
+            raise Invalid(f'Value "{value}" contains padding whitespace')
 
     return validate
 
