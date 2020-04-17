@@ -6,7 +6,7 @@ class Invalid(Exception):
 
 
 def max_length(max_len: int):
-    def validate(value):
+    def validate(value, **_kwargs):
         if len(value) > max_len:
             raise Invalid(f'Value has length {len(value)}, exceeds max of {max_len}')
 
@@ -16,7 +16,7 @@ def max_length(max_len: int):
 def unique():
     previous_values = set()
 
-    def validate(value):
+    def validate(value, **_kwargs):
         if value in previous_values:
             raise Invalid(f'Value "{value}" is not unique')
         previous_values.add(value)
@@ -25,7 +25,7 @@ def unique():
 
 
 def mandatory():
-    def validate(value):
+    def validate(value, **_kwargs):
         if not value or value.replace(" ", "") == '':
             raise Invalid(f'Empty mandatory value')
 
@@ -33,7 +33,7 @@ def mandatory():
 
 
 def numeric():
-    def validate(value):
+    def validate(value, **_kwargs):
         if value and value.replace(" ", "") == '':
             pass
         elif value and not value.replace(" ", "").isnumeric():
@@ -43,7 +43,7 @@ def numeric():
 
 
 def latitude_longitude(max_precision: int, max_scale: int):
-    def validate(value):
+    def validate(value, **_kwargs):
         try:
             float(value)
         except ValueError:
@@ -64,7 +64,7 @@ def latitude_longitude(max_precision: int, max_scale: int):
 
 
 def in_set(valid_value_set: set):
-    def validate(value):
+    def validate(value, **_kwargs):
         if value not in valid_value_set:
             raise Invalid(f'Value "{value}" is not in the valid set')
 
@@ -72,7 +72,7 @@ def in_set(valid_value_set: set):
 
 
 def set_equal(expected_set):
-    def validate(value: Iterable) -> None:
+    def validate(value: Iterable, **_kwargs) -> None:
         value_as_set = set(value)
         if value_as_set != expected_set:
             raise Invalid((f"Values don't match expected set, "
@@ -82,9 +82,18 @@ def set_equal(expected_set):
     return validate
 
 
-def no_whitespace_check():
-    def validate(value):
+def no_padding_whitespace():
+    def validate(value, **_kwargs):
         if value != value.strip():
-            raise Invalid(f'Value contains whitespace')
+            raise Invalid(f'Value "{value}" contains padding whitespace')
+
+    return validate
+
+
+def region_matches_treatment_code():
+    def validate(region, **kwargs):
+        if region[0] != kwargs['row']['TREATMENT_CODE'][-1]:
+            raise Invalid(
+                f'Region "{region}" does not match region in treatment code "{kwargs["row"]["TREATMENT_CODE"]}"')
 
     return validate

@@ -171,19 +171,36 @@ class TestValidators(TestCase):
         with pytest.raises(validators.Invalid):
             set_equal_validator(['a', 'b', 'c', 'blah'])
 
-    def test_no_whitespace_check_valid(self):
+    def test_no_padding_whitespace_check_valid(self):
         # Given
-        no_whitespace_check_validator = validators.no_whitespace_check()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When
-        no_whitespace_check_validator('')
+        no_padding_whitespace_validator('')
 
         # Then no invalid exception is raised
 
-    def test_no_whitespace_check_invalid(self):
+    def test_no_padding_whitespace_check_invalid(self):
         # Given
-        no_whitespace_check_validator = validators.no_whitespace_check()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
-            no_whitespace_check_validator('  ')
+            no_padding_whitespace_validator('  ')
+
+    def test_region_matches_treatment_code_valid(self):
+        # Given
+        region_matches_treatment_code_validator = validators.region_matches_treatment_code()
+
+        # When
+        region_matches_treatment_code_validator('E0000', row={'TREATMENT_CODE': 'HH_TESTE'})
+
+        # Then no invalid exception is raised
+
+    def test_region_matches_treatment_code_invalid(self):
+        # Given
+        region_matches_treatment_code_validator = validators.region_matches_treatment_code()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            region_matches_treatment_code_validator('N0000', row={'TREATMENT_CODE': 'HH_TESTE'})

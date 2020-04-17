@@ -3,7 +3,7 @@ import csv
 from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
-    no_whitespace_check
+    no_padding_whitespace, region_matches_treatment_code
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -20,33 +20,33 @@ class SampleValidator:
 
     def __init__(self):
         self.schema = {
-            'UPRN': [mandatory(), max_length(12), numeric(), no_whitespace_check()],
-            'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory(), no_whitespace_check()],
-            'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'}), no_whitespace_check()],
-            'ESTAB_TYPE': [mandatory(), max_length(255), no_whitespace_check()],
-            'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'}), no_whitespace_check()],
-            'ABP_CODE': [mandatory(), max_length(6), no_whitespace_check()],
-            'ORGANISATION_NAME': [max_length(60), no_whitespace_check()],
-            'ADDRESS_LINE1': [mandatory(), max_length(60), no_whitespace_check()],
-            'ADDRESS_LINE2': [max_length(60), no_whitespace_check()],
-            'ADDRESS_LINE3': [max_length(60), no_whitespace_check()],
-            'TOWN_NAME': [mandatory(), max_length(30), no_whitespace_check()],
-            'POSTCODE': [mandatory(), max_length(8), no_whitespace_check()],
-            'LATITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=9), no_whitespace_check()],
-            'LONGITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=10), no_whitespace_check()],
-            'OA': [mandatory(), max_length(9), no_whitespace_check()],
-            'LSOA': [mandatory(), max_length(9), no_whitespace_check()],
-            'MSOA': [mandatory(), max_length(9), no_whitespace_check()],
-            'LAD': [mandatory(), max_length(9), no_whitespace_check()],
-            'REGION': [mandatory(), max_length(9), no_whitespace_check()],
-            'HTC_WILLINGNESS': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'}), no_whitespace_check()],
-            'HTC_DIGITAL': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'}), no_whitespace_check()],
-            'FIELDCOORDINATOR_ID': [max_length(10), no_whitespace_check()],
-            'FIELDOFFICER_ID': [max_length(13), no_whitespace_check()],
-            'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES), no_whitespace_check()],
-            'CE_EXPECTED_CAPACITY': [numeric(), max_length(4), no_whitespace_check()],
-            'CE_SECURE': [mandatory(), in_set({'0', '1'}), no_whitespace_check()],
-            'PRINT_BATCH': [numeric(), max_length(2), no_whitespace_check()]
+            'UPRN': [mandatory(), max_length(12), numeric(), no_padding_whitespace()],
+            'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory(), no_padding_whitespace()],
+            'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'}), no_padding_whitespace()],
+            'ESTAB_TYPE': [mandatory(), max_length(255), no_padding_whitespace()],
+            'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'}), no_padding_whitespace()],
+            'ABP_CODE': [mandatory(), max_length(6), no_padding_whitespace()],
+            'ORGANISATION_NAME': [max_length(60), no_padding_whitespace()],
+            'ADDRESS_LINE1': [mandatory(), max_length(60), no_padding_whitespace()],
+            'ADDRESS_LINE2': [max_length(60), no_padding_whitespace()],
+            'ADDRESS_LINE3': [max_length(60), no_padding_whitespace()],
+            'TOWN_NAME': [mandatory(), max_length(30), no_padding_whitespace()],
+            'POSTCODE': [mandatory(), max_length(8), no_padding_whitespace()],
+            'LATITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=9), no_padding_whitespace()],
+            'LONGITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=10), no_padding_whitespace()],
+            'OA': [mandatory(), max_length(9), no_padding_whitespace()],
+            'LSOA': [mandatory(), max_length(9), no_padding_whitespace()],
+            'MSOA': [mandatory(), max_length(9), no_padding_whitespace()],
+            'LAD': [mandatory(), max_length(9), no_padding_whitespace()],
+            'REGION': [mandatory(), max_length(9), no_padding_whitespace(), region_matches_treatment_code()],
+            'HTC_WILLINGNESS': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'}), no_padding_whitespace()],
+            'HTC_DIGITAL': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'}), no_padding_whitespace()],
+            'FIELDCOORDINATOR_ID': [max_length(10), no_padding_whitespace()],
+            'FIELDOFFICER_ID': [max_length(13), no_padding_whitespace()],
+            'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES), no_padding_whitespace()],
+            'CE_EXPECTED_CAPACITY': [numeric(), max_length(4), no_padding_whitespace()],
+            'CE_SECURE': [mandatory(), in_set({'0', '1'}), no_padding_whitespace()],
+            'PRINT_BATCH': [numeric(), max_length(2), no_padding_whitespace()]
         }
 
     def find_header_validation_failures(self, header):
@@ -61,7 +61,7 @@ class SampleValidator:
         for column, validators in self.schema.items():
             for validator in validators:
                 try:
-                    validator(row[column])
+                    validator(row[column], row=row)
                 except Invalid as invalid:
                     failures.append(ValidationFailure(line_number, column, invalid))
         return failures
