@@ -61,7 +61,7 @@ class SampleValidator:
         for column, validators in self.schema.items():
             for validator in validators:
                 try:
-                    validator(row[column], row)
+                    validator(row[column], row=row)
                 except Invalid as invalid:
                     failures.append(ValidationFailure(line_number, column, invalid))
         return failures
