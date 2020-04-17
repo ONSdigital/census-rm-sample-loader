@@ -173,20 +173,20 @@ class TestValidators(TestCase):
 
     def test_no_padding_whitespace_check_valid(self):
         # Given
-        no_whitespace_check_validator = validators.no_padding_whitespace()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When
-        no_whitespace_check_validator('')
+        no_padding_whitespace_validator('')
 
         # Then no invalid exception is raised
 
     def test_no_padding_whitespace_check_invalid(self):
         # Given
-        no_whitespace_check_validator = validators.no_padding_whitespace()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
-            no_whitespace_check_validator('  ')
+            no_padding_whitespace_validator('  ')
 
     def test_region_matches_treatment_code_valid(self):
         # Given
