@@ -137,8 +137,7 @@ class TestValidators(TestCase):
 
     def test_in_set_valid(self):
         # Given
-        in_set_validator = validators.in_set({'a', 'b', 'c'}
-                                             )
+        in_set_validator = validators.in_set({'a', 'b', 'c'})
 
         # When
         in_set_validator('a')
