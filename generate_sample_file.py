@@ -129,6 +129,11 @@ class SampleGenerator:
         random_minutes = random.randint(999, 9999)
         return f'{random_degrees}.{random_minutes}'
 
+    def get_random_lsoa(self, treatment_code):
+        region_code = treatment_code[-1]
+        random_number = random.randint(1000001, 1033768)
+        return f'{region_code}0{random_number}'
+
     def generate_sample_file(self, output_file_path: Path, treatment_code_quantities_path: Path, sequential_uprn=False):
         print('Generating sample...')
         self.read_words()
@@ -200,7 +205,7 @@ class SampleGenerator:
             'LATITUDE': self.get_random_lat_or_long(),
             'LONGITUDE': self.get_random_lat_or_long(),
             'OA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
-            'LSOA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
+            'LSOA': self.get_random_lsoa(treatment_code['treatment_code']),
             'MSOA': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
             'LAD': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
             'REGION': self.generate_region_from_treatment_code(treatment_code['treatment_code']),
