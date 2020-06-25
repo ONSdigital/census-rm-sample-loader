@@ -109,6 +109,7 @@ class SampleGenerator:
         random_ce = random.randint(1, 10)
         return f'{random_ce}'
 
+    @staticmethod
     def get_random_print_batch(self):
         print_batch = random.randint(1, 99)
         return print_batch
