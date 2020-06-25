@@ -41,7 +41,7 @@ class SampleGenerator:
                 quantity = int(row['Quantity'])
                 address_level = row['Address Level']
                 treatment_code_quantities.append({'treatment_code': treatment_code, 'quantity': quantity,
-                                                 'address_level': address_level})
+                                                  'address_level': address_level})
 
         return treatment_code_quantities
 
@@ -110,7 +110,7 @@ class SampleGenerator:
         return f'{random_ce}'
 
     @staticmethod
-    def get_random_print_batch(self):
+    def get_random_print_batch():
         print_batch = random.randint(1, 99)
         return print_batch
 
