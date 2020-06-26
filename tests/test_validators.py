@@ -221,4 +221,3 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             ce_u_has_expected_capacity_validator('a', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'U'})
-
