@@ -97,3 +97,21 @@ def region_matches_treatment_code():
                 f'Region "{region}" does not match region in treatment code "{kwargs["row"]["TREATMENT_CODE"]}"')
 
     return validate
+
+
+def estab_type_in_list():
+    CE_TYPES = ['Sheltered Accommodation',
+                'Hall of Residence',
+                'Care Home',
+                'Boarding School',
+                'Hotel',
+                'Hostel',
+                'Residential Caravanner',
+                'Gypsy Roma Traveller',
+                'Residential Boater',
+                'Military SFA']
+    def validate(estab_type, **_kwargs):
+        if estab_type not in CE_TYPES and estab_type != 'Household':
+            raise Invalid(f'Estab Type "{estab_type}" is not a valid option')
+
+    return validate

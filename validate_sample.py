@@ -3,7 +3,7 @@ import csv
 from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
-    no_padding_whitespace, region_matches_treatment_code
+    no_padding_whitespace, region_matches_treatment_code, estab_type_in_list
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -23,7 +23,7 @@ class SampleValidator:
             'UPRN': [mandatory(), max_length(12), numeric(), no_padding_whitespace()],
             'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory(), no_padding_whitespace()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'}), no_padding_whitespace()],
-            'ESTAB_TYPE': [mandatory(), max_length(255), no_padding_whitespace()],
+            'ESTAB_TYPE': [mandatory(), estab_type_in_list(), max_length(255), no_padding_whitespace()],
             'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'}), no_padding_whitespace()],
             'ABP_CODE': [mandatory(), max_length(6), no_padding_whitespace()],
             'ORGANISATION_NAME': [max_length(60), no_padding_whitespace()],

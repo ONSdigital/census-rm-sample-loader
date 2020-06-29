@@ -25,7 +25,8 @@ class SampleGenerator:
                 'Hostel',
                 'Residential Caravanner',
                 'Gypsy Roma Traveller',
-                'Residential Boater']
+                'Residential Boater',
+                'Military SFA']
 
     UPRNS = set()
     UPRN_SEQUENCE = 0
