@@ -110,6 +110,7 @@ def estab_type_in_list():
                 'Gypsy Roma Traveller',
                 'Residential Boater',
                 'Military SFA']
+
     def validate(estab_type, **_kwargs):
         if estab_type not in CE_TYPES and estab_type != 'Household':
             raise Invalid(f'Estab Type "{estab_type}" is not a valid option')
