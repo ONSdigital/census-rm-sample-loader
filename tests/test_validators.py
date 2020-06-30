@@ -205,6 +205,23 @@ class TestValidators(TestCase):
         with pytest.raises(validators.Invalid):
             region_matches_treatment_code_validator('N0000', row={'TREATMENT_CODE': 'HH_TESTE'})
 
+    def test_ce_u_has_expected_capacity_valid(self):
+        # Given
+        ce_u_has_expected_capacity_validator = validators.ce_u_has_expected_capacity()
+
+        # When
+        ce_u_has_expected_capacity_validator('5', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'U'})
+
+        # Then no invalid exception is raised
+
+    def test_ce_u_has_expected_capacity_invalid(self):
+        # Given
+        ce_u_has_expected_capacity_validator = validators.ce_u_has_expected_capacity()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            ce_u_has_expected_capacity_validator('a', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'U'})
+
     def test_estab_type_valid(self):
         # Given
         estab_type_validator = validators.estab_type_in_list()

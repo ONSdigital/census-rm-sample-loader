@@ -3,7 +3,7 @@ import csv
 from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
-    no_padding_whitespace, region_matches_treatment_code, estab_type_in_list
+    no_padding_whitespace, region_matches_treatment_code, ce_u_has_expected_capacity, estab_type_in_list
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -16,7 +16,7 @@ class SampleValidator:
         'HH_1LSFN', 'HH_2LEFN', 'HH_QF2R1E', 'HH_QF2R2E', 'HH_QF2R3AE', 'HH_QF3R1E', 'HH_QF3R2E', 'HH_QF3R3AE',
         'HH_QFNR1E', 'HH_QFNR2E', 'HH_QFNR3AE', 'HH_QF2R1W', 'HH_QF2R2W', 'HH_QF2R3AW', 'HH_QF3R1W', 'HH_QF3R2W',
         'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN', 'SPG_QDHSE', 'SPG_QDHSW', 'SPG_LPHUE',
-        'SPG_QDHUE', 'SPG_VDNEE', 'CE_QDIEE', 'SPG_VDNEW', 'CE_QDIEW', 'SPG_LPHUW', 'SPG_QDHUW'}
+        'SPG_QDHUE', 'SPG_VDNEE', 'CE_QDIEE', 'SPG_VDNEW', 'CE_QDIEW', 'SPG_LPHUW', 'SPG_QDHUW', 'CE_LDIUE', 'CE_LDIUW'}
 
     def __init__(self):
         self.schema = {
@@ -44,7 +44,7 @@ class SampleValidator:
             'FIELDCOORDINATOR_ID': [max_length(10), no_padding_whitespace()],
             'FIELDOFFICER_ID': [max_length(13), no_padding_whitespace()],
             'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES), no_padding_whitespace()],
-            'CE_EXPECTED_CAPACITY': [numeric(), max_length(4), no_padding_whitespace()],
+            'CE_EXPECTED_CAPACITY': [numeric(), max_length(4), no_padding_whitespace(), ce_u_has_expected_capacity()],
             'CE_SECURE': [mandatory(), in_set({'0', '1'}), no_padding_whitespace()],
             'PRINT_BATCH': [numeric(), max_length(2), no_padding_whitespace()]
         }

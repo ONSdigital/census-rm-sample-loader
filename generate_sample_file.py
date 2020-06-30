@@ -40,7 +40,9 @@ class SampleGenerator:
             for row in file_reader:
                 treatment_code = row['Treatment Code']
                 quantity = int(row['Quantity'])
-                treatment_code_quantities.append({'treatment_code': treatment_code, 'quantity': quantity})
+                address_level = row['Address Level']
+                treatment_code_quantities.append({'treatment_code': treatment_code, 'quantity': quantity,
+                                                  'address_level': address_level})
 
         return treatment_code_quantities
 
@@ -105,10 +107,11 @@ class SampleGenerator:
 
     @staticmethod
     def get_random_ce_capacity():
-        random_ce = random.randint(5, 1000)
+        random_ce = random.randint(1, 10)
         return f'{random_ce}'
 
-    def get_random_print_batch(self):
+    @staticmethod
+    def get_random_print_batch():
         print_batch = random.randint(1, 99)
         return print_batch
 
@@ -142,38 +145,24 @@ class SampleGenerator:
             for treatment_code in treatment_code_quantities:
                 for _ in range(treatment_code["quantity"]):
                     if treatment_code["treatment_code"][:3] == "SPG":
-                        self._write_estab_case(writer, sequential_uprn, treatment_code, address_type='SPG')
+                        self._write_spg_or_ce_case(writer, sequential_uprn, treatment_code, address_type='SPG',
+                                                   address_level=treatment_code["address_level"])
                         continue
 
-                    # Randomly decide whether to create a CE case or not
-                    if self.random_1_in_11():
-                        self._write_estab_case(writer, sequential_uprn, treatment_code, address_type='CE')
+                    if treatment_code["treatment_code"][:2] == "CE":
+                        self._write_spg_or_ce_case(writer, sequential_uprn, treatment_code, address_type='CE',
+                                                   address_level=treatment_code["address_level"])
                         continue
 
                     # otherwise write a standard HH case
                     self._write_row(writer, sequential_uprn, treatment_code, address_type='HH',
                                     address_level='U', expected_capacity=0)
 
-    def _write_estab_case(self, writer, sequential_uprn, treatment_code, address_type):
-        #  randomly decide if we want to create an E case with child U cases
-        if self.random_1_in_11():
-            self._write_parent_and_unit_cases(writer, sequential_uprn, treatment_code, address_type)
-            return
+    def _write_spg_or_ce_case(self, writer, sequential_uprn, treatment_code, address_type, address_level):
+        expected_capacity = self.get_random_ce_capacity()
 
-        # otherwise write E case
         self._write_row(writer, sequential_uprn, treatment_code, address_type,
-                        expected_capacity=self.get_random_ce_capacity(), address_level='E')
-
-    def _write_parent_and_unit_cases(self, writer, sequential_uprn, treatment_code, address_type):
-        # create parent case
-        parent_uprn, estab_type = self._write_row(writer, sequential_uprn, treatment_code, address_type,
-                                                  address_level='E', expected_capacity=0)
-
-        # create child cases
-        for _ in range(3):
-            self._write_row(writer, sequential_uprn, treatment_code,
-                            address_type, expected_capacity=self.get_random_ce_capacity(), estab_type=estab_type,
-                            address_level='U', estab_uprn=parent_uprn)
+                        expected_capacity=expected_capacity, address_level=address_level)
 
     def _write_row(self, writer, sequential_uprn, treatment_code, address_type, expected_capacity,
                    address_level=None, estab_uprn=None, estab_type=None):

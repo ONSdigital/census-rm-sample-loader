@@ -99,6 +99,16 @@ def region_matches_treatment_code():
     return validate
 
 
+def ce_u_has_expected_capacity():
+    def validate(expected_capacity, **kwargs):
+        if kwargs['row']['ADDRESS_TYPE'] == 'CE' and kwargs['row']['ADDRESS_LEVEL'] == 'U' \
+                    and (not expected_capacity.isdigit() or int(expected_capacity) == 0):
+            raise Invalid(
+                f'CE Unit Expected Capacity "{expected_capacity}" cannot be null, blank or zero')
+
+    return validate
+
+
 def estab_type_in_list():
     CE_TYPES = ['Sheltered Accommodation',
                 'Hall of Residence',
