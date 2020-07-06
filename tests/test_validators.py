@@ -221,22 +221,3 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             ce_u_has_expected_capacity_validator('a', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'U'})
-
-    def test_estab_type_valid(self):
-        # Given
-        estab_type_validator = validators.estab_type_in_list()
-
-        # When
-        estab_type_validator('Sheltered Accommodation')
-        estab_type_validator('Care Home')
-        estab_type_validator('Household')
-
-        # Then no invalid exception is raised
-
-    def test_estab_type_invalid(self):
-        # Given
-        estab_type_validator = validators.estab_type_in_list()
-
-        # When, then raises
-        with pytest.raises(validators.Invalid):
-            estab_type_validator('Wrong Estab Type')

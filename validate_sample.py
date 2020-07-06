@@ -3,7 +3,7 @@ import csv
 from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
-    no_padding_whitespace, region_matches_treatment_code, ce_u_has_expected_capacity, estab_type_in_list
+    no_padding_whitespace, region_matches_treatment_code, ce_u_has_expected_capacity
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -18,12 +18,15 @@ class SampleValidator:
         'HH_QF3R3AW', 'HH_QFNR1W', 'HH_QFNR2W', 'HH_QFNR3AW', 'HH_3QSFN', 'SPG_QDHSE', 'SPG_QDHSW', 'SPG_LPHUE',
         'SPG_QDHUE', 'SPG_VDNEE', 'CE_QDIEE', 'SPG_VDNEW', 'CE_QDIEW', 'SPG_LPHUW', 'SPG_QDHUW', 'CE_LDIUE', 'CE_LDIUW'}
 
+    ESTAB_TYPES = {'Sheltered Accommodation', 'Hall of Residence', 'Care Home', 'Boarding School', 'Hotel', 'Hostel',
+                   'Residential Caravanner', 'Gypsy Roma Traveller', 'Residential Boater', 'Military SFA', 'Household'}
+
     def __init__(self):
         self.schema = {
             'UPRN': [mandatory(), max_length(12), numeric(), no_padding_whitespace()],
             'ESTAB_UPRN': [mandatory(), max_length(12), numeric(), mandatory(), no_padding_whitespace()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'}), no_padding_whitespace()],
-            'ESTAB_TYPE': [mandatory(), estab_type_in_list(), max_length(255), no_padding_whitespace()],
+            'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES), max_length(255), no_padding_whitespace()],
             'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'}), no_padding_whitespace()],
             'ABP_CODE': [mandatory(), max_length(6), no_padding_whitespace()],
             'ORGANISATION_NAME': [max_length(60), no_padding_whitespace()],
