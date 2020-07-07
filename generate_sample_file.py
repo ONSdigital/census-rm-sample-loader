@@ -168,7 +168,7 @@ class SampleGenerator:
         uprn = self.get_sequential_uprn() if sequential_uprn else self.get_random_uprn()
 
         if estab_type is None:
-            estab_type = self.get_random_estab_type() if address_type != 'HH' else 'Household'
+            estab_type = self.get_random_estab_type() if address_type != 'HH' else 'HOUSEHOLD'
 
         if estab_uprn is None:
             estab_uprn = self.get_random_uprn()
