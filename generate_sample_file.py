@@ -17,16 +17,15 @@ class SampleGenerator:
                'V', 'W', 'X', 'Y', 'Z']
     WORDS = []
 
-    CE_TYPES = ['Sheltered Accommodation',
-                'Hall of Residence',
-                'Care Home',
-                'Boarding School',
-                'Hotel',
-                'Hostel',
-                'Residential Caravanner',
-                'Gypsy Roma Traveller',
-                'Residential Boater',
-                'Military SFA']
+    ESTAB_TYPES = ['HALL OF RESIDENCE', 'CARE HOME', 'HOSPITAL', 'HOSPICE', 'MENTAL HEALTH HOSPITAL',
+                   'MEDICAL CARE OTHER', 'BOARDING SCHOOL', 'LOW/MEDIUM SECURE MENTAL HEALTH',
+                   'HIGH SECURE MENTAL HEALTH', 'HOTEL', 'YOUTH HOSTEL', 'HOSTEL', 'MILITARY SLA', 'MILITARY US',
+                   'RELIGIOUS COMMUNITY', 'RESIDENTIAL CHILDRENS HOME', 'EDUCATION OTHER', 'PRISON',
+                   'IMMIGRATION REMOVAL CENTRE', 'APPROVED PREMISES', 'ROUGH SLEEPER', 'STAFF ACCOMMODATION',
+                   'CAMPHILL', 'HOLIDAY PARK', 'HOUSEHOLD', 'SHELTERED ACCOMMODATION', 'RESIDENTIAL CARAVAN',
+                   'RESIDENTIAL BOAT', 'GATED APARTMENTS', 'MOD HOUSEHOLDS', 'FOREIGN OFFICES', 'CASTLES', 'GRT SITE',
+                   'MILITARY SFA', 'EMBASSY', 'ROYAL HOUSEHOLD', 'CARAVAN SITE', 'MARINA', 'TRAVELLING PERSONS',
+                   'TRANSIENT PERSONS']
 
     UPRNS = set()
     UPRN_SEQUENCE = 0
@@ -115,8 +114,8 @@ class SampleGenerator:
         print_batch = random.randint(1, 99)
         return print_batch
 
-    def get_random_ce_type(self):
-        return self.CE_TYPES[random.randint(0, len(self.CE_TYPES) - 1)]
+    def get_random_estab_type(self):
+        return self.ESTAB_TYPES[random.randint(0, len(self.ESTAB_TYPES) - 1)]
 
     @staticmethod
     def get_random_ce_secure():
@@ -169,7 +168,7 @@ class SampleGenerator:
         uprn = self.get_sequential_uprn() if sequential_uprn else self.get_random_uprn()
 
         if estab_type is None:
-            estab_type = self.get_random_ce_type() if address_type != 'HH' else 'Household'
+            estab_type = self.get_random_estab_type() if address_type != 'HH' else 'Household'
 
         if estab_uprn is None:
             estab_uprn = self.get_random_uprn()
