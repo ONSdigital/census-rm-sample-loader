@@ -102,7 +102,7 @@ def region_matches_treatment_code():
 def ce_u_has_expected_capacity():
     def validate(expected_capacity, **kwargs):
         if kwargs['row']['ADDRESS_TYPE'] == 'CE' and kwargs['row']['ADDRESS_LEVEL'] == 'U' \
-                    and (not expected_capacity.isdigit() or int(expected_capacity) == 0):
+                and (not expected_capacity.isdigit() or int(expected_capacity) == 0):
             raise Invalid(
                 f'CE Unit Expected Capacity "{expected_capacity}" cannot be null, blank or zero')
 
