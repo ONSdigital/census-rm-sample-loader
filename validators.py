@@ -98,9 +98,6 @@ def region_matches_treatment_code():
 
     return validate
 
-    # NI treatment codes do not have Q or L immediately after underscore
-    # V after the treatment code underscore means visit only
-
 
 def ce_u_has_expected_capacity():
     def validate(expected_capacity, **kwargs):
