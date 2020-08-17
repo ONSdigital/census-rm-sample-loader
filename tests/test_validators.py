@@ -173,7 +173,7 @@ class TestValidators(TestCase):
 
     def test_no_padding_whitespace_check_valid(self):
         # Given
-        no_padding_whitespace_validator = validators.no_padding_whitespace()
+        no_padding_whitespace_validator = validators.no_padding_whitespace_and_no_pipe_character()
 
         # When
         no_padding_whitespace_validator('')
@@ -182,11 +182,19 @@ class TestValidators(TestCase):
 
     def test_no_padding_whitespace_check_invalid(self):
         # Given
-        no_padding_whitespace_validator = validators.no_padding_whitespace()
+        no_padding_whitespace_validator = validators.no_padding_whitespace_and_no_pipe_character()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
             no_padding_whitespace_validator('  ')
+
+    def test_no_pipe_character_check_invalid(self):
+        # Given
+        no_pipe_character_validator = validators.no_padding_whitespace_and_no_pipe_character()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            no_pipe_character_validator('|')
 
     def test_region_matches_treatment_code_valid(self):
         # Given
@@ -221,3 +229,39 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             ce_u_has_expected_capacity_validator('a', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'U'})
+
+    def test_ce_e_has_expected_capacity_valid(self):
+        # Given
+        ce_e_has_expected_capacity_validator = validators.ce_e_has_expected_capacity()
+
+        # When
+        ce_e_has_expected_capacity_validator('5', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'E',
+                                                       'TREATMENT_CODE': 'CE_TESTE'})
+
+        # Then no invalid exception is raised
+
+    def test_ce_e_has_expected_capacity_invalid(self):
+        # Given
+        ce_e_has_expected_capacity_validator = validators.ce_e_has_expected_capacity()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            ce_e_has_expected_capacity_validator('0', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'E',
+                                                           'TREATMENT_CODE': 'CE_TESTE'})
+
+    def test_postcode_format_valid(self):
+        # Given
+        postcode_format_validator = validators.postcode_format()
+
+        # When
+        postcode_format_validator('TE255TE')
+
+        # Then no invalid exception is raised
+
+    def test_postcode_format_invalid(self):
+        # Given
+        postcode_format_validator = validators.postcode_format()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            postcode_format_validator('TE25 5TE')  # fails due to there being whitespace
