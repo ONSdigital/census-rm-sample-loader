@@ -1,7 +1,5 @@
 from typing import Iterable
 
-from ukpostcodeutils import validation
-
 
 class Invalid(Exception):
     pass
@@ -29,7 +27,7 @@ def unique():
 def mandatory():
     def validate(value, **_kwargs):
         if not value or value.replace(" ", "") == '':
-            raise Invalid(f'Empty mandatory value')
+            raise Invalid('Empty mandatory value')
 
     return validate
 
@@ -119,15 +117,15 @@ def ce_e_has_expected_capacity():
                 kwargs['row']['TREATMENT_CODE'] not in {'CE_LDCEE', 'CE_LDCEW'}) and (
                 not expected_capacity.isdigit() or int(expected_capacity) == 0):
             raise Invalid(
-                f'Expected Capacity "{expected_capacity}" must be greater than 0')
+                f'Expected Capacity "{expected_capacity}" cannot be null, blank or zero')
 
     return validate
 
 
-def postcode_format():
-    def validate(postcode):
-        if not validation.is_valid_postcode(postcode):
-            raise Invalid(
-                f'Postcode "{postcode}" does not follow correct format')
+def alphanumeric_postcode():
+    def validate(postcode, **_kwargs):
+        postcode = postcode.replace(" ", "")
+        if not postcode.isalnum():
+            raise Invalid(f'Postcode "{postcode}" is non alphanumeric')
 
     return validate

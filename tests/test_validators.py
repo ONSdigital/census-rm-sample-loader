@@ -249,19 +249,19 @@ class TestValidators(TestCase):
             ce_e_has_expected_capacity_validator('0', row={'ADDRESS_TYPE': 'CE', 'ADDRESS_LEVEL': 'E',
                                                            'TREATMENT_CODE': 'CE_TESTE'})
 
-    def test_postcode_format_valid(self):
+    def test_alphanumeric_postcode_valid(self):
         # Given
-        postcode_format_validator = validators.postcode_format()
+        alphanumeric_postcode_validator = validators.alphanumeric_postcode()
 
         # When
-        postcode_format_validator('TE255TE')
+        alphanumeric_postcode_validator('TE25 5TE')
 
         # Then no invalid exception is raised
 
-    def test_postcode_format_invalid(self):
+    def test_alphanumeric_postcode_invalid(self):
         # Given
-        postcode_format_validator = validators.postcode_format()
+        alphanumeric_postcode_validator = validators.alphanumeric_postcode()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
-            postcode_format_validator('TE25 5TE')  # fails due to there being whitespace
+            alphanumeric_postcode_validator('TE5 5TE!')
