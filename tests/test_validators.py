@@ -173,7 +173,7 @@ class TestValidators(TestCase):
 
     def test_no_padding_whitespace_check_valid(self):
         # Given
-        no_padding_whitespace_validator = validators.no_padding_whitespace_and_no_pipe_character()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When
         no_padding_whitespace_validator('')
@@ -182,15 +182,24 @@ class TestValidators(TestCase):
 
     def test_no_padding_whitespace_check_invalid(self):
         # Given
-        no_padding_whitespace_validator = validators.no_padding_whitespace_and_no_pipe_character()
+        no_padding_whitespace_validator = validators.no_padding_whitespace()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
             no_padding_whitespace_validator('  ')
 
+    def test_no_pipe_character_check_valid(self):
+        # Given
+        no_pipe_character_validator = validators.no_pipe_character()
+
+        # When, then raises
+        no_pipe_character_validator('test')
+
+        # Then no invalid exception is raised
+
     def test_no_pipe_character_check_invalid(self):
         # Given
-        no_pipe_character_validator = validators.no_padding_whitespace_and_no_pipe_character()
+        no_pipe_character_validator = validators.no_pipe_character()
 
         # When, then raises
         with pytest.raises(validators.Invalid):
