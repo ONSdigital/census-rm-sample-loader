@@ -274,3 +274,20 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             alphanumeric_postcode_validator('TE5 5TE!')
+
+    def test_latitude_longitude_range_valid(self):
+        # Given
+        latitude_longitude_range_validator = validators.latitude_longitude_range()
+
+        # When
+        latitude_longitude_range_validator(50)
+
+        # Then no invalid exception is raised
+
+    def test_latitude_longitude_range_invalid(self):
+        # Given
+        latitude_longitude_range_validator = validators.latitude_longitude_range()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            latitude_longitude_range_validator(360)

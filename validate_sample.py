@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
     no_padding_whitespace, region_matches_treatment_code, ce_u_has_expected_capacity, \
-    ce_e_has_expected_capacity, alphanumeric_postcode, no_pipe_character
+    ce_e_has_expected_capacity, alphanumeric_postcode, no_pipe_character, latitude_longitude_range
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -32,7 +32,7 @@ class SampleValidator:
             'UPRN': [mandatory(), max_length(13), numeric(), no_padding_whitespace()],
             'ESTAB_UPRN': [mandatory(), max_length(13), numeric(), no_padding_whitespace()],
             'ADDRESS_TYPE': [mandatory(), in_set({'HH', 'CE', 'SPG'}), no_padding_whitespace()],
-            'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES), no_padding_whitespace()],
+            'ESTAB_TYPE': [mandatory(), in_set(self.ESTAB_TYPES)],
             'ADDRESS_LEVEL': [mandatory(), in_set({'E', 'U'}), no_padding_whitespace()],
             'ABP_CODE': [mandatory(), max_length(6), no_padding_whitespace(), no_pipe_character()],
             'ORGANISATION_NAME': [max_length(60), no_padding_whitespace(), no_pipe_character()],
@@ -43,9 +43,9 @@ class SampleValidator:
             'POSTCODE': [mandatory(), max_length(8), no_padding_whitespace(),
                          alphanumeric_postcode(), no_pipe_character()],
             'LATITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=9),
-                         no_padding_whitespace(), no_pipe_character()],
+                         no_padding_whitespace(), no_pipe_character(), latitude_longitude_range()],
             'LONGITUDE': [mandatory(), latitude_longitude(max_scale=7, max_precision=8),
-                          no_padding_whitespace(), no_pipe_character()],
+                          no_padding_whitespace(), no_pipe_character(), latitude_longitude_range()],
             'OA': [mandatory(), max_length(9), no_padding_whitespace(), no_pipe_character()],
             'LSOA': [mandatory(), max_length(9), no_padding_whitespace(), no_pipe_character()],
             'MSOA': [mandatory(), max_length(9), no_padding_whitespace(), no_pipe_character()],
