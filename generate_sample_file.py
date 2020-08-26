@@ -111,7 +111,7 @@ class SampleGenerator:
 
     @staticmethod
     def get_random_print_batch():
-        print_batch = random.randint(1, 99)
+        print_batch = random.randint(0, 99)
         return print_batch
 
     def get_random_estab_type(self):
