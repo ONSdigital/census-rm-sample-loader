@@ -19,13 +19,13 @@ class SampleGenerator:
 
     ESTAB_TYPES = ['HALL OF RESIDENCE', 'CARE HOME', 'HOSPITAL', 'HOSPICE', 'MENTAL HEALTH HOSPITAL',
                    'MEDICAL CARE OTHER', 'BOARDING SCHOOL', 'LOW/MEDIUM SECURE MENTAL HEALTH',
-                   'HIGH SECURE MENTAL HEALTH', 'HOTEL', 'YOUTH HOSTEL', 'HOSTEL', 'MILITARY SLA', 'MILITARY US',
+                   'HIGH SECURE MENTAL HEALTH', 'HOTEL', 'YOUTH HOSTEL', 'HOSTEL', 'MILITARY SLA', 'MILITARY US SLA',
                    'RELIGIOUS COMMUNITY', 'RESIDENTIAL CHILDRENS HOME', 'EDUCATION OTHER', 'PRISON',
                    'IMMIGRATION REMOVAL CENTRE', 'APPROVED PREMISES', 'ROUGH SLEEPER', 'STAFF ACCOMMODATION',
                    'CAMPHILL', 'HOLIDAY PARK', 'HOUSEHOLD', 'SHELTERED ACCOMMODATION', 'RESIDENTIAL CARAVAN',
                    'RESIDENTIAL BOAT', 'GATED APARTMENTS', 'MOD HOUSEHOLDS', 'FOREIGN OFFICES', 'CASTLES', 'GRT SITE',
-                   'MILITARY SFA', 'EMBASSY', 'ROYAL HOUSEHOLD', 'CARAVAN SITE', 'MARINA', 'TRAVELLING PERSONS',
-                   'TRANSIENT PERSONS']
+                   'MILITARY SFA', 'EMBASSY', 'ROYAL HOUSEHOLD', 'CARAVAN', 'MARINA', 'TRAVELLING PERSONS',
+                   'TRANSIENT PERSONS', 'MIGRANT WORKERS', 'MILITARY US SFA']
 
     UPRNS = set()
     UPRN_SEQUENCE = 0
@@ -128,7 +128,7 @@ class SampleGenerator:
 
     @staticmethod
     def get_random_lat_or_long():
-        random_degrees = random.randint(-180, 180)
+        random_degrees = random.randint(-179, 179)
         random_minutes = random.randint(999, 9999)
         return f'{random_degrees}.{random_minutes}'
 
