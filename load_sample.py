@@ -65,7 +65,7 @@ def _load_sample_units(action_plan_id: str, collection_exercise_id: str, sample_
 
 
 def _create_case_json(sample_row, collection_exercise_id, action_plan_id) -> str:
-    create_case = {'uprn': sample_row['UPRN'], 'estabUprn': sample_row['ESTAB_UPRN'],
+    create_case = {'caseId': sample_row['CASE_ID'], 'uprn': sample_row['UPRN'], 'estabUprn': sample_row['ESTAB_UPRN'],
                    'addressType': sample_row['ADDRESS_TYPE'], 'estabType': sample_row['ESTAB_TYPE'],
                    'addressLevel': sample_row['ADDRESS_LEVEL'], 'abpCode': sample_row['ABP_CODE'],
                    'organisationName': sample_row['ORGANISATION_NAME'],
