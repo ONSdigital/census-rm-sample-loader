@@ -5,12 +5,12 @@ from google.cloud import storage
 
 
 def load_bucket_sample_file(sample_file):
-    client = storage.Client(project="census-rm-leo-howard-mark4")
+    client = storage.Client()
 
-    bucket = client.get_bucket(os.getenv('SAMPLE_BUCKET', 'census-rm-leo-howard-mark4-sample'))
+    bucket = client.get_bucket(os.getenv('SAMPLE_BUCKET'))
     blob = storage.Blob(sample_file, bucket)
 
-    with open(sample_file, 'wb+') as file_obj:
+    with open(os.path.join("sample_files", sample_file), 'wb+') as file_obj:
         client.download_blob_to_file(blob, file_obj)
 
     print(f'downloaded file {sample_file} from gcp bucket {os.getenv("SAMPLE_BUCKET")}, now loading')
