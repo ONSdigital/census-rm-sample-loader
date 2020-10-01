@@ -77,6 +77,14 @@ While the sample loader pod is running, from another shell run
 kubectl cp <path_to_sample_file> <namespace>/<sample_load_pod_name>:<destination_path_on_pod>
 ```
 
+### Downloading a sample file from bucket
+Given a file is in the sample bucket, shell into the sample pod, then run command
+```shell script
+python download_file_from_bucket.py --sample_file <name_of_file_in_bucket.csv>
+```
+
+This will download the file from the bucket onto the persistent volume which is mounted to the directory: /home/sampleloader/sample_files 
+
 ## Sample File Validator
 The is a validation script provided which performs a basic sanity check of the sample file. 
 
