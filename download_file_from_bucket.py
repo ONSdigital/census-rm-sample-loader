@@ -13,7 +13,7 @@ def load_bucket_sample_file(sample_file):
     with open(os.path.join("sample_files", sample_file), 'wb+') as file_obj:
         client.download_blob_to_file(blob, file_obj)
 
-    print(f'downloaded file {sample_file} from gcp bucket {os.getenv("SAMPLE_BUCKET")}, now loading')
+    print(f'downloaded file {sample_file} from gcp bucket {os.getenv("SAMPLE_BUCKET")}')
 
 
 def parse_arguments():
