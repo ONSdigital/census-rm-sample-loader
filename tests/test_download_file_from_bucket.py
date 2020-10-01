@@ -1,24 +1,22 @@
+from functools import partial
 from pathlib import Path
 from unittest.mock import patch
 
 from download_file_from_bucket import load_bucket_sample_file
 
-
-def test_download_file_from_bucket_happy_path():
+@patch('download_file_from_bucket.storage')
+def test_download_file_from_bucket_happy_path(patched_storage):
     # Given
     Path("sample_files").mkdir()
 
     sample_file = "sample_file.csv"
 
-    with patch('download_file_from_bucket.storage') as patched_storage:
-        patched_storage.Client.return_value.download_blob_to_file.side_effect = \
-            "resources/sample_file_invalid_treatment_code.csv"
-
-        load_bucket_sample_file(sample_file)
-
-    # mock.blob = Mock()
-
+    patched_storage.Client.return_value.download_blob_to_file.side_effect = partial(mock_download_blob,
+                                                                                    mock_data=(
+                                                                                        b'header_1,header_2\n'
+                                                                                        b'value1,value2\n'))
     # When
+    load_bucket_sample_file(sample_file)
 
     # Then
 
