@@ -9,8 +9,8 @@ ENV RABBITMQ_SERVICE_HOST rabbitmq
 ENV RABBITMQ_SERVICE_PORT 5672
 ENV RABBITMQ_VHOST /
 ENV RABBITMQ_QUEUE case.sample.inbound
-ENV RABBITMQ_USER guest
-ENV RABBITMQ_PASSWORD guest
+ENV RABBITMQ_USER rmquser
+ENV RABBITMQ_PASSWORD rmqp455w0rd
 
 COPY Pipfile* /home/sampleloader/
 RUN pipenv install --system --deploy

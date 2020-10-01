@@ -52,7 +52,7 @@ You can set the global log level with the `LOG_LEVEL` environment variable, when
 
 
 ### Viewing messages in the Rabbit queue
-The Rabbit docker image included in docker-compose.yml has the management plugin enabled. This can be accessed when runnning on http://localhost:15672 use guest:guest as the credentials.
+The Rabbit docker image included in docker-compose.yml has the management plugin enabled. You can access the RabbitMQ interface locally via **`http://localhost:16672`** with the credentials laid out in **`census-rm-docker-dev/.env`**
 
 
 ### Running in Kubernetes
