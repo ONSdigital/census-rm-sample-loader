@@ -104,14 +104,12 @@ class SampleGenerator:
         return f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number} {second_random_number}' \
                f'{self.get_random_letter()}{self.get_random_letter()}'
 
-    @staticmethod
     def get_random_field_coordinator_id(self):
         first_random_number = random.randint(1, 9)
         return f'{self.get_random_letter()}{self.get_random_letter()}-{self.get_random_letter()}' \
                f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number}-' \
                f'{self.get_random_letter()}{self.get_random_letter()}'
 
-    @staticmethod
     def get_random_field_officer_id(self):
         first_random_number = random.randint(1, 9)
         second_random_number = random.randint(1, 9)
