@@ -123,6 +123,17 @@ class SampleGenerator:
         return f'{random_ce_secure}'
 
     @staticmethod
+    def get_field_coordinator_and_officer():
+        random_field_coordinator = f'SH-TWH1-ZA{random.randint(100, 999)}'
+        random_field_officer = f'{random_field_coordinator}-{random.randint(1, 99)}'
+        return random_field_coordinator, random_field_officer
+
+    @staticmethod
+    def get_field_officer(coordinator):
+        random_digits = random.randint(1, 99)
+        return f'{coordinator}-{random_digits}'
+
+    @staticmethod
     def random_1_in_11():
         return random.randint(0, 10) > 9
 
@@ -173,6 +184,8 @@ class SampleGenerator:
         if estab_uprn is None:
             estab_uprn = self.get_random_uprn()
 
+        random_field_coordinator, random_field_officer = self.get_field_coordinator_and_officer()
+
         writer.writerow({
             'UPRN': uprn,
             'ESTAB_UPRN': estab_uprn,
@@ -196,8 +209,8 @@ class SampleGenerator:
             'HTC_WILLINGNESS': self.get_random_htc(),
             'HTC_DIGITAL': self.get_random_htc(),
             'TREATMENT_CODE': treatment_code["treatment_code"],
-            'FIELDCOORDINATOR_ID': '',
-            'FIELDOFFICER_ID': '',
+            'FIELDCOORDINATOR_ID': random_field_coordinator,
+            'FIELDOFFICER_ID': random_field_officer,
             'CE_EXPECTED_CAPACITY': expected_capacity,
             'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' or address_type == 'SPG' else 0,
             'PRINT_BATCH': self.get_random_print_batch()
