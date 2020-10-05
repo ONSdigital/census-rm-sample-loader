@@ -4,7 +4,8 @@ from collections import namedtuple
 
 from validators import max_length, Invalid, mandatory, numeric, in_set, latitude_longitude, set_equal, \
     no_padding_whitespace, region_matches_treatment_code, ce_u_has_expected_capacity, \
-    ce_e_has_expected_capacity, alphanumeric_postcode, no_pipe_character, latitude_longitude_range
+    ce_e_has_expected_capacity, alphanumeric_postcode, no_pipe_character, latitude_longitude_range, \
+    alphanumeric_plus_hyphen_field_values
 
 ValidationFailure = namedtuple('ValidationFailure', ('line_number', 'column', 'description'))
 
@@ -54,8 +55,10 @@ class SampleValidator:
                        region_matches_treatment_code(), no_pipe_character()],
             'HTC_WILLINGNESS': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'})],
             'HTC_DIGITAL': [mandatory(), in_set({'0', '1', '2', '3', '4', '5'})],
-            'FIELDCOORDINATOR_ID': [max_length(10), no_padding_whitespace(), no_pipe_character()],
-            'FIELDOFFICER_ID': [max_length(13), no_padding_whitespace(), no_pipe_character()],
+            'FIELDCOORDINATOR_ID': [mandatory(), max_length(10), no_padding_whitespace(), no_pipe_character(),
+                                    alphanumeric_plus_hyphen_field_values()],
+            'FIELDOFFICER_ID': [mandatory(), max_length(13), no_padding_whitespace(), no_pipe_character(),
+                                alphanumeric_plus_hyphen_field_values()],
             'TREATMENT_CODE': [mandatory(), in_set(self.TREATMENT_CODES)],
             'CE_EXPECTED_CAPACITY': [numeric(), max_length(4), no_padding_whitespace(),
                                      ce_u_has_expected_capacity(),

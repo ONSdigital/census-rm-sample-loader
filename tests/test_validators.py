@@ -291,3 +291,20 @@ class TestValidators(TestCase):
         # When, then raises
         with pytest.raises(validators.Invalid):
             latitude_longitude_range_validator(360)
+
+    def test_alphanumeric_plus_hyphen_field_values_valid(self):
+        # Given
+        alphanumeric_plus_hyphen_field_validator = validators.alphanumeric_plus_hyphen_field_values()
+
+        # When
+        alphanumeric_plus_hyphen_field_validator('TE-STT1-ES-01')
+
+        # Then no invalid exception is raised
+
+    def test_alphanumeric_plus_hyphen_field_values_invalid(self):
+        # Given
+        alphanumeric_plus_hyphen_field_validator = validators.alphanumeric_plus_hyphen_field_values()
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            alphanumeric_plus_hyphen_field_validator('TE-STT1-ES-!!')
