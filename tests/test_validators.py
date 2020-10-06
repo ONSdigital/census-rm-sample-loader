@@ -111,6 +111,14 @@ class TestValidators(TestCase):
 
         # Then no invalid exception is raised
 
+    def test_lat_long_malformed_decimal(self):
+        # Given
+        lat_long_validator = validators.latitude_longitude(max_scale=5, max_precision=10)
+
+        # When, then raises
+        with pytest.raises(validators.Invalid):
+            lat_long_validator('1')
+
     def test_lat_long_invalid_format(self):
         # Given
         lat_long_validator = validators.latitude_longitude(max_scale=5, max_precision=10)
