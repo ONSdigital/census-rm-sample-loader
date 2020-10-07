@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name="census_rm_sample_loader",
-    version="2.1.0",
+    version="2.2.0",
     description="Scripts to load samples",
     long_description=Path('README.md').read_text(),
     long_description_content_type="text/markdown",

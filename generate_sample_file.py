@@ -101,8 +101,22 @@ class SampleGenerator:
     def get_random_post_code(self):
         first_random_number = random.randint(1, 9)
         second_random_number = random.randint(1, 9)
-        return f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number} {second_random_number}' + \
+        return f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number} {second_random_number}' \
                f'{self.get_random_letter()}{self.get_random_letter()}'
+
+    def get_random_field_coordinator_id(self):
+        first_random_number = random.randint(1, 9)
+        return f'{self.get_random_letter()}{self.get_random_letter()}-{self.get_random_letter()}' \
+               f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number}-' \
+               f'{self.get_random_letter()}{self.get_random_letter()}'
+
+    def get_random_field_officer_id(self):
+        first_random_number = random.randint(1, 9)
+        second_random_number = random.randint(1, 9)
+        third_random_number = random.randint(1, 9)
+        return f'{self.get_random_letter()}{self.get_random_letter()}-{self.get_random_letter()}' \
+               f'{self.get_random_letter()}{self.get_random_letter()}{first_random_number}-' \
+               f'{self.get_random_letter()}{self.get_random_letter()}-{second_random_number}{third_random_number}'
 
     @staticmethod
     def get_random_ce_capacity():
@@ -196,8 +210,8 @@ class SampleGenerator:
             'HTC_WILLINGNESS': self.get_random_htc(),
             'HTC_DIGITAL': self.get_random_htc(),
             'TREATMENT_CODE': treatment_code["treatment_code"],
-            'FIELDCOORDINATOR_ID': '',
-            'FIELDOFFICER_ID': '',
+            'FIELDCOORDINATOR_ID': self.get_random_field_coordinator_id(),
+            'FIELDOFFICER_ID': self.get_random_field_officer_id(),
             'CE_EXPECTED_CAPACITY': expected_capacity,
             'CE_SECURE': self.get_random_ce_secure() if address_type == 'CE' or address_type == 'SPG' else 0,
             'PRINT_BATCH': self.get_random_print_batch()
