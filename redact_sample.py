@@ -37,7 +37,7 @@ def redact_sample(sample_file: Iterable[str], output_file_path):
 
 def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path,
                          sample_unit_log_frequency=50000):
-    logger.info(f'Redacting sample...')
+    logger.info('Redacting sample...')
 
     with open(output_file_path, 'w', newline='') as output_file:
         writer = csv.DictWriter(output_file, fieldnames=SampleGenerator.FIELDNAMES)
@@ -50,7 +50,7 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path,
             if count % sample_unit_log_frequency == 0:
                 logger.info(f'{count} sample units redacted')
 
-    logger.info(f'All sample units have been redacted')
+    logger.info('All sample units have been redacted')
 
 
 def _redact_sample_row(sample_row):
