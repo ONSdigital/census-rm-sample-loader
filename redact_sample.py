@@ -10,32 +10,33 @@ from generate_sample_file import SampleGenerator
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 SampleGen = SampleGenerator()
-SampleGen.ESTAB_TYPES = ['HALL OF RESIDENCE', 'CARE HOME', 'HOSPITAL', 'HOSPICE', 'MENTAL HEALTH HOSPITAL',
-                         'MEDICAL CARE OTHER', 'BOARDING SCHOOL', 'HOTEL',
-                         'YOUTH HOSTEL', 'HOSTEL', 'EDUCATION OTHER', 'PRISON', 'STAFF ACCOMMODATION', 'CAMPHILL',
-                         'HOLIDAY PARK', 'HOUSEHOLD', 'RESIDENTIAL CARAVAN', 'RESIDENTIAL BOAT', 'GATED APARTMENTS',
-                         'FOREIGN OFFICES', 'CASTLES', 'EMBASSY', 'CARAVAN', 'MARINA']
+sensitive_estab_types = ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', 'ROYAL HOUSEHOLD',
+                         'MOD HOUSEHOLDS', 'HIGH SECURE MENTAL HEALTH', 'ROUGH SLEEPER', 'TRANSIENT PERSONS',
+                         'TRAVELLING PERSONS', 'GRT SITE', 'MIGRANT WORKERS', 'IMMIGRATION REMOVAL CENTRE',
+                         'SHELTERED ACCOMMODATION', 'APPROVED PREMISES', 'RESIDENTIAL CHILDRENS HOME',
+                         'RELIGIOUS COMMUNITY', 'LOW/MEDIUM SECURE MENTAL HEALTH', 'BOARDING SCHOOL']
+non_sensitive_estab_types = [estab for estab in SampleGen.ESTAB_TYPES if estab not in sensitive_estab_types]
+SampleGen.ESTAB_TYPES = non_sensitive_estab_types
 SampleGen.read_words()
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Load a sample file into response management.')
+    parser = argparse.ArgumentParser(description='Redact a sample file.')
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
     return parser.parse_args()
 
 
-def redact_sample_file(sample_file_path, output_file_path):
+def redact_sample_file(sample_file_path: int, output_file_path: str):
     with open(sample_file_path) as sample_file:
-        redact_sample(sample_file, output_file_path)
-    sample_file.close()
+        _redact_sample(sample_file, output_file_path)
 
 
-def redact_sample(sample_file: Iterable[str], output_file_path):
+def _redact_sample(sample_file: Iterable[str], output_file_path: str):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
     _redact_sample_units(sample_file_reader, output_file_path)
 
 
-def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path,
+def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: str,
                          sample_unit_log_frequency=50000):
     logger.info('Redacting sample...')
 
@@ -53,27 +54,24 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path,
     logger.info('All sample units have been redacted')
 
 
-def _redact_sample_row(sample_row):
+def _redact_sample_row(sample_row: dict):
     sample_row['HTC_WILLINGNESS'] = SampleGen.get_random_htc()
     sample_row['HTC_DIGITAL'] = SampleGen.get_random_htc()
-    if sample_row['ESTAB_TYPE'] in ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', 'ROYAL HOUSEHOLD',
-                                    'MOD HOUSEHOLDS', 'HIGH SECURE MENTAL HEALTH', 'ROUGH SLEEPER', 'TRANSIENT PERSONS',
-                                    'TRAVELLING PERSONS', 'GRT SITE', 'MIGRANT WORKERS', 'IMMIGRATION REMOVAL CENTRE',
-                                    'SHELTERED ACCOMMODATION', 'APPROVED PREMISES', 'RESIDENTIAL CHILDRENS HOME',
-                                    'RELIGIOUS COMMUNITY', 'LOW/MEDIUM SECURE MENTAL HEALTH']:
+    if sample_row['ESTAB_TYPE'] in sensitive_estab_types:
         sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
         sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()
-        sample_row['ADDRESS_LINE2'] = ''
-        sample_row['ADDRESS_LINE3'] = ''
+        address_line_2, address_line_3 = SampleGen.get_random_address_lines_2_and_3()
+        sample_row['ADDRESS_LINE2'] = address_line_2
+        sample_row['ADDRESS_LINE3'] = address_line_3
         sample_row['TOWN_NAME'] = SampleGen.get_random_post_town()
         sample_row['POSTCODE'] = SampleGen.get_random_post_code()
         sample_row['LATITUDE'] = SampleGen.get_random_lat_or_long()
         sample_row['LONGITUDE'] = SampleGen.get_random_lat_or_long()
-
+        sample_row['ORGANISATION_NAME'] = ''
     return sample_row
 
 
-def _write_row(writer, sample_row):
+def _write_row(writer: csv.DictWriter, sample_row: dict):
     writer.writerow({
         'UPRN': sample_row['UPRN'],
         'ESTAB_UPRN': sample_row['ESTAB_UPRN'],
@@ -104,12 +102,17 @@ def _write_row(writer, sample_row):
         'PRINT_BATCH': sample_row['PRINT_BATCH']})
 
 
+def create_output_path(sample_file_path: str):
+    output_file_path = 'sample_files/' + sample_file_path.split('/')[-1].split('.csv')[0] + '_redacted.csv'
+    return output_file_path
+
+
 def main():
     log_level = os.getenv('LOG_LEVEL')
     logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], level=log_level or logging.ERROR)
     logger.setLevel(log_level or logging.INFO)
     args = parse_arguments()
-    output_file_path = 'sample_files/' + args.sample_file_path.split('/')[-1].split('.csv')[0] + '_redacted.csv'
+    output_file_path = create_output_path(args.sample_file_path)
     redact_sample_file(args.sample_file_path, output_file_path)
 
 

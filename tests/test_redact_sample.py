@@ -56,7 +56,7 @@ class TestRedactSample(TestCase):
         # Given
         sample_dict_row = {'UPRN': '10008677190', 'ESTAB_UPRN': '10008677194', 'ADDRESS_TYPE': 'HH',
                            'ESTAB_TYPE': 'MILITARY SFA', 'ADDRESS_LEVEL': 'U', 'ABP_CODE': 'RD06',
-                           'ORGANISATION_NAME': '', 'ADDRESS_LINE1': 'Flat 56 Francombe House',
+                           'ORGANISATION_NAME': 'An Organisation', 'ADDRESS_LINE1': 'Flat 56 Francombe House',
                            'ADDRESS_LINE2': 'Commercial Road', 'ADDRESS_LINE3': 'Another Address Line',
                            'TOWN_NAME': 'Windleybury',
                            'POSTCODE': 'XX1 0XX', 'LATITUDE': '51.4463421', 'LONGITUDE': '-2.5924477',
@@ -68,7 +68,7 @@ class TestRedactSample(TestCase):
 
         sample_dict_row_reference = {'UPRN': '10008677190', 'ESTAB_UPRN': '10008677194', 'ADDRESS_TYPE': 'HH',
                                      'ESTAB_TYPE': 'MILITARY SFA', 'ADDRESS_LEVEL': 'U', 'ABP_CODE': 'RD06',
-                                     'ORGANISATION_NAME': '', 'ADDRESS_LINE1': 'Flat 56 Francombe House',
+                                     'ORGANISATION_NAME': 'An Organisation', 'ADDRESS_LINE1': 'Flat 56 Francombe House',
                                      'ADDRESS_LINE2': 'Commercial Road', 'ADDRESS_LINE3': 'Another Address Line',
                                      'TOWN_NAME': 'Windleybury', 'POSTCODE': 'XX1 0XX', 'LATITUDE': '51.4463421',
                                      'LONGITUDE': '-2.5924477', 'OA': 'E00073438', 'LSOA': 'E01014540',
@@ -97,3 +97,5 @@ class TestRedactSample(TestCase):
         self.assertNotEqual(sample_dict_row_reference['ADDRESS_LINE2'], redacted_sample_row['ADDRESS_LINE2'])
 
         self.assertNotEqual(sample_dict_row_reference['ADDRESS_LINE3'], redacted_sample_row['ADDRESS_LINE3'])
+
+        self.assertNotEqual(sample_dict_row_reference['ORGANISATION_NAME'], redacted_sample_row['ORGANISATION_NAME'])
