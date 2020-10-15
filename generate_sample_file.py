@@ -13,6 +13,8 @@ class SampleGenerator:
     COUNTRIES = ['E', 'W', 'N']
     ROADS = ['Road', 'Street', 'Lane', 'Passage', 'Alley', 'Way', 'Avenue']
     CONURBATIONS = ['City', 'Town', 'Village', 'Hamlet']
+    AREA_SUFFIXES = ['mere', 'ham', 'stead', 'on']
+    TOWN_SUFFIXES = ['ville', 'ford', 'ing', 'cester', 'mouth', 'bury', 'by']
     LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
                'V', 'W', 'X', 'Y', 'Z']
     WORDS = []
@@ -92,6 +94,26 @@ class SampleGenerator:
         random_road = self.ROADS[random.randint(0, len(self.ROADS) - 1)]
 
         return f'{random_number} {self.get_random_word()} {self.get_random_word()} {random_road}'
+
+    def _get_random_address_line_2_or_3(self, line_number: int):
+        random_suffix = self.AREA_SUFFIXES[random.randint(0, len(self.AREA_SUFFIXES) - 1)]
+        if line_number == 3:
+            random_suffix = self.TOWN_SUFFIXES[random.randint(0, len(self.TOWN_SUFFIXES) - 1)]
+        random_word = self.get_random_word()
+        address_line = f'{random_word}{random_suffix}'
+        if random_word.endswith(random_suffix):
+            address_line = random_word
+        return address_line
+
+    def get_random_address_lines_2_and_3(self):
+        number_of_address_lines = random.randint(1, 3)
+        address_line_2 = ''
+        address_line_3 = ''
+        if number_of_address_lines >= 2:
+            address_line_2 = self._get_random_address_line_2_or_3(line_number=2)
+            if number_of_address_lines == 3:
+                address_line_3 = self._get_random_address_line_2_or_3(line_number=3)
+        return [address_line_2, address_line_3]
 
     def get_random_post_town(self):
         random_conurbation = self.CONURBATIONS[random.randint(0, len(self.CONURBATIONS) - 1)]
@@ -187,6 +209,8 @@ class SampleGenerator:
         if estab_uprn is None:
             estab_uprn = self.get_random_uprn()
 
+        address_line_2, address_line_3 = self.get_random_address_lines_2_and_3()
+
         writer.writerow({
             'UPRN': uprn,
             'ESTAB_UPRN': estab_uprn,
@@ -196,8 +220,8 @@ class SampleGenerator:
             'ABP_CODE': self.get_random_abp_code(),
             'ORGANISATION_NAME': '',
             'ADDRESS_LINE1': self.get_random_address_line(),
-            'ADDRESS_LINE2': '',
-            'ADDRESS_LINE3': '',
+            'ADDRESS_LINE2': address_line_2,
+            'ADDRESS_LINE3': address_line_3,
             'TOWN_NAME': self.get_random_post_town(),
             'POSTCODE': self.get_random_post_code(),
             'LATITUDE': self.get_random_lat_or_long(),
