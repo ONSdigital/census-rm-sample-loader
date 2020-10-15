@@ -10,12 +10,12 @@ from generate_sample_file import SampleGenerator
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 SampleGen = SampleGenerator()
-sensitive_estab_types = ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', 'ROYAL HOUSEHOLD',
+SENSITIVE_ESTAB_TYPES = ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', 'ROYAL HOUSEHOLD',
                          'MOD HOUSEHOLDS', 'HIGH SECURE MENTAL HEALTH', 'ROUGH SLEEPER', 'TRANSIENT PERSONS',
                          'TRAVELLING PERSONS', 'GRT SITE', 'MIGRANT WORKERS', 'IMMIGRATION REMOVAL CENTRE',
                          'SHELTERED ACCOMMODATION', 'APPROVED PREMISES', 'RESIDENTIAL CHILDRENS HOME',
                          'RELIGIOUS COMMUNITY', 'LOW/MEDIUM SECURE MENTAL HEALTH', 'BOARDING SCHOOL']
-non_sensitive_estab_types = [estab for estab in SampleGen.ESTAB_TYPES if estab not in sensitive_estab_types]
+non_sensitive_estab_types = [estab for estab in SampleGen.ESTAB_TYPES if estab not in SENSITIVE_ESTAB_TYPES]
 SampleGen.ESTAB_TYPES = non_sensitive_estab_types
 SampleGen.read_words()
 
@@ -57,7 +57,7 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: st
 def _redact_sample_row(sample_row: dict):
     sample_row['HTC_WILLINGNESS'] = SampleGen.get_random_htc()
     sample_row['HTC_DIGITAL'] = SampleGen.get_random_htc()
-    if sample_row['ESTAB_TYPE'] in sensitive_estab_types:
+    if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES:
         sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
         sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()
         address_line_2, address_line_3 = SampleGen.get_random_address_lines_2_and_3()
