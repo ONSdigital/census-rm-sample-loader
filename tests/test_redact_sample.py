@@ -45,12 +45,43 @@ class TestRedactSample(TestCase):
                            'PRINT_BATCH': '2'}
 
         # When
-        redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row)
+        redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row, redact_htc_only=False)
 
         # Then
         self.assertTrue(1 <= int(redacted_sample_row['HTC_WILLINGNESS']) <= 5)
 
         self.assertTrue(1 <= int(redacted_sample_row['HTC_DIGITAL']) <= 5)
+
+    def test_redact_htc_only(self):
+        # Given
+        sample_dict_row = {'UPRN': '10008677190', 'ESTAB_UPRN': '10008677194', 'ADDRESS_TYPE': 'HH',
+                           'ESTAB_TYPE': 'HOUSEHOLD', 'ADDRESS_LEVEL': 'U', 'ABP_CODE': 'RD06', 'ORGANISATION_NAME': '',
+                           'ADDRESS_LINE1': 'Flat 56 Francombe House',
+                           'ADDRESS_LINE2': 'Commercial Road', 'ADDRESS_LINE3': '', 'TOWN_NAME': 'Windleybury',
+                           'POSTCODE': 'XX1 0XX', 'LATITUDE': '51.4463421', 'LONGITUDE': '-2.5924477',
+                           'OA': 'E00073438', 'LSOA': 'E01014540', 'MSOA': 'E02003043', 'LAD': 'E06000023',
+                           'REGION': 'E12000009', 'HTC_WILLINGNESS': '1',
+                           'HTC_DIGITAL': '5', 'FIELDCOORDINATOR_ID': '1', 'FIELDOFFICER_ID': '2',
+                           'TREATMENT_CODE': 'HH_LF3R2E', 'CE_EXPECTED_CAPACITY': '3', 'CE_SECURE': '0',
+                           'PRINT_BATCH': '2'}
+
+        # When
+        redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row, redact_htc_only=True)
+
+        # Then
+        self.assertTrue(1 <= int(redacted_sample_row['HTC_WILLINGNESS']) <= 5)
+        self.assertTrue(1 <= int(redacted_sample_row['HTC_DIGITAL']) <= 5)
+
+        self.assertEqual(sample_dict_row['ESTAB_TYPE'], redacted_sample_row['ESTAB_TYPE'])
+        self.assertEqual(sample_dict_row['ADDRESS_LINE1'], redacted_sample_row['ADDRESS_LINE1'])
+        self.assertEqual(sample_dict_row['TOWN_NAME'], redacted_sample_row['TOWN_NAME'])
+        self.assertEqual(sample_dict_row['POSTCODE'], redacted_sample_row['POSTCODE'])
+        self.assertEqual(sample_dict_row['LATITUDE'], redacted_sample_row['LATITUDE'])
+        self.assertEqual(sample_dict_row['LONGITUDE'], redacted_sample_row['LONGITUDE'])
+        self.assertEqual(sample_dict_row['ADDRESS_LINE2'], redacted_sample_row['ADDRESS_LINE2'])
+        self.assertEqual(sample_dict_row['ADDRESS_LINE3'], redacted_sample_row['ADDRESS_LINE3'])
+        self.assertEqual(sample_dict_row['ORGANISATION_NAME'], redacted_sample_row['ORGANISATION_NAME'])
+
 
     def test_redact_fields_sensitive_estab(self):
         # Given
@@ -79,7 +110,7 @@ class TestRedactSample(TestCase):
                                      'PRINT_BATCH': '2'}
 
         # When
-        redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row)
+        redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row, redact_htc_only=False)
 
         # Then
         self.assertNotEqual(sample_dict_row_reference['ESTAB_TYPE'], redacted_sample_row['ESTAB_TYPE'])
