@@ -120,10 +120,11 @@ To redact **all** sensitive fields, run it with the script :
 ```shell script
 pipenv run python redact_sample.py sample_files/my_sample.csv
 ```
+And it will write out the redacted file to `my_sample_redacted.csv`
 
 To redact just the HTC fields, run the script with the flag `--redact-htc-only`:
 ```shell script
 pipenv run python redact_sample.py sample_files/my_sample.csv --redact-htc-only
 ```
 
-And it will write out the generated file to `my_sample_redacted.csv` or `my_sample_htc_redacted_only.csv`
+And it will write out the redacted file to `my_sample_htc_redacted_only.csv`
