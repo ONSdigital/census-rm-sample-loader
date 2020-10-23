@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 from typing import Iterable
+from pathlib import Path
 
 from generate_sample_file import SampleGenerator
 
@@ -15,29 +16,32 @@ SENSITIVE_ESTAB_TYPES = ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', '
                          'TRAVELLING PERSONS', 'GRT SITE', 'MIGRANT WORKERS', 'IMMIGRATION REMOVAL CENTRE',
                          'SHELTERED ACCOMMODATION', 'APPROVED PREMISES', 'RESIDENTIAL CHILDRENS HOME',
                          'RELIGIOUS COMMUNITY', 'LOW/MEDIUM SECURE MENTAL HEALTH', 'BOARDING SCHOOL']
-non_sensitive_estab_types = [estab for estab in SampleGen.ESTAB_TYPES if estab not in SENSITIVE_ESTAB_TYPES]
-SampleGen.ESTAB_TYPES = non_sensitive_estab_types
+SAMPLE_UNIT_LOG_FREQUENCY = 50000
+HTC_REDACTED_VALUE = 1
+NON_SENSITIVE_ESTAB_TYPES = [estab for estab in SampleGen.ESTAB_TYPES if estab not in SENSITIVE_ESTAB_TYPES]
+SampleGen.ESTAB_TYPES = NON_SENSITIVE_ESTAB_TYPES
 SampleGen.read_words()
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Redact a sample file.')
     parser.add_argument('sample_file_path', help='path to the sample file', type=str)
+    parser.add_argument('--redact-htc-only', help="redact HTC values only", default=False, action='store_true',
+                        required=False)
     return parser.parse_args()
 
 
-def redact_sample_file(sample_file_path: int, output_file_path: str):
+def redact_sample_file(sample_file_path: int, output_file_path: Path,  redact_htc_only: bool):
     with open(sample_file_path) as sample_file:
-        _redact_sample(sample_file, output_file_path)
+        _redact_sample(sample_file, output_file_path, redact_htc_only)
 
 
-def _redact_sample(sample_file: Iterable[str], output_file_path: str):
+def _redact_sample(sample_file: Iterable[str], output_file_path: Path, redact_htc_only: bool):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
-    _redact_sample_units(sample_file_reader, output_file_path)
+    _redact_sample_units(sample_file_reader, output_file_path, redact_htc_only)
 
 
-def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: str,
-                         sample_unit_log_frequency=50000):
+def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: Path, redact_htc_only: bool):
     logger.info('Redacting sample...')
 
     with open(output_file_path, 'w', newline='') as output_file:
@@ -45,19 +49,19 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: st
         writer.writeheader()
 
         for count, sample_row in enumerate(sample_file_reader, 1):
-            redacted_sample_row = _redact_sample_row(sample_row)
+            redacted_sample_row = _redact_sample_row(sample_row, redact_htc_only)
             _write_row(writer, redacted_sample_row)
 
-            if count % sample_unit_log_frequency == 0:
+            if count % SAMPLE_UNIT_LOG_FREQUENCY == 0:
                 logger.info(f'{count} sample units redacted')
 
     logger.info('All sample units have been redacted')
 
 
-def _redact_sample_row(sample_row: dict):
-    sample_row['HTC_WILLINGNESS'] = SampleGen.get_random_htc()
-    sample_row['HTC_DIGITAL'] = SampleGen.get_random_htc()
-    if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES:
+def _redact_sample_row(sample_row: dict, redact_htc_only: bool):
+    sample_row['HTC_WILLINGNESS'] = HTC_REDACTED_VALUE
+    sample_row['HTC_DIGITAL'] = HTC_REDACTED_VALUE
+    if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES and not redact_htc_only:
         sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
         sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()
         address_line_2, address_line_3 = SampleGen.get_random_address_lines_2_and_3()
@@ -102,8 +106,10 @@ def _write_row(writer: csv.DictWriter, sample_row: dict):
         'PRINT_BATCH': sample_row['PRINT_BATCH']})
 
 
-def create_output_path(sample_file_path: str):
-    output_file_path = 'sample_files/' + sample_file_path.split('/')[-1].split('.csv')[0] + '_redacted.csv'
+def create_output_path(sample_file_path: Path, redact_htc_only: bool) -> Path:
+    file_name_suffix = '_redacted.csv' if not redact_htc_only else '_redacted_htc_only.csv'
+    redacted_file_name = f'{Path(sample_file_path).stem}{file_name_suffix}'
+    output_file_path = Path('sample_files').joinpath(redacted_file_name)
     return output_file_path
 
 
@@ -112,8 +118,8 @@ def main():
     logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], level=log_level or logging.ERROR)
     logger.setLevel(log_level or logging.INFO)
     args = parse_arguments()
-    output_file_path = create_output_path(args.sample_file_path)
-    redact_sample_file(args.sample_file_path, output_file_path)
+    output_file_path = create_output_path(args.sample_file_path, args.redact_htc_only)
+    redact_sample_file(args.sample_file_path, output_file_path, args.redact_htc_only)
 
 
 if __name__ == "__main__":
