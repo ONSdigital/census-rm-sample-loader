@@ -24,7 +24,7 @@ class TestRedactSample(TestCase):
             'sample_file_1_per_treatment_code_redacted.csv')
 
         # When
-        redact_sample.redact_sample_file(sample_file_path, sample_redacted_file_path)
+        redact_sample.redact_sample_file(sample_file_path, sample_redacted_file_path, redact_htc_only=False)
         sample_validator = SampleValidator()
         validation_failures = sample_validator.validate(sample_redacted_file_path)
 
