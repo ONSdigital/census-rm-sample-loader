@@ -49,6 +49,8 @@ def latitude_longitude(max_precision: int, max_scale: int):
         except ValueError:
             raise Invalid(f'Value "{value}" is not a valid float')
         try:
+            # This will fail validation correctly if given a value with none or multiple '.'s
+            # as this line raises ValueError if it cannot unpack into 2 variables. 
             integer, decimal = value.split('.')
             int(integer)
             int(decimal)
