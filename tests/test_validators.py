@@ -132,7 +132,8 @@ def test_lat_long_valid():
     '1.2345*10**-3',
     '1.2345x10**-3',
     '1.2345x10^-3',
-    'eggs'
+    'eggs',
+    '12.34.56.789',
 ])
 def test_lat_long_scientific_notation_invalid(value):
     # Given
