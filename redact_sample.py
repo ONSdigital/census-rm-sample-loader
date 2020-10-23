@@ -6,7 +6,6 @@ import sys
 from typing import Iterable
 from pathlib import Path
 
-
 from generate_sample_file import SampleGenerator
 
 logger = logging.getLogger(__name__)
@@ -31,17 +30,17 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def redact_sample_file(sample_file_path: int, output_file_path: str,  redact_htc_only: bool = False):
+def redact_sample_file(sample_file_path: int, output_file_path: Path,  redact_htc_only: bool):
     with open(sample_file_path) as sample_file:
         _redact_sample(sample_file, output_file_path, redact_htc_only)
 
 
-def _redact_sample(sample_file: Iterable[str], output_file_path: str, redact_htc_only: bool):
+def _redact_sample(sample_file: Iterable[str], output_file_path: Path, redact_htc_only: bool):
     sample_file_reader = csv.DictReader(sample_file, delimiter=',')
     _redact_sample_units(sample_file_reader, output_file_path, redact_htc_only)
 
 
-def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: str, redact_htc_only):
+def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: Path, redact_htc_only: bool):
     logger.info('Redacting sample...')
 
     with open(output_file_path, 'w', newline='') as output_file:
