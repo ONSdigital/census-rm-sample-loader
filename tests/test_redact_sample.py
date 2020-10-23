@@ -82,7 +82,6 @@ class TestRedactSample(TestCase):
         self.assertEqual(sample_dict_row['ADDRESS_LINE3'], redacted_sample_row['ADDRESS_LINE3'])
         self.assertEqual(sample_dict_row['ORGANISATION_NAME'], redacted_sample_row['ORGANISATION_NAME'])
 
-
     def test_redact_fields_sensitive_estab(self):
         # Given
         sample_dict_row = {'UPRN': '10008677190', 'ESTAB_UPRN': '10008677194', 'ADDRESS_TYPE': 'HH',
