@@ -60,18 +60,17 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: Pa
 def _redact_sample_row(sample_row: dict, redact_htc_only: bool):
     sample_row['HTC_WILLINGNESS'] = SampleGen.get_random_htc()
     sample_row['HTC_DIGITAL'] = SampleGen.get_random_htc()
-    if not redact_htc_only:
+    if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES and not redact_htc_only:
+        sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
+        sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()
+        address_line_2, address_line_3 = SampleGen.get_random_address_lines_2_and_3()
+        sample_row['ADDRESS_LINE2'] = address_line_2
+        sample_row['ADDRESS_LINE3'] = address_line_3
+        sample_row['TOWN_NAME'] = SampleGen.get_random_post_town()
+        sample_row['POSTCODE'] = SampleGen.get_random_post_code()
+        sample_row['LATITUDE'] = SampleGen.get_random_lat_or_long()
+        sample_row['LONGITUDE'] = SampleGen.get_random_lat_or_long()
         sample_row['ORGANISATION_NAME'] = ''
-        if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES:
-            sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
-            sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()
-            address_line_2, address_line_3 = SampleGen.get_random_address_lines_2_and_3()
-            sample_row['ADDRESS_LINE2'] = address_line_2
-            sample_row['ADDRESS_LINE3'] = address_line_3
-            sample_row['TOWN_NAME'] = SampleGen.get_random_post_town()
-            sample_row['POSTCODE'] = SampleGen.get_random_post_code()
-            sample_row['LATITUDE'] = SampleGen.get_random_lat_or_long()
-            sample_row['LONGITUDE'] = SampleGen.get_random_lat_or_long()
     return sample_row
 
 
