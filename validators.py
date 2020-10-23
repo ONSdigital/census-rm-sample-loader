@@ -50,6 +50,8 @@ def latitude_longitude(max_precision: int, max_scale: int):
             raise Invalid(f'Value "{value}" is not a valid float')
         try:
             integer, decimal = value.split('.')
+            int(integer)
+            int(decimal)
         except ValueError:
             raise Invalid(f'Malformed decimal, Value = "{value}"')
         integer = integer.strip('-')
