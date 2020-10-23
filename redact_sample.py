@@ -17,6 +17,7 @@ SENSITIVE_ESTAB_TYPES = ['MILITARY US SFA', 'MILITARY SFA', 'MILITARY US SLA', '
                          'SHELTERED ACCOMMODATION', 'APPROVED PREMISES', 'RESIDENTIAL CHILDRENS HOME',
                          'RELIGIOUS COMMUNITY', 'LOW/MEDIUM SECURE MENTAL HEALTH', 'BOARDING SCHOOL']
 SAMPLE_UNIT_LOG_FREQUENCY = 50000
+HTC_REDACTED_VALUE = 1
 NON_SENSITIVE_ESTAB_TYPES = [estab for estab in SampleGen.ESTAB_TYPES if estab not in SENSITIVE_ESTAB_TYPES]
 SampleGen.ESTAB_TYPES = NON_SENSITIVE_ESTAB_TYPES
 SampleGen.read_words()
@@ -58,8 +59,8 @@ def _redact_sample_units(sample_file_reader: Iterable[str], output_file_path: Pa
 
 
 def _redact_sample_row(sample_row: dict, redact_htc_only: bool):
-    sample_row['HTC_WILLINGNESS'] = SampleGen.get_random_htc()
-    sample_row['HTC_DIGITAL'] = SampleGen.get_random_htc()
+    sample_row['HTC_WILLINGNESS'] = HTC_REDACTED_VALUE
+    sample_row['HTC_DIGITAL'] = HTC_REDACTED_VALUE
     if sample_row['ESTAB_TYPE'] in SENSITIVE_ESTAB_TYPES and not redact_htc_only:
         sample_row['ESTAB_TYPE'] = SampleGen.get_random_estab_type()
         sample_row['ADDRESS_LINE1'] = SampleGen.get_random_address_line()

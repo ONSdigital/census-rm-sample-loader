@@ -48,9 +48,8 @@ class TestRedactSample(TestCase):
         redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row, redact_htc_only=False)
 
         # Then
-        self.assertTrue(1 <= int(redacted_sample_row['HTC_WILLINGNESS']) <= 5)
-
-        self.assertTrue(1 <= int(redacted_sample_row['HTC_DIGITAL']) <= 5)
+        self.assertEqual(1, redacted_sample_row['HTC_WILLINGNESS'])
+        self.assertEqual(1, redacted_sample_row['HTC_DIGITAL'])
 
     def test_redact_htc_only(self):
         # Given
@@ -69,8 +68,8 @@ class TestRedactSample(TestCase):
         redacted_sample_row = redact_sample._redact_sample_row(sample_dict_row, redact_htc_only=True)
 
         # Then
-        self.assertTrue(1 <= int(redacted_sample_row['HTC_WILLINGNESS']) <= 5)
-        self.assertTrue(1 <= int(redacted_sample_row['HTC_DIGITAL']) <= 5)
+        self.assertEqual(1, redacted_sample_row['HTC_WILLINGNESS'])
+        self.assertEqual(1, redacted_sample_row['HTC_DIGITAL'])
 
         self.assertEqual(sample_dict_row['ESTAB_TYPE'], redacted_sample_row['ESTAB_TYPE'])
         self.assertEqual(sample_dict_row['ADDRESS_LINE1'], redacted_sample_row['ADDRESS_LINE1'])
@@ -129,3 +128,23 @@ class TestRedactSample(TestCase):
         self.assertNotEqual(sample_dict_row_reference['ADDRESS_LINE3'], redacted_sample_row['ADDRESS_LINE3'])
 
         self.assertNotEqual(sample_dict_row_reference['ORGANISATION_NAME'], redacted_sample_row['ORGANISATION_NAME'])
+
+    def test_redacted_file_output_path(self):
+        # Given
+        file_path = Path('sample_files/test.csv')
+
+        # When
+        output_path = redact_sample.create_output_path(file_path, redact_htc_only=False)
+
+        # Then
+        self.assertEqual(Path('sample_files/test_redacted.csv'), output_path)
+
+    def test_redacted_file_output_path_htc_only(self):
+        # Given
+        file_path = Path('sample_files/test.csv')
+
+        # When
+        output_path = redact_sample.create_output_path(file_path, redact_htc_only=True)
+
+        # Then
+        self.assertEqual(Path('sample_files/test_redacted_htc_only.csv'), output_path)
