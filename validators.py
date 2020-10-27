@@ -49,7 +49,11 @@ def latitude_longitude(max_precision: int, max_scale: int):
         except ValueError:
             raise Invalid(f'Value "{value}" is not a valid float')
         try:
+            # This will fail validation correctly if given a value with none or multiple '.'s
+            # as this line raises ValueError if it cannot unpack into 2 variables.
             integer, decimal = value.split('.')
+            int(integer)
+            int(decimal)
         except ValueError:
             raise Invalid(f'Malformed decimal, Value = "{value}"')
         integer = integer.strip('-')
@@ -103,7 +107,8 @@ def no_pipe_character():
 
 def region_matches_treatment_code():
     def validate(region, **kwargs):
-        if region[0] != kwargs['row']['TREATMENT_CODE'][-1]:
+        if region.strip() and kwargs['row']['TREATMENT_CODE'].strip() and \
+                region[0] != kwargs['row']['TREATMENT_CODE'][-1]:
             raise Invalid(
                 f'Region "{region}" does not match region in treatment code "{kwargs["row"]["TREATMENT_CODE"]}"')
 

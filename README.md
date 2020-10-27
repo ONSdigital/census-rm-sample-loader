@@ -112,3 +112,19 @@ pipenv run python generate_sample_file.py -o /custom/path.csv -t /path/to/treatm
 Where the treatment code quantities file is a csv with headers `"Treatment Code"` and `"Quantity"` specifying the quantities of each treatment code to include in the generated sample
 
 An optional flag `-s` or `--sequential_uprn` can be used to generate unique UPRN's sequentially instead of randomly, making it faster to generate a massive file.
+
+## Sample file redactor
+The [`redact_sample.py`](/redact_sample.py) script takes in a sample file and outputs the same sample with random data for redacted fields
+
+To redact **all** sensitive fields, run it with the script :
+```shell script
+pipenv run python redact_sample.py sample_files/my_sample.csv
+```
+And it will write out the redacted file to `my_sample_redacted.csv`
+
+To redact just the HTC fields, run the script with the flag `--redact-htc-only`:
+```shell script
+pipenv run python redact_sample.py sample_files/my_sample.csv --redact-htc-only
+```
+
+And it will write out the redacted file to `my_sample_htc_redacted_only.csv`
