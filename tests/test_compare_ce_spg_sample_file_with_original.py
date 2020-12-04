@@ -10,9 +10,9 @@ def test_pass_validation_if_rows_removed_in_new_file():
 
     new_sample_file = RESOURCE_FILE_PATH.joinpath('ce_spg_new_removed_rows.csv')
 
-    problems = compare_files(old_sample_file, new_sample_file)
+    problems_found = compare_files(old_sample_file, new_sample_file)
 
-    assert problems is False
+    assert len(problems_found) == 0
 
 
 def test_fail_validation_if_duplicated_lines_in_new_file():
@@ -20,9 +20,11 @@ def test_fail_validation_if_duplicated_lines_in_new_file():
 
     new_sample_file = RESOURCE_FILE_PATH.joinpath('ce_spg_new_duplicated_lines.csv')
 
-    problems = compare_files(old_sample_file, new_sample_file)
+    problems_found = compare_files(old_sample_file, new_sample_file)
 
-    assert problems is True
+    expected_problems = ['12348874419', '12348874419', '12348874419']
+
+    assert problems_found == expected_problems
 
 
 def test_fail_validation_if_new_rows_in_new_file():
@@ -30,9 +32,11 @@ def test_fail_validation_if_new_rows_in_new_file():
 
     new_sample_file = RESOURCE_FILE_PATH.joinpath('ce_spg_new_brand_new_uprns.csv')
 
-    problems = compare_files(old_sample_file, new_sample_file)
+    problems_found = compare_files(old_sample_file, new_sample_file)
 
-    assert problems is True
+    expected_problems = ['12345']
+
+    assert problems_found == expected_problems
 
 
 def test_fail_validation_if_columns_other_than_field_officer_and_field_coordinator_are_changed():
@@ -40,9 +44,11 @@ def test_fail_validation_if_columns_other_than_field_officer_and_field_coordinat
 
     new_sample_file = RESOURCE_FILE_PATH.joinpath('ce_spg_new_postcode_changed.csv')
 
-    problems = compare_files(old_sample_file, new_sample_file)
+    problems_found = compare_files(old_sample_file, new_sample_file)
 
-    assert problems is True
+    expected_problems = ['XXXXXX']
+
+    assert problems_found == expected_problems
 
 
 def test_pass_validation_if_field_officer_and_field_coordinator_are_changed():
@@ -50,6 +56,6 @@ def test_pass_validation_if_field_officer_and_field_coordinator_are_changed():
 
     new_sample_file = RESOURCE_FILE_PATH.joinpath('ce_spg_new_field_columns_changed.csv')
 
-    problems = compare_files(old_sample_file, new_sample_file)
+    problems_found = compare_files(old_sample_file, new_sample_file)
 
-    assert problems is False
+    assert len(problems_found) == 0

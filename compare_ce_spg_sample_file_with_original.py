@@ -5,7 +5,7 @@ import csv
 def compare_files(old_file_path, new_file_path):
     old_file_by_uprn = {}
 
-    problems_found = False
+    problems_found = []
 
     with open(old_file_path) as old_file:
 
@@ -23,21 +23,21 @@ def compare_files(old_file_path, new_file_path):
         for count, sample_row in enumerate(new_file_reader, 1):
             matching_sample_row = old_file_by_uprn.get(sample_row['UPRN'])
             if not matching_sample_row:
-                print(f'Could not find UPRN {sample_row["UPRN"]} on row {count + 1}')
-                problems_found = True
+                print(f'Could not find UPRN in original sample {sample_row["UPRN"]} on row {count + 1}')
+                problems_found.append(sample_row["UPRN"])
             else:
-
                 if sample_row["UPRN"] in unique_uprns:
-                    print(f'Duplicate line on row {count + 1}')
-                    problems_found = True
+                    print(f'Duplicate UPRN {sample_row["UPRN"]} on row {count + 1}')
+                    problems_found.append(sample_row["UPRN"])
 
                 unique_uprns.add(sample_row['UPRN'])
 
                 for row_key in list(sample_row.keys()):
                     if sample_row[row_key] != matching_sample_row[row_key] \
                             and row_key != 'FIELDCOORDINATOR_ID' and row_key != 'FIELDOFFICER_ID':
-                        print(f'Found invalid data in column {row_key}, row {count + 1}: {sample_row[row_key]}')
-                        problems_found = True
+                        print(f'Found invalid data in column {row_key}, row {count + 1}: {sample_row[row_key]}'
+                              f'\nExpected: {matching_sample_row[row_key]} ')
+                        problems_found.append(sample_row[row_key])
 
     return problems_found
 
