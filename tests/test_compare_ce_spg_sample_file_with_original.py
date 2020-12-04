@@ -22,7 +22,8 @@ def test_fail_validation_if_duplicated_lines_in_new_file():
 
     problems_found = compare_files(old_sample_file, new_sample_file)
 
-    expected_problems = ['12348874419', '12348874419', '12348874419']
+    expected_problems = ['Duplicate UPRN 12348874419 on row 6', 'Duplicate UPRN 12348874419 on row 7',
+                         'Duplicate UPRN 12348874419 on row 8']
 
     assert problems_found == expected_problems
 
@@ -34,7 +35,7 @@ def test_fail_validation_if_new_rows_in_new_file():
 
     problems_found = compare_files(old_sample_file, new_sample_file)
 
-    expected_problems = ['12345']
+    expected_problems = ['Could not find UPRN in original sample 12345 on row 5']
 
     assert problems_found == expected_problems
 
@@ -46,7 +47,7 @@ def test_fail_validation_if_columns_other_than_field_officer_and_field_coordinat
 
     problems_found = compare_files(old_sample_file, new_sample_file)
 
-    expected_problems = ['XXXXXX']
+    expected_problems = ['Found invalid data in column POSTCODE, row 3: XXXXXX \nExpected: OO9 5DX ']
 
     assert problems_found == expected_problems
 

@@ -24,11 +24,11 @@ def compare_files(old_file_path, new_file_path):
             matching_sample_row = old_file_by_uprn.get(sample_row['UPRN'])
             if not matching_sample_row:
                 print(f'Could not find UPRN in original sample {sample_row["UPRN"]} on row {count + 1}')
-                problems_found.append(sample_row["UPRN"])
+                problems_found.append(f'Could not find UPRN in original sample {sample_row["UPRN"]} on row {count + 1}')
             else:
                 if sample_row["UPRN"] in unique_uprns:
                     print(f'Duplicate UPRN {sample_row["UPRN"]} on row {count + 1}')
-                    problems_found.append(sample_row["UPRN"])
+                    problems_found.append(f'Duplicate UPRN {sample_row["UPRN"]} on row {count + 1}')
 
                 unique_uprns.add(sample_row['UPRN'])
 
@@ -37,7 +37,8 @@ def compare_files(old_file_path, new_file_path):
                             and row_key != 'FIELDCOORDINATOR_ID' and row_key != 'FIELDOFFICER_ID':
                         print(f'Found invalid data in column {row_key}, row {count + 1}: {sample_row[row_key]}'
                               f'\nExpected: {matching_sample_row[row_key]} ')
-                        problems_found.append(sample_row[row_key])
+                        problems_found.append(f'Found invalid data in column {row_key}, row {count + 1}:'
+                                              f' {sample_row[row_key]} \nExpected: {matching_sample_row[row_key]} ')
 
     return problems_found
 
