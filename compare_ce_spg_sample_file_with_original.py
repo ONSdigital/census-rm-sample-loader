@@ -23,11 +23,9 @@ def compare_files(old_file_path, new_file_path):
         for count, sample_row in enumerate(new_file_reader, 1):
             matching_sample_row = old_file_by_uprn.get(sample_row['UPRN'])
             if not matching_sample_row:
-                print(f'Could not find UPRN in original sample {sample_row["UPRN"]} on row {count + 1}')
                 problems_found.append(f'Could not find UPRN in original sample {sample_row["UPRN"]} on row {count + 1}')
             else:
                 if sample_row["UPRN"] in unique_uprns:
-                    print(f'Duplicate UPRN {sample_row["UPRN"]} on row {count + 1}')
                     problems_found.append(f'Duplicate UPRN {sample_row["UPRN"]} on row {count + 1}')
 
                 unique_uprns.add(sample_row['UPRN'])
@@ -35,10 +33,8 @@ def compare_files(old_file_path, new_file_path):
                 for row_key in list(sample_row.keys()):
                     if sample_row[row_key] != matching_sample_row[row_key] \
                             and row_key != 'FIELDCOORDINATOR_ID' and row_key != 'FIELDOFFICER_ID':
-                        print(f'Found invalid data in column {row_key}, row {count + 1}: {sample_row[row_key]}'
-                              f'\nExpected: {matching_sample_row[row_key]} ')
                         problems_found.append(f'Found invalid data in column {row_key}, row {count + 1}:'
-                                              f' {sample_row[row_key]} \nExpected: {matching_sample_row[row_key]} ')
+                                              f' {sample_row[row_key]}...Expected: {matching_sample_row[row_key]} ')
 
     return problems_found
 
@@ -53,7 +49,9 @@ def parse_arguments():
 def main():
     args = parse_arguments()
 
-    if compare_files(old_file_path=args.old_file, new_file_path=args.new_file):
+    problems_found = compare_files(old_file_path=args.old_file, new_file_path=args.new_file)
+    if problems_found:
+        print('\n'.join(problems_found))
         print('This file has FAILED validation')
     else:
         print('This file has PASSED validation')
