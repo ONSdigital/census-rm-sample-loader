@@ -34,7 +34,8 @@ def compare_files(old_file_path, new_file_path):
                     if sample_row[row_key] != matching_sample_row[row_key] \
                             and row_key != 'FIELDCOORDINATOR_ID' and row_key != 'FIELDOFFICER_ID':
                         problems_found.append(f'Found invalid data in column {row_key}, row {count + 1}:'
-                                              f' {sample_row[row_key]}...Expected: {matching_sample_row[row_key]} ')
+                                              f' "{sample_row[row_key]}" '
+                                              f'but expected: "{matching_sample_row[row_key]}"')
 
     return problems_found
 
@@ -53,6 +54,7 @@ def main():
     if problems_found:
         print('\n'.join(problems_found))
         print('This file has FAILED validation')
+        exit(1)
     else:
         print('This file has PASSED validation')
 

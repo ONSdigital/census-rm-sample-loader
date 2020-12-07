@@ -47,7 +47,7 @@ def test_fail_validation_if_columns_other_than_field_officer_and_field_coordinat
 
     problems_found = compare_files(old_sample_file, new_sample_file)
 
-    expected_problems = ['Found invalid data in column POSTCODE, row 3: XXXXXX...Expected: OO9 5DX ']
+    expected_problems = ['Found invalid data in column POSTCODE, row 3: "XXXXXX" but expected: "OO9 5DX"']
 
     assert problems_found == expected_problems
 
